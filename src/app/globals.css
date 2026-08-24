@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+  --color-forest-950: #0d1a10;
+  --color-forest-900: #122016;
+  --color-forest-800: #1a3020;
+  --color-forest-700: #254530;
+  --color-forest-600: #2f5c3e;
+  --color-forest-500: #3a7050;
+  --color-forest-400: #5a9970;
+  --color-forest-300: #82ba96;
+  --color-forest-200: #b4d6bf;
+  --color-forest-100: #ddf0e4;
+  --color-forest-50: #f2faf5;
+
+  --color-stone-900: #1c1a17;
+  --color-stone-800: #2e2b25;
+  --color-stone-700: #433f37;
+  --color-stone-600: #5c584e;
+  --color-stone-500: #7a7469;
+  --color-stone-400: #9e9a90;
+  --color-stone-300: #c2bfb8;
+  --color-stone-200: #dddbd7;
+  --color-stone-100: #f0efec;
+  --color-stone-50: #faf9f8;
+
+
+  --color-bg: #f8f7f5;
+  --color-surface: #ffffff;
+  --color-text: #1c1a17;
+  --color-muted: #7a7469;
+  --color-border: #e2e0db;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
