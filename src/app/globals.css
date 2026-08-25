@@ -46,7 +46,7 @@ html {
 }
 
 body {
-  background-color: var(--color-bg);
+  background: url("/images/ugo_cabinsandbonfire.jpg") center / cover no-repeat;
   color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
