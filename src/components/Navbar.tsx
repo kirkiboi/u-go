@@ -45,9 +45,12 @@ export default function Navbar() {
         className={[
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-stone-200"
-            : "bg-white/80 backdrop-blur-sm",
+            ? "backdrop-blur-md shadow-sm border-b"
+            : "backdrop-blur-sm",
         ].join(" ")}
+        style={{
+          backgroundColor: "var(--color-forest-800)",
+        }}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-18">
@@ -60,7 +63,7 @@ export default function Navbar() {
             >
               <span
                 className="text-[10px] font-semibold tracking-[0.2em] uppercase"
-                style={{ color: "var(--color-forest-500)" }}
+                style={{ color: "var(--color-forest-300)" }}
               >
                 U-Go Mountain Resort
               </span>
@@ -68,30 +71,35 @@ export default function Navbar() {
                 className="text-xl font-bold tracking-tight transition-colors duration-200"
                 style={{
                   fontFamily: "var(--font-display)",
-                  color: "var(--color-forest-900)",
+                  color: "white",
                 }}
               >
                 Home &amp; Retreat
               </span>
             </Link>
 
-            <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1">
+            <nav
+              aria-label="Primary navigation"
+              className="hidden md:flex items-center gap-1"
+            >
               {NAV_LINKS.map(({ label, href }) => (
                 <Link
                   key={label}
                   href={href}
                   className="relative px-3 py-1.5 text-sm font-medium transition-colors duration-200 rounded-md group"
-                  style={{ color: "var(--color-stone-700)" }}
+                  style={{ color: "var(--color-forest-100)" }}
                 >
                   <span
                     className="absolute bottom-0 left-3 right-3 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"
-                    style={{ backgroundColor: "var(--color-forest-500)" }}
+                    style={{
+                      backgroundColor: "var(--color-forest-300)",
+                    }}
                   />
                   <span
                     className="group-hover:text-inherit transition-colors duration-200"
                     style={
                       {
-                        "--tw-hover-color": "var(--color-forest-700)",
+                        "--tw-hover-color": "var(--color-forest-200)",
                       } as React.CSSProperties
                     }
                   >
@@ -102,12 +110,13 @@ export default function Navbar() {
 
               <a
                 href="/#booking"
-                className="ml-4 inline-flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="ml-4 inline-flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 style={{
                   background:
-                    "linear-gradient(135deg, var(--color-forest-600), var(--color-forest-800))",
-                  boxShadow: "0 1px 3px 0 rgba(26,48,32,0.35)",
-                  ["--tw-ring-color" as any]: "var(--color-forest-500)",
+                    "linear-gradient(135deg, var(--color-forest-300), var(--color-forest-200))",
+                  color: "var(--color-forest-900)",
+                  boxShadow: "0 1px 3px 0 rgba(0,0,0,0.25)",
+                  ["--tw-ring-color" as any]: "var(--color-forest-300)",
                 }}
               >
                 Book Now
@@ -121,10 +130,10 @@ export default function Navbar() {
               aria-controls="mobile-menu"
               aria-expanded={menuOpen}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
-              className="md:hidden flex flex-col items-center justify-center w-9 h-9 rounded-md transition-colors duration-150 hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2"
+              className="md:hidden flex flex-col items-center justify-center w-9 h-9 rounded-md transition-colors duration-150 hover:bg-forest-700 focus-visible:outline-none focus-visible:ring-2"
               style={
                 {
-                  ["--tw-ring-color" as any]: "var(--color-forest-500)",
+                  "--tw-ring-color": "var(--color-forest-300)",
                 } as React.CSSProperties
               }
             >
@@ -134,21 +143,21 @@ export default function Navbar() {
                   "block w-5 h-0.5 rounded-full transition-all duration-300",
                   menuOpen ? "translate-y-1.5 rotate-45" : "",
                 ].join(" ")}
-                style={{ backgroundColor: "var(--color-forest-900)" }}
+                style={{ backgroundColor: "var(--color-forest-100)" }}
               />
               <span
                 className={[
                   "block w-5 h-0.5 rounded-full my-1 transition-all duration-300",
                   menuOpen ? "opacity-0 scale-x-0" : "",
                 ].join(" ")}
-                style={{ backgroundColor: "var(--color-forest-900)" }}
+                style={{ backgroundColor: "var(--color-forest-100)" }}
               />
               <span
                 className={[
                   "block w-5 h-0.5 rounded-full transition-all duration-300",
                   menuOpen ? "-translate-y-1.5 -rotate-45" : "",
                 ].join(" ")}
-                style={{ backgroundColor: "var(--color-forest-900)" }}
+                style={{ backgroundColor: "var(--color-forest-100)" }}
               />
             </button>
           </div>
@@ -168,7 +177,10 @@ export default function Navbar() {
         ].join(" ")}
       >
         <div
-          className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+          className="absolute inset-0 backdrop-blur-sm"
+          style={{
+            backgroundColor: "rgba(13, 26, 16, 0.55)",
+          }}
           onClick={closeMenu}
           aria-hidden="true"
         />
@@ -176,38 +188,48 @@ export default function Navbar() {
         <div
           className={[
             "relative mt-16 mx-4 rounded-xl border shadow-xl transition-all duration-300",
-            menuOpen ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0",
+            menuOpen
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-4 opacity-0",
           ].join(" ")}
           style={{
-            backgroundColor: "var(--color-surface)",
-            borderColor: "var(--color-border)",
+            backgroundColor: "var(--color-forest-800)",
+            borderColor: "var(--color-forest-700)",
           }}
         >
           <nav
             aria-label="Mobile navigation"
             className="flex flex-col divide-y"
-            style={{ borderColor: "var(--color-border)" }}
+            style={{ borderColor: "var(--color-forest-700)" }}
           >
             {NAV_LINKS.map(({ label, href }) => (
               <Link
                 key={label}
                 href={href}
                 onClick={closeMenu}
-                className="px-5 py-4 text-sm font-medium transition-colors duration-150 hover:bg-stone-50 first:rounded-t-xl"
-                style={{ color: "var(--color-stone-800)" }}
+                className="px-5 py-4 text-sm font-medium transition-colors duration-150 first:rounded-t-xl"
+                style={{
+                  color: "var(--color-forest-100)",
+                }}
               >
                 {label}
               </Link>
             ))}
 
-            <div className="p-4 rounded-b-xl">
+            <div
+              className="p-4 rounded-b-xl"
+              style={{
+                backgroundColor: "var(--color-forest-900)",
+              }}
+            >
               <a
                 href="/#booking"
                 onClick={closeMenu}
-                className="flex items-center justify-center w-full py-3 rounded-lg text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
+                className="flex items-center justify-center w-full py-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
                 style={{
                   background:
-                    "linear-gradient(135deg, var(--color-forest-600), var(--color-forest-800))",
+                    "linear-gradient(135deg, var(--color-forest-300), var(--color-forest-200))",
+                  color: "var(--color-forest-900)",
                 }}
               >
                 Book Now
