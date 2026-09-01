@@ -5,7 +5,6 @@ import Link from "next/link";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/#about" },
   { label: "Rooms", href: "/#rooms" },
   { label: "Amenities", href: "/#amenities" },
   { label: "Location", href: "/#location" },
@@ -107,20 +106,6 @@ export default function Navbar() {
                   </span>
                 </Link>
               ))}
-
-              <a
-                href="/#booking"
-                className="ml-4 inline-flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                style={{
-                  background:
-                    "linear-gradient(135deg, var(--color-forest-300), var(--color-forest-200))",
-                  color: "var(--color-forest-900)",
-                  boxShadow: "0 1px 3px 0 rgba(0,0,0,0.25)",
-                  ["--tw-ring-color" as any]: "var(--color-forest-300)",
-                }}
-              >
-                Book Now
-              </a>
             </nav>
 
             <button
