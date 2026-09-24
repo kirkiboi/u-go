@@ -55,12 +55,12 @@ function RoomCard({ room }: { room: Room }) {
                     </div>
 
                     <button
-                        className="group flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110"
+                        className="group flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 cursor-pointer"
                         style={{
                             backgroundColor: "var(--color-forest-800)",
                         }}
                     >
-                        <span>Learn More</span>
+                        <span>Take a look inside</span>
 
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
