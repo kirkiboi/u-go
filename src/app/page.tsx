@@ -1,7 +1,7 @@
 import Hero from "@/components/sections/Hero";
 import Rooms from "@/components/sections/Rooms";
 import Amenities from "@/components/sections/Amenities";
-
+import Location from "@/components/sections/Location";
 
 export default function HomePage() {
   return (
@@ -9,6 +9,7 @@ export default function HomePage() {
       <Hero></Hero>
       <Rooms></Rooms>
       <Amenities></Amenities>
+      <Location></Location>
     </main>
   );
 }
