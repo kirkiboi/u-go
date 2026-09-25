@@ -1,4 +1,5 @@
 import AmenityCard from "@/components/reusable/AmenitiesCard";
+import Link from "next/link";
 
 const amenities = [
     {
@@ -73,25 +74,34 @@ export default function Amenities() {
                             Explore the surroundings, discover hidden corners, and experience U-Go Mountain Resort as if you were already here.
                         </p>
                     </div>
-                    <a href="#"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group inline-flex shrink-0 items-center gap-3 rounded-full 
-                                border px-6 py-3 text-sm font-semibold transition-all duration-300 
-                                hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-forest-900)]"
-                        style={{ borderColor: "var(--color-forest-300)", color: "var(--color-forest-300)", }}>
+                    <Link
+                        href="/amenities"
+                        className="group inline-flex shrink-0 items-center gap-3 rounded-full
+                        border px-6 py-3 text-sm font-semibold transition-all duration-300
+                        hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-forest-900)]"
+                        style={{
+                            borderColor: "var(--color-forest-300)",
+                            color: "var(--color-forest-300)",
+                        }}>
                         <span>
                             Take a walk
                         </span>
-                        <svg xmlns="http://www.w3.org/2000/svg"
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
                             strokeWidth={2}
                             stroke="currentColor"
-                            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
+                            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 12h14m-6-6 6 6-6 6"
+                            />
                         </svg>
-                    </a>
+                    </Link>
                 </div>
             </div>
         </section>

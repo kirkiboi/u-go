@@ -1,4 +1,5 @@
 
+import Link from "next/link";
 export default function BookingCTA() {
     return (
         <section
@@ -29,9 +30,11 @@ export default function BookingCTA() {
                     cottages, and unforgettable moments at U-Go Mountain
                     Resort.
                 </p>
-                <a
-                    href="#"
-                    className="group mt-9 inline-flex items-center gap-3 rounded-full px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:brightness-110"
+                <Link
+                    href="/booking"
+                    className="group mt-9 inline-flex items-center gap-3 
+                                rounded-full px-7 py-3.5 text-sm font-semibold text-white 
+                                transition-all duration-300 hover:-translate-y-1 hover:brightness-110"
                     style={{
                         backgroundColor: "var(--color-forest-700)",
                         boxShadow: "0 8px 24px rgba(13, 26, 16, 0.35)",
@@ -49,7 +52,7 @@ export default function BookingCTA() {
                             strokeLinejoin="round"
                             d="M5 12h14m-6-6 6 6-6 6" />
                     </svg>
-                </a>
+                </Link>
             </div>
         </section>
     );

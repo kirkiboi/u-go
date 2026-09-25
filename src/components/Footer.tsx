@@ -39,28 +39,6 @@ export default function Footer() {
                             Bukidnon. Come for the scenery, stay for the
                             experience.
                         </p>
-                        <a
-                            href="#booking"
-                            className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold transition-colors duration-200"
-                            style={{
-                                color: "var(--color-forest-300)",
-                            }}>
-                            <span>
-                                Plan your escape
-                            </span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={2}
-                                stroke="currentColor"
-                                className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M5 12h14m-6-6 6 6-6 6" />
-                            </svg>
-                        </a>
                     </div>
                     <div>
                         <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/90">

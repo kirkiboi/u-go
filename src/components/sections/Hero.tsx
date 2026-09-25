@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function Hero() {
     return (
         <div>
@@ -39,16 +40,17 @@ export default function Hero() {
                         city and a chance to recharge your batteries.
                     </p>
 
-                    <button
-                        className="group flex items-center gap-3 rounded-md px-5 py-3 text-sm font-semibold 
-                                    transition-all duration-200 hover:-translate-y-0.5 cursor-pointer hover:shadow-lg 
-                                    focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    <Link
+                        href="/rooms"
+                        className="group flex items-center gap-3 rounded-md px-5 py-3 text-sm font-semibold
+               transition-all duration-200 hover:-translate-y-0.5 cursor-pointer hover:shadow-lg
+               focus:outline-none focus:ring-2 focus:ring-offset-2"
                         style={{
                             backgroundColor: "var(--color-forest-200)",
                             color: "var(--color-forest-900)",
                         }}
                     >
-                        <span>BOOK A COTTAGE</span>
+                        <span>CHECK OUR ROOMS</span>
 
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +66,7 @@ export default function Hero() {
                                 d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
                             />
                         </svg>
-                    </button>
+                    </Link>
 
                     <div className="flex items-center gap-2 text-xs text-white/70">
                         <svg
