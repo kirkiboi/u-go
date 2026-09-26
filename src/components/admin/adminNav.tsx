@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const NAV_LINKS = [
     { label: "Dashboard", href: "/admin/dashboard" },
@@ -13,7 +13,7 @@ const NAV_LINKS = [
 
 export default function AdminNavbar() {
     const pathname = usePathname();
-
+    const router = useRouter();
     return (
         <aside
             className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r"
@@ -99,6 +99,7 @@ export default function AdminNavbar() {
                 </div>
                 <button
                     type="button"
+                    onClick={() => router.push("/admin/login")}
                     className="mt-3 w-full rounded-md border px-3 py-2 
                         text-xs font-medium transition-colors hover:bg-white/10
                         cursor-pointer"
