@@ -7,13 +7,13 @@ type Amenity = {
 function AmenityCard({ amenity }: { amenity: Amenity }) {
     return (
         <article
-            className="group relative h-[360px] overflow-hidden rounded-2xl"
-        >
+            className="group relative h-[360px] overflow-hidden rounded-2xl">
             <img
                 src={amenity.image}
                 alt={amenity.name}
-                className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-            />
+                className="absolute inset-0 h-full w-full 
+                            object-cover object-center transition-transform 
+                            duration-700 group-hover:scale-105"/>
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
 
@@ -22,8 +22,7 @@ function AmenityCard({ amenity }: { amenity: Amenity }) {
                     className="text-2xl font-semibold text-white"
                     style={{
                         fontFamily: "var(--font-display)",
-                    }}
-                >
+                    }}>
                     {amenity.name}
                 </h3>
 
@@ -35,8 +34,7 @@ function AmenityCard({ amenity }: { amenity: Amenity }) {
                     className="mt-5 h-px w-10 transition-all duration-300 group-hover:w-20"
                     style={{
                         backgroundColor: "var(--color-forest-300)",
-                    }}
-                />
+                    }} />
             </div>
         </article>
     );

@@ -7,7 +7,7 @@ const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Rooms", href: "/rooms" },
   { label: "Amenities", href: "/amenities" },
-  { label: "Location", href: "/location" },
+  { label: "Location", href: "/locations" },
 ] as const;
 
 export default function Navbar() {
@@ -49,59 +49,49 @@ export default function Navbar() {
         ].join(" ")}
         style={{
           backgroundColor: "var(--color-forest-800)",
-        }}
-      >
+        }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-18">
-
             <Link
               href="/"
               onClick={closeMenu}
               className="flex flex-col leading-tight group"
-              aria-label="Evergreen Ridge Resort — home"
-            >
+              aria-label="Evergreen Ridge Resort — home">
               <span
                 className="text-[10px] font-semibold tracking-[0.2em] uppercase"
-                style={{ color: "var(--color-forest-300)" }}
-              >
-                U-Go Mountain Resort
+                style={{ color: "var(--color-forest-300)" }}>
+                U-GO Cliff Resort
               </span>
               <span
                 className="text-xl font-bold tracking-tight transition-colors duration-200"
                 style={{
                   fontFamily: "var(--font-display)",
                   color: "white",
-                }}
-              >
-                Home &amp; Retreat
+                }}>
+                Mountain Retreat
               </span>
             </Link>
-
             <nav
               aria-label="Primary navigation"
-              className="hidden md:flex items-center gap-1"
-            >
+              className="hidden md:flex items-center gap-1">
               {NAV_LINKS.map(({ label, href }) => (
                 <Link
                   key={label}
                   href={href}
                   className="relative px-3 py-1.5 text-sm font-medium transition-colors duration-200 rounded-md group"
-                  style={{ color: "var(--color-forest-100)" }}
-                >
+                  style={{ color: "var(--color-forest-100)" }}>
                   <span
                     className="absolute bottom-0 left-3 right-3 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"
                     style={{
                       backgroundColor: "var(--color-forest-300)",
-                    }}
-                  />
+                    }} />
                   <span
                     className="group-hover:text-inherit transition-colors duration-200"
                     style={
                       {
                         "--tw-hover-color": "var(--color-forest-200)",
                       } as React.CSSProperties
-                    }
-                  >
+                    }>
                     {label}
                   </span>
                 </Link>
@@ -113,8 +103,7 @@ export default function Navbar() {
                   background:
                     "linear-gradient(135deg, var(--color-forest-300), var(--color-forest-200))",
                   color: "var(--color-forest-900)",
-                }}
-              >
+                }}>
                 Book With Us
               </Link>
             </nav>
@@ -130,30 +119,25 @@ export default function Navbar() {
                 {
                   "--tw-ring-color": "var(--color-forest-300)",
                 } as React.CSSProperties
-              }
-            >
-
+              }>
               <span
                 className={[
                   "block w-5 h-0.5 rounded-full transition-all duration-300",
                   menuOpen ? "translate-y-1.5 rotate-45" : "",
                 ].join(" ")}
-                style={{ backgroundColor: "var(--color-forest-100)" }}
-              />
+                style={{ backgroundColor: "var(--color-forest-100)" }} />
               <span
                 className={[
                   "block w-5 h-0.5 rounded-full my-1 transition-all duration-300",
                   menuOpen ? "opacity-0 scale-x-0" : "",
                 ].join(" ")}
-                style={{ backgroundColor: "var(--color-forest-100)" }}
-              />
+                style={{ backgroundColor: "var(--color-forest-100)" }} />
               <span
                 className={[
                   "block w-5 h-0.5 rounded-full transition-all duration-300",
                   menuOpen ? "-translate-y-1.5 -rotate-45" : "",
                 ].join(" ")}
-                style={{ backgroundColor: "var(--color-forest-100)" }}
-              />
+                style={{ backgroundColor: "var(--color-forest-100)" }} />
             </button>
           </div>
         </div>
@@ -169,17 +153,14 @@ export default function Navbar() {
           menuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none",
-        ].join(" ")}
-      >
+        ].join(" ")}>
         <div
           className="absolute inset-0 backdrop-blur-sm"
           style={{
             backgroundColor: "rgba(13, 26, 16, 0.55)",
           }}
           onClick={closeMenu}
-          aria-hidden="true"
-        />
-
+          aria-hidden="true" />
         <div
           className={[
             "relative mt-16 mx-4 rounded-xl border shadow-xl transition-all duration-300",
@@ -190,13 +171,11 @@ export default function Navbar() {
           style={{
             backgroundColor: "var(--color-forest-800)",
             borderColor: "var(--color-forest-700)",
-          }}
-        >
+          }}>
           <nav
             aria-label="Mobile navigation"
             className="flex flex-col divide-y"
-            style={{ borderColor: "var(--color-forest-700)" }}
-          >
+            style={{ borderColor: "var(--color-forest-700)" }}>
             {NAV_LINKS.map(({ label, href }) => (
               <Link
                 key={label}
@@ -205,8 +184,7 @@ export default function Navbar() {
                 className="px-5 py-4 text-sm font-medium transition-colors duration-150 first:rounded-t-xl"
                 style={{
                   color: "var(--color-forest-100)",
-                }}
-              >
+                }}>
                 {label}
               </Link>
             ))}
@@ -215,20 +193,18 @@ export default function Navbar() {
               className="p-4 rounded-b-xl"
               style={{
                 backgroundColor: "var(--color-forest-900)",
-              }}
-            >
-              <a
-                href="/#booking"
+              }}>
+              <Link
+                href="/booking"
                 onClick={closeMenu}
                 className="flex items-center justify-center w-full py-3 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
                 style={{
                   background:
                     "linear-gradient(135deg, var(--color-forest-300), var(--color-forest-200))",
                   color: "var(--color-forest-900)",
-                }}
-              >
+                }}>
                 Book Now
-              </a>
+              </Link>
             </div>
           </nav>
         </div>

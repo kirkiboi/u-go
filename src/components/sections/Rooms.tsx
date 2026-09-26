@@ -30,36 +30,28 @@ const rooms: Room[] = [
 
 export default function Rooms() {
     const [currentIndex, setCurrentIndex] = useState(0);
-
     const currentRoom = rooms[currentIndex];
-
     const previousRoom = () => {
         setCurrentIndex((currentIndex - 1 + rooms.length) % rooms.length);
     };
-
     const nextRoom = () => {
         setCurrentIndex((currentIndex + 1) % rooms.length);
     };
-
     return (
         <section
             id="rooms"
             className="px-6 py-20"
             style={{
                 backgroundColor: "var(--color-bg)",
-            }}
-        >
+            }}>
             <div className="mx-auto max-w-7xl">
-
-                {/* Section heading */}
                 <div className="mb-12 text-center">
                     <h2
                         className="text-4xl font-semibold md:text-5xl"
                         style={{
                             fontFamily: "var(--font-display)",
                             color: "var(--color-forest-900)",
-                        }}
-                    >
+                        }}>
                         Our Rooms
                     </h2>
 
@@ -67,61 +59,47 @@ export default function Rooms() {
                         className="mx-auto mt-4 max-w-xl text-sm leading-relaxed"
                         style={{
                             color: "var(--color-stone-600)",
-                        }}
-                    >
+                        }}>
                         Find a comfortable retreat surrounded by the beauty
                         of Valencia City's mountains.
                     </p>
                 </div>
-
-                {/* Room showcase */}
                 <div className="relative flex items-center justify-center">
-
-                    {/* Previous button */}
                     <button
                         onClick={previousRoom}
                         aria-label="Previous room"
                         className="absolute left-0 z-10 flex h-12 w-12 -translate-x-2 items-center justify-center rounded-full bg-white shadow-md transition-all duration-200 hover:-translate-x-3 hover:shadow-lg md:-translate-x-6 cursor-pointer"
                         style={{
                             color: "var(--color-forest-800)",
-                        }}
-                    >
+                        }}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
                             strokeWidth={2}
                             stroke="currentColor"
-                            className="h-5 w-5"
-                        >
+                            className="h-5 w-5">
                             <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                d="M15 19l-7-7 7-7"
-                            />
+                                d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
-
-                    {/* Current room */}
                     <RoomCard room={currentRoom} />
-
-                    {/* Next button */}
                     <button
                         onClick={nextRoom}
                         aria-label="Next room"
                         className="absolute right-0 z-10 flex h-12 w-12 translate-x-2 items-center justify-center rounded-full bg-white shadow-md transition-all duration-200 hover:translate-x-3 hover:shadow-lg md:translate-x-6 cursor-pointer"
                         style={{
                             color: "var(--color-forest-800)",
-                        }}
-                    >
+                        }}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
                             strokeWidth={2}
                             stroke="currentColor"
-                            className="h-5 w-5"
-                        >
+                            className="h-5 w-5">
                             <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -129,10 +107,8 @@ export default function Rooms() {
                             />
                         </svg>
                     </button>
-
                 </div>
 
-                {/* Room indicators */}
                 <div className="mt-8 flex justify-center gap-2">
                     {rooms.map((room, index) => (
                         <button
@@ -150,7 +126,6 @@ export default function Rooms() {
                         />
                     ))}
                 </div>
-
             </div>
         </section>
     );

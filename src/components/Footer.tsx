@@ -102,7 +102,8 @@ export default function Footer() {
                             </div>
                             <div className="flex gap-3">
                                 <a
-                                    href="#"
+                                    href="https://www.facebook.com/ugocliffresortbukidnon/"
+                                    target="blank"
                                     aria-label="Facebook"
                                     className="flex h-9 w-9 items-center justify-center 
                                     rounded-full border border-white/15 text-white/60 transition-all duration-200 
@@ -110,7 +111,8 @@ export default function Footer() {
                                     <FontAwesomeIcon icon={faFacebook} />
                                 </a>
                                 <a
-                                    href="#"
+                                    href="https://www.instagram.com/ugocliffresortbukidnon/?hl=en"
+                                    target="blank"
                                     aria-label="Instagram"
                                     className="flex h-9 w-9 items-center justify-center 
                                     rounded-full border border-white/15 text-white/60 transition-all duration-200 

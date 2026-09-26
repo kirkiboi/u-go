@@ -1,6 +1,20 @@
 export type Room = {
+    id?: string;
     name: string;
     description: string;
     price: string;
     image: string;
+    maxGuests?: number;
+    beds?: number;
+    bedType?: string;
+    bedrooms?: number;
+    bathrooms?: number;
+    hasPrivatePool?: boolean;
+    hasKitchen?: boolean;
+    hasWifi?: boolean;
+    hasParking?: boolean;
+    hasAC?: boolean;
+    checkInTime?: string;
+    checkOutTime?: string;
+    amenities?: string[];
 };

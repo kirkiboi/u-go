@@ -10,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Evergreen Ridge Resort & Retreat",
+  title: "U-GO Cliff Resort",
   description:
-    "Experience the perfect balance of nature and luxury at Evergreen Ridge — a premium mountain resort nestled in untouched wilderness.",
+    "a scenic mountain retreat located in Barangay Lourdes, Valencia City, Bukidnon.",
 };
 
 export default function RootLayout({
