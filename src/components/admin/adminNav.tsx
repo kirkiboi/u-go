@@ -97,6 +97,17 @@ export default function AdminNavbar() {
                         Administrator
                     </p>
                 </div>
+                <button
+                    type="button"
+                    className="mt-3 w-full rounded-md border px-3 py-2 
+                        text-xs font-medium transition-colors hover:bg-white/10
+                        cursor-pointer"
+                    style={{
+                        borderColor: "var(--color-forest-700)",
+                        color: "var(--color-forest-200)",
+                    }}>
+                    Sign out
+                </button>
             </div>
         </aside>
     );
