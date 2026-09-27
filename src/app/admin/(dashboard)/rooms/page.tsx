@@ -149,6 +149,7 @@ export default function RoomsPage() {
 
                                     <button
                                         type="button"
+                                        onClick={() => router.push(`/admin/rooms/${room.id}`)}
                                         className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100"
                                         style={{
                                             backgroundColor:
