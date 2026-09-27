@@ -1,3 +1,4 @@
+import Link from "next/link";
 type Room = {
     id: string;
     name: string;
@@ -44,8 +45,8 @@ const rooms: Room[] = [
         status: "Available",
     },
 ];
-
 export default async function RoomDetailsPage({
+
     params,
 }: {
     params: Promise<{ roomId: string }>;
@@ -55,6 +56,7 @@ export default async function RoomDetailsPage({
 
     if (!room) {
         return (
+
             <section className="min-h-screen px-8 py-8">
                 <div className="mx-auto max-w-5xl">
                     <h1
@@ -113,15 +115,14 @@ export default async function RoomDetailsPage({
                         </div>
                     </div>
 
-                    <button
-                        type="button"
+                    <Link
+                        href={`/admin/rooms/${room.id}/edit`}
                         className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:brightness-110"
                         style={{
-                            backgroundColor:
-                                "var(--color-forest-700)",
+                            backgroundColor: "var(--color-forest-700)",
                         }}>
                         Edit Room
-                    </button>
+                    </Link>
                 </div>
                 <div className="mt-8 space-y-6">
                     <div

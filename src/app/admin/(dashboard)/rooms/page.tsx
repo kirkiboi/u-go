@@ -1,5 +1,4 @@
-"use client";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 const rooms = [
     {
         id: "room-1",
@@ -37,7 +36,6 @@ const rooms = [
 ];
 
 export default function RoomsPage() {
-    const router = useRouter();
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-7xl">
@@ -58,17 +56,13 @@ export default function RoomsPage() {
                         }}>
                         Rooms Overview
                     </h1>
-                    <button
-                        type="button"
-                        onClick={() => router.push("/admin/rooms/add")}
-                        className="ml-auto shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold 
-                        text-white transition-all duration-200 hover:-translate-y-0.5 
-                        hover:brightness-110 cursor-pointer"
+                    <Link href={"/admin/rooms/add-rooms"}
+                        className="ml-auto shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 cursor-pointer"
                         style={{
                             backgroundColor: "var(--color-forest-700)",
                         }}>
                         + Add Room
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="mt-8 space-y-4">
@@ -135,8 +129,8 @@ export default function RoomsPage() {
                                 </div>
 
                                 <div className="flex shrink-0 gap-2">
-                                    <button
-                                        type="button"
+                                    <Link
+                                        href={`/admin/rooms/${room.id}/edit`}
                                         className="rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
                                         style={{
                                             borderColor:
@@ -145,11 +139,10 @@ export default function RoomsPage() {
                                                 "var(--color-forest-800)",
                                         }}>
                                         Edit
-                                    </button>
+                                    </Link>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => router.push(`/admin/rooms/${room.id}`)}
+                                    <Link
+                                        href={`/admin/rooms/${room.id}`}
                                         className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100"
                                         style={{
                                             backgroundColor:
@@ -158,13 +151,13 @@ export default function RoomsPage() {
                                                 "var(--color-forest-800)",
                                         }}>
                                         View
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
-        </section>
+        </section >
     );
 }
