@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faFacebook,
@@ -46,26 +47,26 @@ export default function Footer() {
                         </h3>
 
                         <nav className="mt-5 flex flex-col gap-3">
-                            <a
-                                href="#rooms"
+                            <Link
+                                href="/rooms"
                                 className="text-sm text-white/60 transition-colors duration-200 hover:text-white">
                                 Rooms
-                            </a>
-                            <a
-                                href="#amenities"
+                            </Link>
+                            <Link
+                                href="/amenities"
                                 className="text-sm text-white/60 transition-colors duration-200 hover:text-white">
                                 Amenities
-                            </a>
-                            <a
-                                href="#location"
+                            </Link>
+                            <Link
+                                href="/locations"
                                 className="text-sm text-white/60 transition-colors duration-200 hover:text-white">
                                 Location
-                            </a>
-                            <a
-                                href="#booking"
+                            </Link>
+                            <Link
+                                href="/booking"
                                 className="text-sm text-white/60 transition-colors duration-200 hover:text-white">
                                 Book a Cottage
-                            </a>
+                            </Link>
                         </nav>
                     </div>
                     <div>
