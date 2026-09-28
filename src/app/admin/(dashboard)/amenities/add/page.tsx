@@ -3,8 +3,14 @@ export default function AddAmenityPage() {
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-4xl">
-
                 <div>
+                    <p
+                        className="w-full text-sm font-medium"
+                        style={{
+                            color: "var(--color-forest-500)",
+                        }}>
+                        Amenities Management
+                    </p>
                     <h1
                         className="text-2xl font-semibold"
                         style={{
@@ -12,14 +18,6 @@ export default function AddAmenityPage() {
                         }}>
                         Add Amenity
                     </h1>
-
-                    <p
-                        className="mt-1 text-sm"
-                        style={{
-                            color: "var(--color-muted)",
-                        }}>
-                        Add a new experience or facility to your resort.
-                    </p>
                 </div>
                 <div
                     className="mt-8 rounded-xl border bg-white p-6 shadow-sm"
