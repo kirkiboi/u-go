@@ -36,11 +36,6 @@ export default function AdminDashboard() {
                         <p className="mt-2 text-3xl font-bold" style={{ color: "var(--color-forest-900)" }}>8</p>
                         <p className="mt-2 text-xs" style={{ color: "var(--color-muted)" }}>Out of 12 total rooms</p>
                     </div>
-                    <div className="rounded-xl border bg-white p-6 shadow-sm" style={{ borderColor: "var(--color-border)" }}>
-                        <p className="text-sm font-medium" style={{ color: "var(--color-muted)" }}>Occupancy Rate</p>
-                        <p className="mt-2 text-3xl font-bold" style={{ color: "var(--color-forest-900)" }}>75%</p>
-                        <p className="mt-2 text-xs text-green-600 font-medium">Higher than average</p>
-                    </div>
                 </div>
                 <div className="mt-8 grid gap-8 lg:grid-cols-3">
                     <div className="lg:col-span-2 rounded-xl border bg-white shadow-sm" style={{ borderColor: "var(--color-border)" }}>
@@ -72,14 +67,6 @@ export default function AdminDashboard() {
                                         <td className="px-6 py-4" style={{ color: "var(--color-muted)" }}>Oct 4 - Oct 6</td>
                                         <td className="px-6 py-4">
                                             <span className="rounded-full px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-800">Pending</span>
-                                        </td>
-                                    </tr>
-                                    <tr className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium" style={{ color: "var(--color-forest-900)" }}>Carlos Reyes</td>
-                                        <td className="px-6 py-4" style={{ color: "var(--color-muted)" }}>Pinetree House</td>
-                                        <td className="px-6 py-4" style={{ color: "var(--color-muted)" }}>Oct 10 - Oct 12</td>
-                                        <td className="px-6 py-4">
-                                            <span className="rounded-full px-2.5 py-1 text-xs font-medium bg-blue-100 text-blue-800">Checked In</span>
                                         </td>
                                     </tr>
                                 </tbody>
