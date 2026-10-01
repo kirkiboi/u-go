@@ -1,5 +1,4 @@
 import Link from "next/link";
-import RoomCard from "@/components/reusable/RoomCard";
 import type { Room } from "@/types/room";
 
 const ROOMS_DATA: Room[] = [
@@ -182,11 +181,19 @@ export default function RoomsPage() {
                   {ROOMS_DATA[4].price}<span className="text-sm font-normal text-stone-500"> / night</span>
                 </p>
               </div>
-              <Link
-                href="/booking"
-                className="bg-[var(--color-forest-800)] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[var(--color-forest-700)] transition-colors inline-block">
-                Book This Villa
-              </Link>
+              <div className="flex flex-col gap-3">
+                <Link
+                  href="/booking"
+                  className="bg-[var(--color-forest-800)] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[var(--color-forest-700)] transition-colors inline-block text-center">
+                  Book This Villa
+                </Link>
+
+                <Link
+                  href="/rooms/room-1"
+                  className="px-5 py-2.5 rounded-lg font-semibold border border-[var(--color-border)] text-stone-700 hover:bg-stone-50 transition-colors inline-flex items-center justify-center gap-2">
+                  <span>Take a look inside</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -238,9 +245,11 @@ export default function RoomsPage() {
                     className="flex-1 text-center bg-[var(--color-forest-800)] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[var(--color-forest-700)] transition-colors">
                     Book This Room
                   </Link>
-                  <button className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-semibold border border-[var(--color-border)] text-stone-700 hover:bg-stone-50 transition-colors">
-                    Take a look inside
-                  </button>
+                  <Link
+                    href="/rooms/room-1"
+                    className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-semibold border border-[var(--color-border)] text-stone-700 hover:bg-stone-50 transition-colors">
+                    <span>Take a look inside</span>
+                  </Link>
                 </div>
               </div>
             </div>
