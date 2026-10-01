@@ -1,4 +1,5 @@
 "use client";
+import { login } from "./actions";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -29,12 +30,16 @@ export default function AdminLogin() {
 
     setLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
 
-    if (email === "admin@gmail.com" && password === "password") {
+    const result = await login(formData);
+
+    if (result.success) {
       router.push("/admin/dashboard");
     } else {
-      setError("Invalid credentials. Please try again.");
+      setError("Invalid username or password");
       setLoading(false);
     }
   };
