@@ -83,9 +83,6 @@ export default function AmenitiesPage() {
             <p className="text-white/90 text-lg mb-6 leading-relaxed">
               The heart of our resort. Gather by the monumental stone fireplace, enjoy artisanal coffee, or simply relax with a book in our expansive living area overlooking the valley.
             </p>
-            <button className="bg-white text-[var(--color-forest-900)] px-6 py-3 rounded-lg font-semibold hover:bg-stone-100 transition-colors">
-              Explore The Lodge
-            </button>
           </div>
         </div>
       </section>
