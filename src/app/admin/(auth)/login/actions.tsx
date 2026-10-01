@@ -1,6 +1,7 @@
 "use server";
 
 import { verifyAdminCredentials } from "@/lib/auth";
+import { createSession } from "@/lib/sessions";
 
 export async function login(formData: FormData) {
     const email = formData.get("email");
@@ -21,7 +22,7 @@ export async function login(formData: FormData) {
             error: "Invalid email or password.",
         };
     }
-
+    await createSession(user);
     return {
         success: true,
         user,
