@@ -1,4 +1,5 @@
 import type { Room } from "@/types/room";
+import Link from "next/link";
 function RoomCard({ room }: { room: Room }) {
     return (
         <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl bg-white shadow-lg md:flex">
@@ -48,7 +49,8 @@ function RoomCard({ room }: { room: Room }) {
                         </p>
                     </div>
 
-                    <button
+                    <Link
+                        href="/rooms/room-1"
                         className="group flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 cursor-pointer"
                         style={{
                             backgroundColor: "var(--color-forest-800)",
@@ -67,10 +69,10 @@ function RoomCard({ room }: { room: Room }) {
                                 strokeLinejoin="round"
                                 d="M5 12h14m-6-6 6 6-6 6" />
                         </svg>
-                    </button>
+                    </Link>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 export default RoomCard;
