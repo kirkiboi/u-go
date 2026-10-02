@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { logout } from "@/app/admin/(auth)/logout/actions";
 
 const NAV_LINKS = [
     { label: "Dashboard", href: "/admin/dashboard" },
@@ -12,7 +13,6 @@ const NAV_LINKS = [
 
 export default function AdminNavbar() {
     const pathname = usePathname();
-    const router = useRouter();
     return (
         <aside
             className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r"
@@ -32,7 +32,6 @@ export default function AdminNavbar() {
                         }}>
                         U-GO CLIFF RESORT
                     </span>
-
                     <span
                         className="mt-1 block text-xl font-bold"
                         style={{
@@ -87,7 +86,6 @@ export default function AdminNavbar() {
                         }}>
                         Admin Account
                     </p>
-
                     <p
                         className="mt-1 text-xs"
                         style={{
@@ -96,18 +94,19 @@ export default function AdminNavbar() {
                         Administrator
                     </p>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => router.push("/admin/login")}
-                    className="mt-3 w-full rounded-md border px-3 py-2 
-                        text-xs font-medium transition-colors hover:bg-white/10
-                        cursor-pointer"
-                    style={{
-                        borderColor: "var(--color-forest-700)",
-                        color: "var(--color-forest-200)",
-                    }}>
-                    Sign out
-                </button>
+                <form action={logout} className="mt-3">
+                    <button
+                        type="submit"
+                        className="w-full rounded-md border px-3 py-2 
+                                    text-xs font-medium transition-colors hover:bg-white/10
+                                    cursor-pointer"
+                        style={{
+                            borderColor: "var(--color-forest-700)",
+                            color: "var(--color-forest-200)",
+                        }}>
+                        Sign out
+                    </button>
+                </form>
             </div>
         </aside>
     );
