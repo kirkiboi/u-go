@@ -1,3 +1,4 @@
+import { addRoom } from "./actions";
 export default function AddRoomPage() {
     return (
         <section className="min-h-screen px-8 py-8">
@@ -29,7 +30,8 @@ export default function AddRoomPage() {
                     </p>
                 </div>
 
-                <form className="rounded-xl border bg-white p-6 shadow-sm"
+                <form action={addRoom}
+                    className="rounded-xl border bg-white p-6 shadow-sm"
                     style={{
                         borderColor: "var(--color-border)",
                     }}>
@@ -52,10 +54,12 @@ export default function AddRoomPage() {
                                     </label>
 
                                     <input
+                                        name="name"
                                         id="room-name"
                                         type="text"
                                         placeholder="e.g. Cabin House"
-                                        className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                        required
+                                        className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)] "
                                         style={{
                                             borderColor:
                                                 "var(--color-border)",
@@ -72,6 +76,7 @@ export default function AddRoomPage() {
 
                                     <input
                                         id="room-price"
+                                        name="price"
                                         type="number"
                                         placeholder="2999"
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
@@ -92,6 +97,7 @@ export default function AddRoomPage() {
 
                             <textarea
                                 id="room-description"
+                                name="description"
                                 rows={4}
                                 placeholder="Describe the room and what makes it special..."
                                 className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
@@ -119,6 +125,7 @@ export default function AddRoomPage() {
                                     </label>
 
                                     <input
+                                        name="maxGuests"
                                         id="room-guests"
                                         type="number"
                                         min="1"
@@ -138,6 +145,7 @@ export default function AddRoomPage() {
                                     </label>
 
                                     <input
+                                        name="bedrooms"
                                         id="room-bedrooms"
                                         type="number"
                                         min="0"
@@ -157,6 +165,7 @@ export default function AddRoomPage() {
                                     </label>
 
                                     <input
+                                        name="bathrooms"
                                         id="room-bathrooms"
                                         type="number"
                                         min="0"
@@ -168,6 +177,42 @@ export default function AddRoomPage() {
                                         }}
                                     />
                                 </div>
+                                <div>
+                                    <label
+                                        htmlFor="room-beds"
+                                        className="block text-sm font-medium">
+                                        Number of beds
+                                    </label>
+                                    <input
+                                        id="room-beds"
+                                        name="beds"
+                                        type="number"
+                                        min="1"
+                                        placeholder="1"
+                                        required
+                                        className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                        style={{
+                                            borderColor: "var(--color-border)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="room-bed-type"
+                                    className="block text-sm font-medium">
+                                    Bed type
+                                </label>
+                                <input
+                                    id="room-bed-type"
+                                    name="bedType"
+                                    type="text"
+                                    placeholder="e.g. Queen Size"
+                                    className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                    style={{
+                                        borderColor: "var(--color-border)",
+                                    }}
+                                />
                             </div>
                         </div>
                         <div>
@@ -178,35 +223,91 @@ export default function AddRoomPage() {
                                 }}>
                                 Room Features
                             </h2>
-
                             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 {[
-                                    "Wi-Fi",
-                                    "Kitchen",
-                                    "Private Pool",
-                                    "Air Conditioning",
-                                    "Parking",
-                                    "Mountain View",
+                                    { label: "Wi-Fi", name: "hasWifi" },
+                                    { label: "Kitchen", name: "hasKitchen" },
+                                    { label: "Private Pool", name: "hasPrivatePool" },
+                                    { label: "Air Conditioning", name: "hasAC" },
+                                    { label: "Parking", name: "hasParking" },
                                 ].map((feature) => (
                                     <label
-                                        key={feature}
+                                        key={feature.name}
                                         className="flex items-center gap-3 rounded-lg border px-4 py-3 text-sm"
                                         style={{
-                                            borderColor:
-                                                "var(--color-border)",
+                                            borderColor: "var(--color-border)",
                                         }}>
                                         <input
                                             type="checkbox"
+                                            name={feature.name}
                                             className="h-4 w-4"
                                             style={{
-                                                accentColor:
-                                                    "var(--color-forest-600)",
+                                                accentColor: "var(--color-forest-600)",
                                             }}
                                         />
-                                        {feature}
+
+                                        {feature.label}
                                     </label>
                                 ))}
                             </div>
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="room-image"
+                                className="block text-sm font-medium">
+                                Image
+                            </label>
+                            <input
+                                id="room-image"
+                                name="image"
+                                type="file"
+                                accept="image/*"
+                                required
+                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors file:mr-4 file:rounded-md file:border-0 file:bg-[var(--color-forest-100)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--color-forest-800)]"
+                                style={{
+                                    borderColor: "var(--color-border)",
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label
+                                htmlFor="check-in"
+                                className="block text-sm font-medium">
+                                Check-in time
+                            </label>
+
+                            <input
+                                id="check-in"
+                                name="checkInTime"
+                                type="text"
+                                placeholder="2:00 PM"
+                                defaultValue="2:00 PM"
+                                required
+                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                style={{
+                                    borderColor: "var(--color-border)",
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="check-out"
+                                className="block text-sm font-medium">
+                                Check-out time
+                            </label>
+                            <input
+                                id="check-out"
+                                name="checkOutTime"
+                                type="text"
+                                placeholder="12:00 NN"
+                                defaultValue="12:00 NN"
+                                required
+                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                style={{
+                                    borderColor: "var(--color-border)",
+                                }}
+                            />
                         </div>
                         <div
                             className="flex justify-end gap-3 border-t pt-6"

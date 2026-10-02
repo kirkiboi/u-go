@@ -5,6 +5,7 @@ export type Room = {
     price: string;
     image: string;
     maxGuests?: number;
+    rooms?: number;
     beds?: number;
     bedType?: string;
     bedrooms?: number;
@@ -16,5 +17,4 @@ export type Room = {
     hasAC?: boolean;
     checkInTime?: string;
     checkOutTime?: string;
-    amenities?: string[];
 };

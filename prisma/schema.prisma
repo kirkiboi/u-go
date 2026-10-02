@@ -16,3 +16,24 @@ model User {
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt
 }
+
+model Room {
+  id             Int      @id @default(autoincrement())
+  name           String
+  description    String
+  price          String
+  image          String
+  maxGuests      Int
+  rooms          Int?
+  beds           Int
+  bedType        String?
+  bedrooms       Int?
+  bathrooms      Int
+  hasPrivatePool Boolean  @default(false)
+  hasKitchen     Boolean  @default(false)
+  hasWifi        Boolean  @default(false)
+  hasParking     Boolean  @default(false)
+  hasAC          Boolean  @default(false)
+  checkInTime    String
+  checkOutTime   String
+}

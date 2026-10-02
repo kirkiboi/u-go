@@ -1,41 +1,7 @@
 import Link from "next/link";
-const rooms = [
-    {
-        id: "room-1",
-        name: "Cabin House",
-        description:
-            "A cozy mountain escape for up to 3 guests, surrounded by trees and peaceful scenery.",
-        price: "₱2,999",
-        guests: 3,
-        bedrooms: 1,
-        bathrooms: 1,
-        status: "Available",
-    },
-    {
-        id: "room-2",
-        name: "Pinetree House",
-        description:
-            "A relaxing mountain retreat for up to 6 guests with a private kitchen and peaceful surroundings.",
-        price: "₱4,500",
-        guests: 6,
-        bedrooms: 2,
-        bathrooms: 1,
-        status: "Available",
-    },
-    {
-        id: "room-3",
-        name: "Mountain View Cottage",
-        description:
-            "A spacious cottage for groups of up to 15 guests with beautiful mountain views and a private pool.",
-        price: "₱8,999",
-        guests: 15,
-        bedrooms: 4,
-        bathrooms: 2,
-        status: "Available",
-    },
-];
-
-export default function RoomsPage() {
+import { getRooms } from "@/services/room";
+export default async function RoomsPage() {
+    const rooms = await getRooms();
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-7xl">
@@ -56,7 +22,7 @@ export default function RoomsPage() {
                         }}>
                         Rooms Overview
                     </h1>
-                    <Link href={"/admin/rooms/add-rooms"}
+                    <Link href={"/admin/rooms/add"}
                         className="ml-auto shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 cursor-pointer"
                         style={{
                             backgroundColor: "var(--color-forest-700)",
@@ -75,26 +41,6 @@ export default function RoomsPage() {
                             }}>
                             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                                 <div className="min-w-0">
-                                    <div className="flex items-center gap-3">
-                                        <h2
-                                            className="text-xl font-semibold"
-                                            style={{
-                                                color: "var(--color-forest-900)",
-                                            }}>
-                                            {room.name}
-                                        </h2>
-                                        <span
-                                            className="rounded-full px-2.5 py-1 text-xs font-medium"
-                                            style={{
-                                                backgroundColor:
-                                                    "var(--color-forest-100)",
-                                                color:
-                                                    "var(--color-forest-700)",
-                                            }}>
-                                            {room.status}
-                                        </span>
-                                    </div>
-
                                     <p
                                         className="mt-2 max-w-2xl text-sm leading-relaxed"
                                         style={{
@@ -104,7 +50,7 @@ export default function RoomsPage() {
                                     </p>
                                     <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
                                         <span>
-                                            <strong>{room.guests}</strong>{" "}
+                                            <strong>{room.maxGuests}</strong>{" "}
                                             guests
                                         </span>
 

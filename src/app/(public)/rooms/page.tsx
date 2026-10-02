@@ -22,7 +22,6 @@ const ROOMS_DATA: Room[] = [
     hasAC: true,
     checkInTime: "2:00 PM",
     checkOutTime: "12:00 NN",
-    amenities: ["Mountain View", "Private Balcony", "Hot Shower"],
   },
   {
     id: "pinetree-house",
@@ -44,7 +43,6 @@ const ROOMS_DATA: Room[] = [
     hasAC: true,
     checkInTime: "2:00 PM",
     checkOutTime: "12:00 NN",
-    amenities: ["Mini Fridge", "Work Desk", "Coffee Maker"],
   },
   {
     id: "mountain-view-cottage",
@@ -66,7 +64,6 @@ const ROOMS_DATA: Room[] = [
     hasAC: true,
     checkInTime: "2:00 PM",
     checkOutTime: "12:00 NN",
-    amenities: ["Viewing Deck", "BBQ Grill", "Hammock"],
   },
   {
     id: "forest-haven-house",
@@ -88,7 +85,6 @@ const ROOMS_DATA: Room[] = [
     hasAC: true,
     checkInTime: "2:00 PM",
     checkOutTime: "12:00 NN",
-    amenities: ["Private Pool", "Full Kitchen", "Living Area", "Smart TV"],
   },
   {
     id: "evergreen-family-villa",
@@ -110,7 +106,6 @@ const ROOMS_DATA: Room[] = [
     hasAC: true,
     checkInTime: "2:00 PM",
     checkOutTime: "12:00 NN",
-    amenities: ["Private Plunge Pool", "Outdoor Dining Area", "Fire Pit", "Spacious Lounge"],
   },
 ];
 
