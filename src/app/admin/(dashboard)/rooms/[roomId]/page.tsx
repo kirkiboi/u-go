@@ -1,50 +1,5 @@
 import Link from "next/link";
-type Room = {
-    id: string;
-    name: string;
-    description: string;
-    price: string;
-    guests: number;
-    bedrooms: number;
-    bathrooms: number;
-    status: string;
-};
-
-const rooms: Room[] = [
-    {
-        id: "room-1",
-        name: "Cabin House",
-        description:
-            "A cozy mountain escape for up to 3 guests, surrounded by trees and peaceful scenery.",
-        price: "₱2,999",
-        guests: 3,
-        bedrooms: 1,
-        bathrooms: 1,
-        status: "Available",
-    },
-    {
-        id: "room-2",
-        name: "Pinetree House",
-        description:
-            "A relaxing mountain retreat for up to 6 guests with a private kitchen and peaceful surroundings.",
-        price: "₱4,500",
-        guests: 6,
-        bedrooms: 2,
-        bathrooms: 1,
-        status: "Available",
-    },
-    {
-        id: "room-3",
-        name: "Mountain View Cottage",
-        description:
-            "A spacious cottage for groups of up to 15 guests with beautiful mountain views and a private pool.",
-        price: "₱8,999",
-        guests: 15,
-        bedrooms: 4,
-        bathrooms: 2,
-        status: "Available",
-    },
-];
+import { getRoomById } from "@/services/room";
 export default async function RoomDetailsPage({
 
     params,
@@ -52,8 +7,31 @@ export default async function RoomDetailsPage({
     params: Promise<{ roomId: string }>;
 }) {
     const { roomId } = await params;
-    const room = rooms.find((room) => room.id === roomId);
+    const id = Number(roomId);
 
+    if (!Number.isInteger(id)) {
+        return (
+            <section className="min-h-screen px-8 py-8">
+                <div className="mx-auto max-w-5xl">
+                    <h1
+                        className="text-2xl font-bold"
+                        style={{
+                            color: "var(--color-forest-900)",
+                        }}>
+                        Room not found
+                    </h1>
+                    <p
+                        className="mt-2 text-sm"
+                        style={{
+                            color: "var(--color-muted)",
+                        }}>
+                        The room you are looking for does not exist.
+                    </p>
+                </div>
+            </section>
+        );
+    }
+    const room = await getRoomById(id);
     if (!room) {
         return (
 
@@ -66,7 +44,6 @@ export default async function RoomDetailsPage({
                         }}>
                         Room not found
                     </h1>
-
                     <p
                         className="mt-2 text-sm"
                         style={{
@@ -78,7 +55,6 @@ export default async function RoomDetailsPage({
             </section>
         );
     }
-
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-5xl">
@@ -101,17 +77,6 @@ export default async function RoomDetailsPage({
                                 }}>
                                 {room.name}
                             </h1>
-
-                            <span
-                                className="rounded-full px-3 py-1 text-xs font-medium"
-                                style={{
-                                    backgroundColor:
-                                        "var(--color-forest-100)",
-                                    color:
-                                        "var(--color-forest-700)",
-                                }}>
-                                {room.status}
-                            </span>
                         </div>
                     </div>
 
@@ -137,16 +102,15 @@ export default async function RoomDetailsPage({
                             }}>
                             Room Information
                         </h2>
-
-                        <p
-                            className="mt-3 max-w-3xl text-sm leading-relaxed"
-                            style={{
-                                color: "var(--color-muted)",
-                            }}>
-                            {room.description}
-                        </p>
-
                         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div>
+                                <p className="text-xs text-gray-500">
+                                    Name
+                                </p>
+                                <p className="mt-1 font-semibold">
+                                    {room.name}
+                                </p>
+                            </div>
                             <div>
                                 <p className="text-xs text-gray-500">
                                     Price
@@ -158,25 +122,33 @@ export default async function RoomDetailsPage({
                                     </span>
                                 </p>
                             </div>
-
                             <div>
                                 <p className="text-xs text-gray-500">
-                                    Guests
+                                    Maximum Guests
                                 </p>
                                 <p className="mt-1 font-semibold">
-                                    {room.guests}
+                                    {room.maxGuests}
                                 </p>
                             </div>
-
-                            <div>
-                                <p className="text-xs text-gray-500">
-                                    Bedrooms
-                                </p>
-                                <p className="mt-1 font-semibold">
-                                    {room.bedrooms}
-                                </p>
-                            </div>
-
+                            {room.bedrooms !== null && room.bedrooms !== undefined ? (
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Bedrooms
+                                    </p>
+                                    <p className="mt-1 font-semibold">
+                                        {room.bedrooms}
+                                    </p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Bedrooms
+                                    </p>
+                                    <p className="mt-1 font-semibold">
+                                        0
+                                    </p>
+                                </div>
+                            )}
                             <div>
                                 <p className="text-xs text-gray-500">
                                     Bathrooms
@@ -185,9 +157,49 @@ export default async function RoomDetailsPage({
                                     {room.bathrooms}
                                 </p>
                             </div>
+                            <div>
+                                <p className="text-xs text-gray-500">
+                                    Bed Type
+                                </p>
+                                <p className="mt-1 font-semibold">
+                                    {room.bedType ?? "Not specified"}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500">
+                                    Check-In
+                                </p>
+                                <p className="mt-1 font-semibold">
+                                    {room.checkInTime}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500">
+                                    Check-Out
+                                </p>
+                                <p className="mt-1 font-semibold">
+                                    {room.checkOutTime}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500">
+                                    Number of beds
+                                </p>
+                                <p className="mt-1 font-semibold">
+                                    {room.beds}
+                                </p>
+                            </div>
+                        </div>
+                        <br />
+                        <div>
+                            <p className="text-xs text-gray-500">
+                                Description
+                            </p>
+                            <p className="mt-1 font-semibold">
+                                {room.description}
+                            </p>
                         </div>
                     </div>
-
                     <div
                         className="rounded-xl border bg-white p-6 shadow-sm"
                         style={{
@@ -200,37 +212,71 @@ export default async function RoomDetailsPage({
                             }}>
                             Room Features
                         </h2>
-
                         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                             {[
-                                "Wi-Fi",
-                                "Kitchen",
-                                "Private Pool",
-                                "Air Conditioning",
-                                "Parking",
-                                "Mountain View",
+                                {
+                                    label: "Wi-Fi",
+                                    available: room.hasWifi,
+                                },
+                                {
+                                    label: "Kitchen",
+                                    available: room.hasKitchen,
+                                },
+                                {
+                                    label: "Private Pool",
+                                    available: room.hasPrivatePool,
+                                },
+                                {
+                                    label: "Air Conditioning",
+                                    available: room.hasAC,
+                                },
+                                {
+                                    label: "Parking",
+                                    available: room.hasParking,
+                                },
                             ].map((feature) => (
                                 <div
-                                    key={feature}
+                                    key={feature.label}
                                     className="flex items-center justify-between rounded-lg border px-4 py-3 text-sm"
                                     style={{
-                                        borderColor:
-                                            "var(--color-border)",
+                                        borderColor: "var(--color-border)",
                                     }}>
-                                    <span>{feature}</span>
+                                    <span>{feature.label}</span>
 
                                     <span
                                         className="rounded-full px-2 py-1 text-xs font-medium"
                                         style={{
-                                            backgroundColor:
-                                                "var(--color-forest-100)",
-                                            color:
-                                                "var(--color-forest-700)",
+                                            backgroundColor: feature.available
+                                                ? "var(--color-forest-100)"
+                                                : "var(--color-stone-100)",
+                                            color: feature.available
+                                                ? "var(--color-forest-700)"
+                                                : "var(--color-muted)",
                                         }}>
-                                        Available
+                                        {feature.available ? "Available" : "Not available"}
                                     </span>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                    <div
+                        className="rounded-xl border bg-white p-6 shadow-sm"
+                        style={{
+                            borderColor: "var(--color-border)",
+                        }}>
+                        <h2
+                            className="text-lg font-semibold"
+                            style={{
+                                color: "var(--color-forest-900)",
+                            }}>
+                            Room Image
+                        </h2>
+                        <div className="mt-4 overflow-hidden rounded-lg border">
+                            <img
+                                src={room.image}
+                                alt={`${room.name} room`}
+                                className="h-auto max-h-[500px] w-full object-cover"
+                            />
                         </div>
                     </div>
                 </div>

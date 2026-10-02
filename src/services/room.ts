@@ -8,6 +8,14 @@ export async function getRooms() {
     });
 }
 
+export async function getRoomById(id: number) {
+    return prisma.room.findUnique({
+        where: {
+            id,
+        },
+    });
+}
+
 export async function createRoom(data: {
     name: string;
     description: string;

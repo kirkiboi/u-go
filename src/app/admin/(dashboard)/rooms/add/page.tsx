@@ -57,7 +57,7 @@ export default function AddRoomPage() {
                                         name="name"
                                         id="room-name"
                                         type="text"
-                                        placeholder="e.g. Cabin House"
+                                        placeholder="required to provide name e.g. Cabin House"
                                         required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)] "
                                         style={{
@@ -78,7 +78,8 @@ export default function AddRoomPage() {
                                         id="room-price"
                                         name="price"
                                         type="number"
-                                        placeholder="2999"
+                                        required
+                                        placeholder="required to provide price e.g. 2,999"
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                         style={{
                                             borderColor:
@@ -98,9 +99,9 @@ export default function AddRoomPage() {
                             <textarea
                                 id="room-description"
                                 name="description"
+                                required
                                 rows={4}
-                                placeholder="Describe the room and what makes it special..."
-                                className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                placeholder="required to describe the room e.g. &quot;This room is made for two people who wants to be centered with pine trees&quot;" className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                 style={{
                                     borderColor:
                                         "var(--color-border)",
@@ -129,7 +130,8 @@ export default function AddRoomPage() {
                                         id="room-guests"
                                         type="number"
                                         min="1"
-                                        placeholder="3"
+                                        required
+                                        placeholder="required to provide max guests e.g. 3"
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                         style={{
                                             borderColor:
@@ -188,7 +190,7 @@ export default function AddRoomPage() {
                                         name="beds"
                                         type="number"
                                         min="1"
-                                        placeholder="1"
+                                        placeholder="required to provide number of beds"
                                         required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                         style={{
@@ -268,6 +270,9 @@ export default function AddRoomPage() {
                                     borderColor: "var(--color-border)",
                                 }}
                             />
+                            <p className="mt-1 text-xs text-gray-500">
+                                Uploading a high-resolution PNG or JPG image of the room is required.
+                            </p>
                         </div>
                         <div>
                             <label
@@ -280,7 +285,7 @@ export default function AddRoomPage() {
                                 id="check-in"
                                 name="checkInTime"
                                 type="text"
-                                placeholder="2:00 PM"
+                                placeholder="required to provide check-in time e.g. 2:00 PM"
                                 defaultValue="2:00 PM"
                                 required
                                 className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
@@ -300,7 +305,7 @@ export default function AddRoomPage() {
                                 id="check-out"
                                 name="checkOutTime"
                                 type="text"
-                                placeholder="12:00 NN"
+                                placeholder="required to provide checkout time e.g. 12:00 NN"
                                 defaultValue="12:00 NN"
                                 required
                                 className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
