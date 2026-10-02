@@ -39,3 +39,33 @@ export async function createRoom(data: {
         data,
     });
 }
+
+export async function updateRoom(
+    id: number,
+    data: {
+        name: string;
+        description: string;
+        price: string;
+        image: string;
+        maxGuests: number;
+        rooms?: number;
+        beds: number;
+        bedType?: string;
+        bedrooms?: number;
+        bathrooms: number;
+        hasPrivatePool: boolean;
+        hasKitchen: boolean;
+        hasWifi: boolean;
+        hasParking: boolean;
+        hasAC: boolean;
+        checkInTime: string;
+        checkOutTime: string;
+    }
+) {
+    return prisma.room.update({
+        where: {
+            id,
+        },
+        data,
+    });
+}

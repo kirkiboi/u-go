@@ -1,45 +1,29 @@
-type Room = {
-    id: string;
-    name: string;
-    description: string;
-    price: string;
-    guests: number;
-    bedrooms: number;
-    bathrooms: number;
-};
+import { getRoomById } from "@/services/room";
+import { editRoom } from "./actions";
 
-const rooms: Room[] = [
-    {
-        id: "room-1",
-        name: "Cabin House",
-        description:
-            "A cozy mountain escape for up to 3 guests, surrounded by trees and peaceful scenery.",
-        price: "2999",
-        guests: 3,
-        bedrooms: 1,
-        bathrooms: 1,
-    },
-    {
-        id: "room-2",
-        name: "Pinetree House",
-        description:
-            "A relaxing mountain retreat for up to 6 guests with a private kitchen and peaceful surroundings.",
-        price: "4500",
-        guests: 6,
-        bedrooms: 2,
-        bathrooms: 1,
-    },
-    {
-        id: "room-3",
-        name: "Mountain View Cottage",
-        description:
-            "A spacious cottage for groups of up to 15 guests with beautiful mountain views and a private pool.",
-        price: "8999",
-        guests: 15,
-        bedrooms: 4,
-        bathrooms: 2,
-    },
-];
+function toTimeInputValue(time: string) {
+    const normalized = time.trim().toUpperCase();
+
+    const match = normalized.match(/^(\d{1,2}):(\d{2})\s*(AM|PM|NN)$/);
+
+    if (!match) {
+        return "";
+    }
+
+    let hour = Number(match[1]);
+    const minute = match[2];
+    const period = match[3];
+
+    if (period === "PM" && hour !== 12) {
+        hour += 12;
+    }
+
+    if ((period === "AM" || period === "NN") && hour === 12) {
+        hour = 0;
+    }
+
+    return `${String(hour).padStart(2, "0")}:${minute}`;
+}
 
 export default async function EditRoomPage({
     params,
@@ -47,8 +31,25 @@ export default async function EditRoomPage({
     params: Promise<{ roomId: string }>;
 }) {
     const { roomId } = await params;
+    const id = Number(roomId);
 
-    const room = rooms.find((room) => room.id === roomId);
+    if (!Number.isInteger(id)) {
+        return (
+            <section className="min-h-screen px-8 py-8">
+                <div className="mx-auto max-w-5xl">
+                    <h1
+                        className="text-2xl font-bold"
+                        style={{
+                            color: "var(--color-forest-900)",
+                        }}>
+                        Room not found
+                    </h1>
+                </div>
+            </section>
+        );
+    }
+
+    const room = await getRoomById(id);
 
     if (!room) {
         return (
@@ -89,6 +90,7 @@ export default async function EditRoomPage({
                 </div>
 
                 <form
+                    action={editRoom.bind(null, id)}
                     className="rounded-xl border bg-white p-6 shadow-sm"
                     style={{
                         borderColor: "var(--color-border)",
@@ -114,6 +116,7 @@ export default async function EditRoomPage({
                                     <input
                                         id="room-name"
                                         type="text"
+                                        name="name"
                                         defaultValue={room.name}
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                         style={{
@@ -133,6 +136,7 @@ export default async function EditRoomPage({
                                     <input
                                         id="room-price"
                                         type="number"
+                                        name="price"
                                         defaultValue={room.price}
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                         style={{
@@ -153,6 +157,7 @@ export default async function EditRoomPage({
 
                             <textarea
                                 id="room-description"
+                                name="description"
                                 rows={4}
                                 defaultValue={room.description}
                                 className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
@@ -172,7 +177,7 @@ export default async function EditRoomPage({
                                 Capacity & Layout
                             </h2>
 
-                            <div className="mt-4 grid gap-5 sm:grid-cols-3">
+                            <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                                 <div>
                                     <label
                                         htmlFor="room-guests"
@@ -182,13 +187,54 @@ export default async function EditRoomPage({
 
                                     <input
                                         id="room-guests"
+                                        name="maxGuests"
                                         type="number"
                                         min="1"
-                                        defaultValue={room.guests}
+                                        defaultValue={room.maxGuests}
+                                        required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                         style={{
-                                            borderColor:
-                                                "var(--color-border)",
+                                            borderColor: "var(--color-border)",
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label
+                                        htmlFor="room-beds"
+                                        className="block text-sm font-medium">
+                                        Beds
+                                    </label>
+
+                                    <input
+                                        id="room-beds"
+                                        name="beds"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={room.beds}
+                                        required
+                                        className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
+                                        style={{
+                                            borderColor: "var(--color-border)",
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label
+                                        htmlFor="room-bed-type"
+                                        className="block text-sm font-medium">
+                                        Bed type
+                                    </label>
+
+                                    <input
+                                        id="room-bed-type"
+                                        name="bedType"
+                                        type="text"
+                                        defaultValue={room.bedType ?? ""}
+                                        className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
+                                        style={{
+                                            borderColor: "var(--color-border)",
                                         }}
                                     />
                                 </div>
@@ -202,13 +248,13 @@ export default async function EditRoomPage({
 
                                     <input
                                         id="room-bedrooms"
+                                        name="bedrooms"
                                         type="number"
                                         min="0"
-                                        defaultValue={room.bedrooms}
+                                        defaultValue={room.bedrooms ?? ""}
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                         style={{
-                                            borderColor:
-                                                "var(--color-border)",
+                                            borderColor: "var(--color-border)",
                                         }}
                                     />
                                 </div>
@@ -222,13 +268,14 @@ export default async function EditRoomPage({
 
                                     <input
                                         id="room-bathrooms"
+                                        name="bathrooms"
                                         type="number"
                                         min="0"
                                         defaultValue={room.bathrooms}
+                                        required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                         style={{
-                                            borderColor:
-                                                "var(--color-border)",
+                                            borderColor: "var(--color-border)",
                                         }}
                                     />
                                 </div>
@@ -246,32 +293,149 @@ export default async function EditRoomPage({
 
                             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 {[
-                                    "Wi-Fi",
-                                    "Kitchen",
-                                    "Private Pool",
-                                    "Air Conditioning",
-                                    "Parking",
-                                    "Mountain View",
+                                    {
+                                        id: "hasWifi",
+                                        label: "Wi-Fi",
+                                        checked: room.hasWifi,
+                                    },
+                                    {
+                                        id: "hasKitchen",
+                                        label: "Kitchen",
+                                        checked: room.hasKitchen,
+                                    },
+                                    {
+                                        id: "hasPrivatePool",
+                                        label: "Private Pool",
+                                        checked: room.hasPrivatePool,
+                                    },
+                                    {
+                                        id: "hasAC",
+                                        label: "Air Conditioning",
+                                        checked: room.hasAC,
+                                    },
+                                    {
+                                        id: "hasParking",
+                                        label: "Parking",
+                                        checked: room.hasParking,
+                                    },
                                 ].map((feature) => (
                                     <label
-                                        key={feature}
+                                        key={feature.id}
                                         className="flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 text-sm"
                                         style={{
-                                            borderColor:
-                                                "var(--color-border)",
+                                            borderColor: "var(--color-border)",
                                         }}>
                                         <input
                                             type="checkbox"
-                                            defaultChecked
+                                            name={feature.id}
+                                            defaultChecked={feature.checked}
                                             className="h-4 w-4"
                                             style={{
-                                                accentColor:
-                                                    "var(--color-forest-600)",
+                                                accentColor: "var(--color-forest-600)",
                                             }}
                                         />
-                                        {feature}
+
+                                        {feature.label}
                                     </label>
                                 ))}
+                            </div>
+                        </div>
+
+
+                        <div>
+                            <h2
+                                className="text-lg font-semibold"
+                                style={{
+                                    color: "var(--color-forest-900)",
+                                }}>
+                                Schedule
+                            </h2>
+
+                            <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                                <div>
+                                    <label
+                                        htmlFor="room-check-in"
+                                        className="block text-sm font-medium">
+                                        Check-in time
+                                    </label>
+
+                                    <input
+                                        id="room-check-in"
+                                        name="checkInTime"
+                                        type="time"
+                                        defaultValue={toTimeInputValue(room.checkInTime)}
+                                        required
+                                        className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
+                                        style={{
+                                            borderColor: "var(--color-border)",
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label
+                                        htmlFor="room-check-out"
+                                        className="block text-sm font-medium">
+                                        Check-out time
+                                    </label>
+
+                                    <input
+                                        id="room-check-out"
+                                        name="checkOutTime"
+                                        type="time"
+                                        defaultValue={toTimeInputValue(room.checkOutTime)}
+                                        required
+                                        className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
+                                        style={{
+                                            borderColor: "var(--color-border)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h2
+                                className="text-lg font-semibold"
+                                style={{
+                                    color: "var(--color-forest-900)",
+                                }}>
+                                Room Image
+                            </h2>
+
+                            <div className="mt-4">
+                                <div className="overflow-hidden rounded-lg border">
+                                    <img
+                                        src={room.image}
+                                        alt={`${room.name} room`}
+                                        className="h-64 w-full object-cover"
+                                    />
+                                </div>
+
+                                <label
+                                    htmlFor="room-image"
+                                    className="mt-4 block text-sm font-medium">
+                                    Replace image
+                                </label>
+
+                                <input
+                                    id="room-image"
+                                    name="image"
+                                    type="file"
+                                    accept="image/*"
+                                    className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors file:mr-4 file:rounded-md file:border-0 file:bg-[var(--color-forest-100)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--color-forest-800)]"
+                                    style={{
+                                        borderColor: "var(--color-border)",
+                                    }}
+                                />
+
+                                <p
+                                    className="mt-2 text-xs"
+                                    style={{
+                                        color: "var(--color-muted)",
+                                    }}>
+                                    Leave this empty to keep the current image.
+                                </p>
                             </div>
                         </div>
 
@@ -291,7 +455,6 @@ export default async function EditRoomPage({
                                 }}>
                                 Cancel
                             </button>
-
                             <button
                                 type="submit"
                                 className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"

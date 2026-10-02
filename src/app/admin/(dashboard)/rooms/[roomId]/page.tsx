@@ -105,14 +105,6 @@ export default async function RoomDetailsPage({
                         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <div>
                                 <p className="text-xs text-gray-500">
-                                    Name
-                                </p>
-                                <p className="mt-1 font-semibold">
-                                    {room.name}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-500">
                                     Price
                                 </p>
                                 <p className="mt-1 font-semibold">
