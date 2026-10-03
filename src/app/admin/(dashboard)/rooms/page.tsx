@@ -76,18 +76,6 @@ export default async function RoomsPage() {
 
                                 <div className="flex shrink-0 gap-2">
                                     <Link
-                                        href={`/admin/rooms/${room.id}/edit`}
-                                        className="rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
-                                        style={{
-                                            borderColor:
-                                                "var(--color-border)",
-                                            color:
-                                                "var(--color-forest-800)",
-                                        }}>
-                                        Edit
-                                    </Link>
-
-                                    <Link
                                         href={`/admin/rooms/${room.id}`}
                                         className="rounded-lg px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100"
                                         style={{
@@ -96,7 +84,7 @@ export default async function RoomsPage() {
                                             color:
                                                 "var(--color-forest-800)",
                                         }}>
-                                        View
+                                        View Room
                                     </Link>
                                 </div>
                             </div>

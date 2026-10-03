@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getRoomById } from "@/services/room";
-export default async function RoomDetailsPage({
+import DeleteRoomButton from "@/components/admin/deleteRoomButton";
 
+export default async function RoomDetailsPage({
     params,
 }: {
     params: Promise<{ roomId: string }>;
@@ -79,15 +80,17 @@ export default async function RoomDetailsPage({
                             </h1>
                         </div>
                     </div>
-
-                    <Link
-                        href={`/admin/rooms/${room.id}/edit`}
-                        className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:brightness-110"
-                        style={{
-                            backgroundColor: "var(--color-forest-700)",
-                        }}>
-                        Edit Room
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href={`/admin/rooms/${room.id}/edit`}
+                            className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:brightness-110"
+                            style={{
+                                backgroundColor: "var(--color-forest-700)",
+                            }}>
+                            Edit Room
+                        </Link>
+                        <DeleteRoomButton roomId={room.id} />
+                    </div>
                 </div>
                 <div className="mt-8 space-y-6">
                     <div

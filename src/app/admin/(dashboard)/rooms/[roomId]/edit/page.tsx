@@ -1,5 +1,7 @@
 import { getRoomById } from "@/services/room";
 import { editRoom } from "./actions";
+import Link from "next/link";
+import CancelEditButton from "@/components/admin/editRoomButtonCancel";
 
 function toTimeInputValue(time: string) {
     const normalized = time.trim().toUpperCase();
@@ -444,20 +446,10 @@ export default async function EditRoomPage({
                             style={{
                                 borderColor: "var(--color-border)",
                             }}>
-                            <button
-                                type="button"
-                                className="rounded-lg border px-4 py-2.5 text-sm font-medium"
-                                style={{
-                                    borderColor:
-                                        "var(--color-border)",
-                                    color:
-                                        "var(--color-forest-800)",
-                                }}>
-                                Cancel
-                            </button>
+                            <CancelEditButton roomId={id} />
                             <button
                                 type="submit"
-                                className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
+                                className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 hover:cursor-pointer"
                                 style={{
                                     backgroundColor:
                                         "var(--color-forest-700)",

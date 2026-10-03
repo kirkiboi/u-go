@@ -69,3 +69,11 @@ export async function updateRoom(
         data,
     });
 }
+
+export async function deleteRoom(id: number) {
+    return prisma.room.delete({
+        where: {
+            id,
+        },
+    });
+}
