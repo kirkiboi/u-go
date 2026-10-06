@@ -1,6 +1,6 @@
-import Link from "next/link";
 import SaveAmenityButton from "@/components/admin/saveAmenityButton";
 import { addAmenity } from "./actions";
+import CancelAmenityButton from "@/components/admin/cancelAmenityButton";
 export default function AddAmenityPage() {
     return (
         <section className="min-h-screen px-8 py-8">
@@ -127,17 +127,7 @@ export default function AddAmenityPage() {
                                 borderColor:
                                     "var(--color-border)",
                             }}>
-                            <Link
-                                href="/admin/amenities"
-                                className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
-                                style={{
-                                    borderColor:
-                                        "var(--color-border)",
-                                    color:
-                                        "var(--color-forest-800)",
-                                }}>
-                                Cancel
-                            </Link>
+                            <CancelAmenityButton />
                             <SaveAmenityButton />
                         </div>
                     </form>

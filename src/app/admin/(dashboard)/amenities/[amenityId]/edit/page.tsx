@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAmenityById } from "@/services/amenity";
 import { editAmenity } from "./actions";
+import SaveEditAmenityButton from "@/components/admin/saveEditAmenityButton";
+import CancelEditAmenityButton from "@/components/admin/editAmenityButtonCancel";
 
 interface EditAmenityPageProps {
     params: Promise<{
@@ -188,27 +190,8 @@ export default async function EditAmenityPage({
                                 borderColor:
                                     "var(--color-border)",
                             }}>
-                            <Link
-                                href={`/admin/amenities/${amenity.id} `}
-                                className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
-                                style={{
-                                    borderColor:
-                                        "var(--color-border)",
-                                    color:
-                                        "var(--color-forest-800)",
-                                }}>
-                                Cancel
-                            </Link>
-
-                            <button
-                                type="submit"
-                                className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
-                                style={{
-                                    backgroundColor:
-                                        "var(--color-forest-700)",
-                                }}>
-                                Save Changes
-                            </button>
+                            <CancelEditAmenityButton amenityId={amenity.id} />
+                            <SaveEditAmenityButton />
                         </div>
                     </div>
                 </form>
