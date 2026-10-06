@@ -1,4 +1,6 @@
 import { addRoom } from "./actions";
+import CancelAddButton from "@/components/admin/addRoomButtonCancel";
+
 export default function AddRoomPage() {
     return (
         <section className="min-h-screen px-8 py-8">
@@ -319,17 +321,7 @@ export default function AddRoomPage() {
                             style={{
                                 borderColor: "var(--color-border)",
                             }}>
-                            <button
-                                type="button"
-                                className="rounded-lg border px-4 py-2.5 text-sm font-medium"
-                                style={{
-                                    borderColor:
-                                        "var(--color-border)",
-                                    color:
-                                        "var(--color-forest-800)",
-                                }}>
-                                Cancel
-                            </button>
+                            <CancelAddButton />
 
                             <button
                                 type="submit"
