@@ -98,13 +98,6 @@ export default async function RoomDetailsPage({
                         style={{
                             borderColor: "var(--color-border)",
                         }}>
-                        <h2
-                            className="text-lg font-semibold"
-                            style={{
-                                color: "var(--color-forest-900)",
-                            }}>
-                            Room Information
-                        </h2>
                         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <div>
                                 <p className="text-xs text-gray-500">

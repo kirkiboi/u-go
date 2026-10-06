@@ -15,7 +15,7 @@ export default async function EditAmenityPage({
     const { amenityId } = await params;
     const id = Number(amenityId);
 
-    if (Number.isNaN(id)) {
+    if (!Number.isInteger(id)) {
         notFound();
     }
 
@@ -27,8 +27,8 @@ export default async function EditAmenityPage({
 
     return (
         <section className="min-h-screen px-8 py-8">
-            <div className="mx-auto max-w-4xl">
-                <div>
+            <div className="mx-auto max-w-5xl">
+                <div className="mb-8">
                     <p
                         className="text-sm font-medium"
                         style={{
@@ -38,42 +38,46 @@ export default async function EditAmenityPage({
                     </p>
 
                     <h1
-                        className="text-2xl font-semibold"
+                        className="mt-1 text-3xl font-bold"
                         style={{
+                            fontFamily: "var(--font-display)",
                             color: "var(--color-forest-900)",
                         }}>
-                        Edit Amenity
+                        Edit {amenity.name}
                     </h1>
                 </div>
 
-                <div
-                    className="mt-8 rounded-xl border bg-white p-6 shadow-sm"
+                <form
+                    id="edit-amenity-form"
+                    action={editAmenity.bind(null, amenity.id)}
+                    className="rounded-xl border bg-white p-6 shadow-sm"
                     style={{
                         borderColor: "var(--color-border)",
                     }}>
-                    <form
-                        id="edit-amenity-form"
-                        action={editAmenity.bind(null, amenity.id)}
-                        className="space-y-6">
+                    <div className="space-y-6">
                         <div>
-                            <label
-                                htmlFor="amenity-name"
-                                className="block text-sm font-medium">
-                                Amenity name
-                            </label>
+                            <div className="mt-4">
+                                <div>
+                                    <label
+                                        htmlFor="amenity-name"
+                                        className="block text-sm font-medium">
+                                        Amenity name
+                                    </label>
 
-                            <input
-                                id="amenity-name"
-                                name="name"
-                                type="text"
-                                required
-                                defaultValue={amenity.name}
-                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                                style={{
-                                    borderColor:
-                                        "var(--color-border)",
-                                }}
-                            />
+                                    <input
+                                        id="amenity-name"
+                                        name="name"
+                                        type="text"
+                                        required
+                                        defaultValue={amenity.name}
+                                        className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
+                                        style={{
+                                            borderColor:
+                                                "var(--color-border)",
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         <div>
@@ -89,7 +93,7 @@ export default async function EditAmenityPage({
                                 rows={5}
                                 required
                                 defaultValue={amenity.description}
-                                className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                 style={{
                                     borderColor:
                                         "var(--color-border)",
@@ -98,68 +102,84 @@ export default async function EditAmenityPage({
                         </div>
 
                         <div>
-                            <label
-                                htmlFor="amenity-image"
-                                className="block text-sm font-medium">
-                                Amenity image
-                            </label>
-
-                            <div className="mt-2">
-                                <img
-                                    src={amenity.image}
-                                    alt={amenity.name}
-                                    className="mb-4 h-48 w-full rounded-lg object-cover"
-                                />
+                            <div className="mt-4">
+                                <label
+                                    htmlFor="amenity-time"
+                                    className="block text-sm font-medium">
+                                    Time description
+                                </label>
 
                                 <input
-                                    id="amenity-image"
-                                    name="image"
-                                    type="file"
-                                    accept="image/*"
-                                    className="w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors file:mr-4 file:rounded-md file:border-0 file:bg-[var(--color-forest-100)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--color-forest-800)]"
+                                    id="amenity-time"
+                                    name="timeDescription"
+                                    type="text"
+                                    required
+                                    defaultValue={
+                                        amenity.timeDescription
+                                    }
+                                    className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                     style={{
                                         borderColor:
                                             "var(--color-border)",
                                     }}
                                 />
 
-                                <p className="mt-1 text-xs text-gray-500">
-                                    Upload a new PNG or JPG only if you
-                                    want to replace the current image.
+                                <p
+                                    className="mt-2 text-xs"
+                                    style={{
+                                        color: "var(--color-muted)",
+                                    }}>
+                                    Can be a time range or a descriptive
+                                    phrase such as "Best After 8:00 PM".
                                 </p>
                             </div>
                         </div>
 
                         <div>
-                            <label
-                                htmlFor="amenity-time"
-                                className="block text-sm font-medium">
-                                Time description
-                            </label>
-
-                            <input
-                                id="amenity-time"
-                                name="timeDescription"
-                                type="text"
-                                required
-                                defaultValue={
-                                    amenity.timeDescription
-                                }
-                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                            <h2
+                                className="text-lg font-semibold"
                                 style={{
-                                    borderColor:
-                                        "var(--color-border)",
-                                }}
-                            />
-
-                            <p
-                                className="mt-2 text-xs"
-                                style={{
-                                    color: "var(--color-muted)",
+                                    color: "var(--color-forest-900)",
                                 }}>
-                                Can be a time range or a descriptive
-                                phrase such as "Best After 8:00 PM".
-                            </p>
+                                Amenity Image
+                            </h2>
+
+                            <div className="mt-4">
+                                <div className="overflow-hidden rounded-lg border">
+                                    <img
+                                        src={amenity.image}
+                                        alt={`${amenity.name} amenity`}
+                                        className="h-64 w-full object-cover"
+                                    />
+                                </div>
+
+                                <label
+                                    htmlFor="amenity-image"
+                                    className="mt-4 block text-sm font-medium">
+                                    Replace image
+                                </label>
+
+                                <input
+                                    id="amenity-image"
+                                    name="image"
+                                    type="file"
+                                    accept="image/*"
+                                    className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors file:mr-4 file:rounded-md file:border-0 file:bg-[var(--color-forest-100)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--color-forest-800)]"
+                                    style={{
+                                        borderColor:
+                                            "var(--color-border)",
+                                    }}
+                                />
+
+                                <p
+                                    className="mt-2 text-xs"
+                                    style={{
+                                        color: "var(--color-muted)",
+                                    }}>
+                                    Leave this empty to keep the current
+                                    image.
+                                </p>
+                            </div>
                         </div>
 
                         <div
@@ -169,7 +189,7 @@ export default async function EditAmenityPage({
                                     "var(--color-border)",
                             }}>
                             <Link
-                                href={`/admin/amenities/${amenity.id}`}
+                                href={`/admin/amenities/${amenity.id} `}
                                 className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
                                 style={{
                                     borderColor:
@@ -190,8 +210,8 @@ export default async function EditAmenityPage({
                                 Save Changes
                             </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </section>
     );
