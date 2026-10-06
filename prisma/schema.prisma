@@ -28,7 +28,7 @@ model Room {
   beds           Int
   bedType        String?
   bedrooms       Int?
-  bathrooms      Int
+  bathrooms      Int?
   hasPrivatePool Boolean  @default(false)
   hasKitchen     Boolean  @default(false)
   hasWifi        Boolean  @default(false)

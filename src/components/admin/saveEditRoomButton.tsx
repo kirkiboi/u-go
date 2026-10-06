@@ -8,7 +8,7 @@ export default function SaveEditRoomButton() {
 
     const handleSaveClick = () => {
         const form = document.getElementById(
-            "edit-room-form"
+            "add-room-form"
         ) as HTMLFormElement | null;
 
         if (!form) {
@@ -16,10 +16,16 @@ export default function SaveEditRoomButton() {
         }
 
         if (!form.checkValidity()) {
-            form.reportValidity();
+            const firstInvalidField = form.querySelector(
+                ":invalid"
+            ) as HTMLInputElement | HTMLTextAreaElement | null;
+
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+                firstInvalidField.reportValidity();
+            }
             return;
         }
-
         setIsConfirming(true);
     };
 

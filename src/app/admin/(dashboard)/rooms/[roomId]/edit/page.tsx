@@ -87,7 +87,7 @@ export default async function EditRoomPage({
                             fontFamily: "var(--font-display)",
                             color: "var(--color-forest-900)",
                         }}>
-                        Edit Room {room.name}
+                        Edit {room.name}
                     </h1>
                 </div>
 

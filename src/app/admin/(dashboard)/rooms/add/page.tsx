@@ -23,14 +23,6 @@ export default function AddRoomPage() {
                         }}>
                         Add Room
                     </h1>
-
-                    <p
-                        className="mt-2 text-sm"
-                        style={{
-                            color: "var(--color-muted)",
-                        }}>
-                        Add a new accommodation to your resort.
-                    </p>
                 </div>
 
                 <form
@@ -62,7 +54,7 @@ export default function AddRoomPage() {
                                         name="name"
                                         id="room-name"
                                         type="text"
-                                        placeholder="required to provide name e.g. Cabin House"
+                                        placeholder="required"
                                         required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)] "
                                         style={{
@@ -84,7 +76,7 @@ export default function AddRoomPage() {
                                         name="price"
                                         type="number"
                                         required
-                                        placeholder="required to provide price e.g. 2,999"
+                                        placeholder="required"
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                         style={{
                                             borderColor:
@@ -106,7 +98,7 @@ export default function AddRoomPage() {
                                 name="description"
                                 required
                                 rows={4}
-                                placeholder="required to describe the room e.g. &quot;This room is made for two people who wants to be centered with pine trees&quot;" className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                placeholder="required" className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                 style={{
                                     borderColor:
                                         "var(--color-border)",
@@ -136,7 +128,7 @@ export default function AddRoomPage() {
                                         type="number"
                                         min="1"
                                         required
-                                        placeholder="required to provide max guests e.g. 3"
+                                        placeholder="required"
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                         style={{
                                             borderColor:
@@ -156,7 +148,7 @@ export default function AddRoomPage() {
                                         id="room-bedrooms"
                                         type="number"
                                         min="0"
-                                        placeholder="1"
+                                        placeholder="optional"
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                         style={{
                                             borderColor:
@@ -176,7 +168,7 @@ export default function AddRoomPage() {
                                         id="room-bathrooms"
                                         type="number"
                                         min="0"
-                                        placeholder="1"
+                                        placeholder="optional"
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                         style={{
                                             borderColor:
@@ -195,7 +187,7 @@ export default function AddRoomPage() {
                                         name="beds"
                                         type="number"
                                         min="1"
-                                        placeholder="required to provide number of beds"
+                                        placeholder="required"
                                         required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                         style={{
@@ -205,6 +197,7 @@ export default function AddRoomPage() {
                                 </div>
                             </div>
                             <div>
+                                <br />
                                 <label
                                     htmlFor="room-bed-type"
                                     className="block text-sm font-medium">
@@ -214,7 +207,7 @@ export default function AddRoomPage() {
                                     id="room-bed-type"
                                     name="bedType"
                                     type="text"
-                                    placeholder="e.g. Queen Size"
+                                    placeholder="optional"
                                     className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                     style={{
                                         borderColor: "var(--color-border)",
@@ -276,7 +269,7 @@ export default function AddRoomPage() {
                                 }}
                             />
                             <p className="mt-1 text-xs text-gray-500">
-                                Uploading a high-resolution PNG or JPG image of the room is required.
+                                Uploading an image of the room, either PNG or JPG, is required.
                             </p>
                         </div>
                         <div>
@@ -290,8 +283,7 @@ export default function AddRoomPage() {
                                 id="check-in"
                                 name="checkInTime"
                                 type="text"
-                                placeholder="required to provide check-in time e.g. 2:00 PM"
-                                defaultValue="2:00 PM"
+                                placeholder="required"
                                 required
                                 className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                 style={{
@@ -310,8 +302,7 @@ export default function AddRoomPage() {
                                 id="check-out"
                                 name="checkOutTime"
                                 type="text"
-                                placeholder="required to provide checkout time e.g. 12:00 NN"
-                                defaultValue="12:00 NN"
+                                placeholder="required"
                                 required
                                 className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                 style={{
