@@ -1,5 +1,6 @@
 import { addRoom } from "./actions";
 import CancelAddButton from "@/components/admin/addRoomButtonCancel";
+import SaveRoomButton from "@/components/admin/saveRoomButton";
 
 export default function AddRoomPage() {
     return (
@@ -32,7 +33,9 @@ export default function AddRoomPage() {
                     </p>
                 </div>
 
-                <form action={addRoom}
+                <form
+                    id="add-room-form"
+                    action={addRoom}
                     className="rounded-xl border bg-white p-6 shadow-sm"
                     style={{
                         borderColor: "var(--color-border)",
@@ -322,16 +325,7 @@ export default function AddRoomPage() {
                                 borderColor: "var(--color-border)",
                             }}>
                             <CancelAddButton />
-
-                            <button
-                                type="submit"
-                                className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
-                                style={{
-                                    backgroundColor:
-                                        "var(--color-forest-700)",
-                                }}>
-                                Save Room
-                            </button>
+                            <SaveRoomButton />
                         </div>
                     </div>
                 </form>

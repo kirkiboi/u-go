@@ -6,6 +6,8 @@ export async function uploadRoomImage(file: File) {
         file,
         {
             access: "public",
+            oidcToken: process.env.VERCEL_OIDC_TOKEN,
+            storeId: process.env.BLOB_STORE_ID,
         }
     );
 
