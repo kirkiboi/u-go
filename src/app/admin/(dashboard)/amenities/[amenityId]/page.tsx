@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAmenityById } from "@/services/amenity";
+import DeleteAmenityButton from "@/components/admin/deleteAmenityButton";
 
 interface AmenityPageProps {
     params: Promise<{
@@ -115,18 +116,6 @@ export default async function AmenityPage({
                                 "var(--color-border)",
                         }}>
                         <Link
-                            href="/admin/amenities"
-                            className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
-                            style={{
-                                borderColor:
-                                    "var(--color-border)",
-                                color:
-                                    "var(--color-forest-800)",
-                            }}>
-                            Back to Amenities
-                        </Link>
-
-                        <Link
                             href={`/admin/amenities/${amenity.id}/edit`}
                             className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
                             style={{
@@ -135,6 +124,7 @@ export default async function AmenityPage({
                             }}>
                             Edit Amenity
                         </Link>
+                        <DeleteAmenityButton amenityId={amenity.id} />
                     </div>
                 </div>
             </div>
