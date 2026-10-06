@@ -1,0 +1,35 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { createAmenity } from "@/services/amenity";
+import { put } from "@vercel/blob";
+
+export async function addAmenity(formData: FormData) {
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const timeDescription = formData.get("timeDescription") as string;
+    const image = formData.get("image") as File;
+
+    if (!name || !description || !timeDescription || !image) {
+        throw new Error("All fields are required.");
+    }
+
+    const blob = await put(
+        `amenities/${Date.now()}-${image.name}`,
+        image,
+        {
+            access: "public",
+            oidcToken: process.env.VERCEL_OIDC_TOKEN,
+            storeId: process.env.BLOB_STORE_ID,
+        }
+    );
+
+    await createAmenity({
+        name,
+        description,
+        image: blob.url,
+        timeDescription,
+    });
+
+    redirect("/admin/amenities");
+}

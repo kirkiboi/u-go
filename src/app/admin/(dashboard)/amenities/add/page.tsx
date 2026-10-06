@@ -1,11 +1,13 @@
 import Link from "next/link";
+import SaveAmenityButton from "@/components/admin/saveAmenityButton";
+import { addAmenity } from "./actions";
 export default function AddAmenityPage() {
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-4xl">
                 <div>
                     <p
-                        className="w-full text-sm font-medium"
+                        className="text-sm font-medium"
                         style={{
                             color: "var(--color-forest-500)",
                         }}>
@@ -19,211 +21,124 @@ export default function AddAmenityPage() {
                         Add Amenity
                     </h1>
                 </div>
+
                 <div
                     className="mt-8 rounded-xl border bg-white p-6 shadow-sm"
                     style={{
                         borderColor: "var(--color-border)",
                     }}>
-                    <form className="space-y-6">
-                        <div className="grid gap-5 md:grid-cols-2">
-                            <div>
-                                <label
-                                    htmlFor="amenity-name"
-                                    className="block text-sm font-medium">
-                                    Amenity name
-                                </label>
-
-                                <input
-                                    id="amenity-name"
-                                    type="text"
-                                    placeholder="e.g. Swimming Pool"
-                                    className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                                    style={{
-                                        borderColor: "var(--color-border)",
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="amenity-category"
-                                    className="block text-sm font-medium">
-                                    Category
-                                </label>
-
-                                <select
-                                    id="amenity-category"
-                                    className="mt-2 w-full rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                                    style={{
-                                        borderColor: "var(--color-border)",
-                                    }}
-                                    defaultValue="">
-                                    <option value="" disabled>
-                                        Select a category
-                                    </option>
-                                    <option value="recreation">
-                                        Recreation
-                                    </option>
-                                    <option value="outdoor">
-                                        Outdoor
-                                    </option>
-                                    <option value="family">
-                                        Family
-                                    </option>
-                                    <option value="relaxation">
-                                        Relaxation
-                                    </option>
-                                    <option value="dining">
-                                        Dining
-                                    </option>
-                                    <option value="other">
-                                        Other
-                                    </option>
-                                </select>
-                            </div>
+                    <form
+                        id="add-amenity-form"
+                        action={addAmenity}
+                        className="space-y-6">
+                        <div>
+                            <label
+                                htmlFor="amenity-name"
+                                className="block text-sm font-medium">
+                                Amenity name
+                            </label>
+                            <input
+                                id="amenity-name"
+                                name="name"
+                                type="text"
+                                required
+                                placeholder="required"
+                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                style={{
+                                    borderColor:
+                                        "var(--color-border)",
+                                }}
+                            />
                         </div>
+
                         <div>
                             <label
                                 htmlFor="amenity-description"
                                 className="block text-sm font-medium">
                                 Description
                             </label>
-
                             <textarea
                                 id="amenity-description"
+                                name="description"
                                 rows={5}
-                                placeholder="Describe the amenity and what guests can expect..."
+                                required
+                                placeholder="required"
                                 className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                 style={{
-                                    borderColor: "var(--color-border)",
+                                    borderColor:
+                                        "var(--color-border)",
                                 }}
                             />
                         </div>
+
                         <div>
                             <label
                                 htmlFor="amenity-image"
                                 className="block text-sm font-medium">
                                 Amenity image
                             </label>
-
-                            <div
-                                className="mt-2 rounded-lg border-2 border-dashed p-6 text-center"
+                            <input
+                                id="amenity-image"
+                                name="image"
+                                type="file"
+                                accept="image/*"
+                                required
+                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors file:mr-4 file:rounded-md file:border-0 file:bg-[var(--color-forest-100)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--color-forest-800)]"
                                 style={{
                                     borderColor: "var(--color-border)",
-                                }}>
-                                <input
-                                    id="amenity-image"
-                                    type="file"
-                                    accept="image/*"
-                                    className="mx-auto block w-full max-w-sm text-sm"
-                                />
-
-                                <p
-                                    className="mt-2 text-xs"
-                                    style={{
-                                        color: "var(--color-muted)",
-                                    }}>
-                                    Upload an image representing this
-                                    amenity.
-                                </p>
-                            </div>
+                                }}
+                            />
+                            <p className="mt-1 text-xs text-gray-500">
+                                Uploading an image of the amenity, either PNG or JPG, is required.
+                            </p>
                         </div>
-                        <div
-                            className="rounded-lg border p-5"
-                            style={{
-                                borderColor: "var(--color-border)",
-                                backgroundColor:
-                                    "var(--color-forest-50)",
-                            }}>
-                            <h2
-                                className="text-sm font-semibold"
+
+                        <div>
+                            <label
+                                htmlFor="amenity-time"
+                                className="block text-sm font-medium">
+                                Time description
+                            </label>
+                            <input
+                                id="amenity-time"
+                                name="timeDescription"
+                                type="text"
+                                required
+                                placeholder="required"
+                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                 style={{
-                                    color: "var(--color-forest-900)",
+                                    borderColor:
+                                        "var(--color-border)",
+                                }}
+                            />
+                            <p
+                                className="mt-2 text-xs"
+                                style={{
+                                    color: "var(--color-muted)",
                                 }}>
-                                Amenity Settings
-                            </h2>
-
-                            <div className="mt-4 space-y-4">
-                                <label className="flex items-start gap-3">
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked
-                                        className="mt-0.5 h-4 w-4"
-                                        style={{
-                                            accentColor:
-                                                "var(--color-forest-600)",
-                                        }}
-                                    />
-
-                                    <div>
-                                        <p className="text-sm font-medium">
-                                            Active
-                                        </p>
-
-                                        <p
-                                            className="mt-0.5 text-xs"
-                                            style={{
-                                                color:
-                                                    "var(--color-muted)",
-                                            }}>
-                                            Make this amenity visible on
-                                            the public website.
-                                        </p>
-                                    </div>
-                                </label>
-
-                                <label className="flex items-start gap-3">
-                                    <input
-                                        type="checkbox"
-                                        className="mt-0.5 h-4 w-4"
-                                        style={{
-                                            accentColor:
-                                                "var(--color-forest-600)",
-                                        }}
-                                    />
-
-                                    <div>
-                                        <p className="text-sm font-medium">
-                                            Featured Experience
-                                        </p>
-
-                                        <p
-                                            className="mt-0.5 text-xs"
-                                            style={{
-                                                color:
-                                                    "var(--color-muted)",
-                                            }}>
-                                            Highlight this amenity in the
-                                            featured experience section.
-                                        </p>
-                                    </div>
-                                </label>
-                            </div>
+                                Can be a time range or a descriptive
+                                phrase such as "Best After 8:00 PM".
+                            </p>
                         </div>
 
                         <div
                             className="flex justify-end gap-3 border-t pt-6"
                             style={{
-                                borderColor: "var(--color-border)",
+                                borderColor:
+                                    "var(--color-border)",
                             }}>
                             <Link
                                 href="/admin/amenities"
                                 className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
                                 style={{
-                                    borderColor: "var(--color-border)",
-                                    color: "var(--color-forest-800)",
+                                    borderColor:
+                                        "var(--color-border)",
+                                    color:
+                                        "var(--color-forest-800)",
                                 }}>
                                 Cancel
                             </Link>
-
-                            <button
-                                type="submit"
-                                className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
-                                style={{
-                                    backgroundColor:
-                                        "var(--color-forest-700)",
-                                }}>
-                                Save Amenity
-                            </button>
+                            <SaveAmenityButton />
                         </div>
                     </form>
                 </div>
