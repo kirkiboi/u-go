@@ -1,6 +1,5 @@
 import { getRoomById } from "@/services/room";
 import { editRoom } from "./actions";
-import Link from "next/link";
 import CancelEditButton from "@/components/admin/editRoomButtonCancel";
 import SaveEditRoomButton from "@/components/admin/saveEditRoomButton";
 
@@ -338,13 +337,11 @@ export default async function EditRoomPage({
                                                 accentColor: "var(--color-forest-600)",
                                             }}
                                         />
-
                                         {feature.label}
                                     </label>
                                 ))}
                             </div>
                         </div>
-
 
                         <div>
                             <h2

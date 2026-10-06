@@ -46,7 +46,7 @@ export default async function RoomsPage() {
                                         style={{
                                             color: "var(--color-muted)",
                                         }}>
-                                        {room.description}
+                                        {room.name}
                                     </p>
                                     <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
                                         <span>
