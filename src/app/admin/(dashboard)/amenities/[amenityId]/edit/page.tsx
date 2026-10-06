@@ -1,29 +1,42 @@
-"use client";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { notFound } from "next/navigation";
+import { getAmenityById } from "@/services/amenity";
+import { editAmenity } from "./actions";
 
-const amenity = {
-    name: "Swimming Pool",
-    description:
-        "A refreshing outdoor pool surrounded by peaceful mountain scenery.",
-    category: "Recreation",
-    active: true,
-    featured: true,
-};
+interface EditAmenityPageProps {
+    params: Promise<{
+        amenityId: string;
+    }>;
+}
 
-export default function EditAmenityPage() {
-    const params = useParams();
+export default async function EditAmenityPage({
+    params,
+}: EditAmenityPageProps) {
+    const { amenityId } = await params;
+    const id = Number(amenityId);
+
+    if (Number.isNaN(id)) {
+        notFound();
+    }
+
+    const amenity = await getAmenityById(id);
+
+    if (!amenity) {
+        notFound();
+    }
+
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-4xl">
                 <div>
                     <p
-                        className="w-full text-sm font-medium"
+                        className="text-sm font-medium"
                         style={{
                             color: "var(--color-forest-500)",
                         }}>
                         Amenities Management
                     </p>
+
                     <h1
                         className="text-2xl font-semibold"
                         style={{
@@ -32,67 +45,37 @@ export default function EditAmenityPage() {
                         Edit Amenity
                     </h1>
                 </div>
+
                 <div
                     className="mt-8 rounded-xl border bg-white p-6 shadow-sm"
                     style={{
                         borderColor: "var(--color-border)",
                     }}>
-                    <form className="space-y-6">
-                        <div className="grid gap-5 md:grid-cols-2">
-                            <div>
-                                <label
-                                    htmlFor="amenity-name"
-                                    className="block text-sm font-medium">
-                                    Amenity name
-                                </label>
+                    <form
+                        id="edit-amenity-form"
+                        action={editAmenity.bind(null, amenity.id)}
+                        className="space-y-6">
+                        <div>
+                            <label
+                                htmlFor="amenity-name"
+                                className="block text-sm font-medium">
+                                Amenity name
+                            </label>
 
-                                <input
-                                    id="amenity-name"
-                                    type="text"
-                                    defaultValue={amenity.name}
-                                    className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                                    style={{
-                                        borderColor:
-                                            "var(--color-border)",
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    htmlFor="amenity-category"
-                                    className="block text-sm font-medium">
-                                    Category
-                                </label>
-
-                                <select
-                                    id="amenity-category"
-                                    defaultValue={amenity.category}
-                                    className="mt-2 w-full rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                                    style={{
-                                        borderColor:
-                                            "var(--color-border)",
-                                    }}>
-                                    <option value="Recreation">
-                                        Recreation
-                                    </option>
-                                    <option value="Outdoor">
-                                        Outdoor
-                                    </option>
-                                    <option value="Family">
-                                        Family
-                                    </option>
-                                    <option value="Relaxation">
-                                        Relaxation
-                                    </option>
-                                    <option value="Dining">
-                                        Dining
-                                    </option>
-                                    <option value="Other">
-                                        Other
-                                    </option>
-                                </select>
-                            </div>
+                            <input
+                                id="amenity-name"
+                                name="name"
+                                type="text"
+                                required
+                                defaultValue={amenity.name}
+                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                style={{
+                                    borderColor:
+                                        "var(--color-border)",
+                                }}
+                            />
                         </div>
+
                         <div>
                             <label
                                 htmlFor="amenity-description"
@@ -102,7 +85,9 @@ export default function EditAmenityPage() {
 
                             <textarea
                                 id="amenity-description"
+                                name="description"
                                 rows={5}
+                                required
                                 defaultValue={amenity.description}
                                 className="mt-2 w-full resize-none rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                 style={{
@@ -111,6 +96,7 @@ export default function EditAmenityPage() {
                                 }}
                             />
                         </div>
+
                         <div>
                             <label
                                 htmlFor="amenity-image"
@@ -118,104 +104,64 @@ export default function EditAmenityPage() {
                                 Amenity image
                             </label>
 
-                            <div
-                                className="mt-2 rounded-lg border-2 border-dashed p-6 text-center"
-                                style={{
-                                    borderColor:
-                                        "var(--color-border)",
-                                }}>
-                                <input
-                                    id="amenity-image"
-                                    type="file"
-                                    accept="image/*"
-                                    className="mx-auto block w-full max-w-sm text-sm"
+                            <div className="mt-2">
+                                <img
+                                    src={amenity.image}
+                                    alt={amenity.name}
+                                    className="mb-4 h-48 w-full rounded-lg object-cover"
                                 />
 
-                                <p
-                                    className="mt-2 text-xs"
+                                <input
+                                    id="amenity-image"
+                                    name="image"
+                                    type="file"
+                                    accept="image/*"
+                                    className="w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors file:mr-4 file:rounded-md file:border-0 file:bg-[var(--color-forest-100)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--color-forest-800)]"
                                     style={{
-                                        color:
-                                            "var(--color-muted)",
-                                    }}>
-                                    Upload a new image to replace the
-                                    current amenity image.
+                                        borderColor:
+                                            "var(--color-border)",
+                                    }}
+                                />
+
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Upload a new PNG or JPG only if you
+                                    want to replace the current image.
                                 </p>
                             </div>
                         </div>
-                        <div
-                            className="rounded-lg border p-5"
-                            style={{
-                                borderColor:
-                                    "var(--color-border)",
-                                backgroundColor:
-                                    "var(--color-forest-50)",
-                            }}>
-                            <h2
-                                className="text-sm font-semibold"
+
+                        <div>
+                            <label
+                                htmlFor="amenity-time"
+                                className="block text-sm font-medium">
+                                Time description
+                            </label>
+
+                            <input
+                                id="amenity-time"
+                                name="timeDescription"
+                                type="text"
+                                required
+                                defaultValue={
+                                    amenity.timeDescription
+                                }
+                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                 style={{
-                                    color:
-                                        "var(--color-forest-900)",
+                                    borderColor:
+                                        "var(--color-border)",
+                                }}
+                            />
+
+                            <p
+                                className="mt-2 text-xs"
+                                style={{
+                                    color: "var(--color-muted)",
                                 }}>
-                                Amenity Settings
-                            </h2>
-
-                            <div className="mt-4 space-y-4">
-                                <label className="flex items-start gap-3">
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked={amenity.active}
-                                        className="mt-0.5 h-4 w-4"
-                                        style={{
-                                            accentColor:
-                                                "var(--color-forest-600)",
-                                        }}
-                                    />
-
-                                    <div>
-                                        <p className="text-sm font-medium">
-                                            Active
-                                        </p>
-
-                                        <p
-                                            className="mt-0.5 text-xs"
-                                            style={{
-                                                color:
-                                                    "var(--color-muted)",
-                                            }}>
-                                            Make this amenity visible on
-                                            the public website.
-                                        </p>
-                                    </div>
-                                </label>
-                                <label className="flex items-start gap-3">
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked={amenity.featured}
-                                        className="mt-0.5 h-4 w-4"
-                                        style={{
-                                            accentColor:
-                                                "var(--color-forest-600)",
-                                        }}
-                                    />
-
-                                    <div>
-                                        <p className="text-sm font-medium">
-                                            Featured Experience
-                                        </p>
-
-                                        <p
-                                            className="mt-0.5 text-xs"
-                                            style={{
-                                                color:
-                                                    "var(--color-muted)",
-                                            }}>
-                                            Highlight this amenity in the
-                                            featured experience section.
-                                        </p>
-                                    </div>
-                                </label>
-                            </div>
+                                Can be a time range or a descriptive
+                                phrase such as "Best After 8:00 PM".
+                            </p>
                         </div>
+
                         <div
                             className="flex justify-end gap-3 border-t pt-6"
                             style={{
@@ -223,7 +169,7 @@ export default function EditAmenityPage() {
                                     "var(--color-border)",
                             }}>
                             <Link
-                                href={`/admin/amenities`}
+                                href={`/admin/amenities/${amenity.id}`}
                                 className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
                                 style={{
                                     borderColor:

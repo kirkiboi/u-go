@@ -1,6 +1,6 @@
 "use server";
 
-import { uploadRoomImage } from "@/services/imageService";
+import { uploadImage } from "@/services/imageService";
 import { redirect } from "next/navigation";
 import { createRoom } from "@/services/room";
 
@@ -31,7 +31,7 @@ export async function addRoom(formData: FormData) {
     ) {
         throw new Error("Invalid inputs.");
     }
-    const imageUrl = await uploadRoomImage(imageFile);
+    const imageUrl = await uploadImage("rooms", imageFile);
     await createRoom({
         name,
         description,

@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { deleteRoom, getRoomById } from "@/services/room";
-import { deleteRoomImage } from "@/services/imageService";
+import { deleteImage } from "@/services/imageService";
 
 export async function removeRoom(roomId: number) {
     const room = await getRoomById(roomId);
@@ -11,7 +11,7 @@ export async function removeRoom(roomId: number) {
         throw new Error("Room not found.");
     }
 
-    await deleteRoomImage(room.image);
+    await deleteImage(room.image);
     await deleteRoom(roomId);
 
     redirect("/admin/rooms");
