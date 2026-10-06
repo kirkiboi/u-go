@@ -2,6 +2,7 @@ import { getRoomById } from "@/services/room";
 import { editRoom } from "./actions";
 import Link from "next/link";
 import CancelEditButton from "@/components/admin/editRoomButtonCancel";
+import SaveEditRoomButton from "@/components/admin/saveEditRoomButton";
 
 function toTimeInputValue(time: string) {
     const normalized = time.trim().toUpperCase();
@@ -92,6 +93,7 @@ export default async function EditRoomPage({
                 </div>
 
                 <form
+                    id="edit-room-form"
                     action={editRoom.bind(null, id)}
                     className="rounded-xl border bg-white p-6 shadow-sm"
                     style={{
@@ -447,15 +449,7 @@ export default async function EditRoomPage({
                                 borderColor: "var(--color-border)",
                             }}>
                             <CancelEditButton roomId={id} />
-                            <button
-                                type="submit"
-                                className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 hover:cursor-pointer"
-                                style={{
-                                    backgroundColor:
-                                        "var(--color-forest-700)",
-                                }}>
-                                Save Changes
-                            </button>
+                            <SaveEditRoomButton />
                         </div>
                     </div>
                 </form>
