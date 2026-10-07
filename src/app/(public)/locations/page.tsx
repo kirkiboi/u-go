@@ -8,7 +8,7 @@ export default function LocationPage() {
           Find Your Escape
         </h1>
         <p className="text-lg text-stone-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-          Tucked away in the serene mountains of Bukidnon, U-Go Mountain Resort is your perfect sanctuary from the bustling city.
+          Tucked away in the serene mountains of Bukidnon, U-GO Mountain Resort is your perfect sanctuary from the bustling city.
         </p>
       </section>
 

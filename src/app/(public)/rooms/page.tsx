@@ -200,7 +200,7 @@ export default async function RoomsPage() {
                     ? "md:flex-row-reverse"
                     : "md:flex-row"
                     } bg-white rounded-2xl overflow-hidden shadow-sm border border-[var(--color-border)] hover:shadow-md transition-shadow`}>
-                  <div className="w-full md:w-1/2 h-64 md:h-auto">
+                  <div className="w-full md:w-1/2 h-64 md:h-[400px]">
                     <img
                       src={room.image}
                       alt={room.name}

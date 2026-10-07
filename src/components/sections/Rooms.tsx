@@ -9,13 +9,19 @@ type RoomsProps = {
 };
 
 export default function Rooms({ rooms }: RoomsProps) {
+    const showcasedRooms = rooms.slice(0, 3);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const currentRoom = rooms[currentIndex];
+    const currentRoom = showcasedRooms[currentIndex];
+
     const previousRoom = () => {
-        setCurrentIndex((currentIndex - 1 + rooms.length) % rooms.length);
+        setCurrentIndex(
+            (currentIndex - 1 + showcasedRooms.length) % showcasedRooms.length
+        );
     };
     const nextRoom = () => {
-        setCurrentIndex((currentIndex + 1) % rooms.length);
+        setCurrentIndex(
+            (currentIndex + 1) % showcasedRooms.length
+        );
     };
     return (
         <section
@@ -91,7 +97,7 @@ export default function Rooms({ rooms }: RoomsProps) {
                 </div>
 
                 <div className="mt-8 flex justify-center gap-2">
-                    {rooms.map((room, index) => (
+                    {showcasedRooms.map((room, index) => (
                         <button
                             key={room.id}
                             onClick={() => setCurrentIndex(index)}

@@ -31,7 +31,7 @@ export default function Location() {
                         style={{
                             color: "var(--color-stone-600)",
                         }}>
-                        Discover U-Go Mountain Resort in the peaceful
+                        Discover U-GO Mountain Resort in the peaceful
                         surroundings of Valencia City, Bukidnon.
                     </p>
                 </div>

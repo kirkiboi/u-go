@@ -27,7 +27,7 @@ export default function BookingCTA() {
                 </h2>
                 <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-white/80 md:text-base">
                     Experience peaceful mountain scenery, comfortable
-                    cottages, and unforgettable moments at U-Go Mountain
+                    cottages, and unforgettable moments at U-GO Mountain
                     Resort.
                 </p>
                 <Link

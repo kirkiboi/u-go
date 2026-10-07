@@ -40,7 +40,7 @@ export default function Amenities({ amenities }: AmenitiesProps) {
                         }}>
                         From relaxing by the pool to enjoying the mountain
                         scenery, discover the experiences waiting for you at
-                        U-Go Mountain Resort.
+                        U-GO Mountain Resort.
                     </p>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">
@@ -71,7 +71,7 @@ export default function Amenities({ amenities }: AmenitiesProps) {
                                 color: "var(--color-forest-200)",
                             }}>
                             Explore the surroundings, discover hidden corners,
-                            and experience U-Go Mountain Resort as if you were
+                            and experience U-GO Mountain Resort as if you were
                             already here.
                         </p>
                     </div>

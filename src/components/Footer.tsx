@@ -127,7 +127,7 @@ export default function Footer() {
                 <div className="mt-14 border-t border-white/10 pt-6">
                     <div className="flex flex-col gap-3 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
                         <p>
-                            © {new Date().getFullYear()} U-Go Mountain Resort.
+                            © {new Date().getFullYear()} U-GO Mountain Resort.
                             All rights reserved.
                         </p>
                         <p>
