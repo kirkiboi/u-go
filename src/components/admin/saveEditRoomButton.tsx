@@ -8,7 +8,7 @@ export default function SaveEditRoomButton() {
 
     const handleSaveClick = () => {
         const form = document.getElementById(
-            "add-room-form"
+            "edit-room-form"
         ) as HTMLFormElement | null;
 
         if (!form) {

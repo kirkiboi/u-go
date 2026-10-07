@@ -65,7 +65,7 @@ export default function Footer() {
                             <Link
                                 href="/booking"
                                 className="text-sm text-white/60 transition-colors duration-200 hover:text-white">
-                                Book a Cottage
+                                Book
                             </Link>
                         </nav>
                     </div>

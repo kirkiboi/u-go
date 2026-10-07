@@ -26,14 +26,6 @@ export default function Location() {
                         <br />
                         tranquility.
                     </h2>
-                    <p
-                        className="mx-auto mt-5 max-w-xl text-sm leading-relaxed"
-                        style={{
-                            color: "var(--color-stone-600)",
-                        }}>
-                        Discover U-GO Mountain Resort in the peaceful
-                        surroundings of Valencia City, Bukidnon.
-                    </p>
                 </div>
                 <div className="grid overflow-hidden rounded-2xl bg-white shadow-lg md:grid-cols-2">
                     <div className="relative min-h-[420px] overflow-hidden">

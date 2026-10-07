@@ -161,7 +161,7 @@ export default function LocationPage() {
                 The Surrounding Beauty
               </h3>
               <p className="text-stone-600 mb-6 leading-relaxed">
-                Located in the heart of Bukidnon, U-Go Mountain Resort offers a perfect starting point to explore the province's natural wonders.
+                Located in the heart of Bukidnon, U-GO Mountain Resort offers a perfect starting point to explore the province's natural wonders.
               </p>
               <p className="text-stone-600 mb-8 leading-relaxed">
                 Whether you're taking a scenic drive through the winding mountain roads or visiting nearby agricultural attractions, every moment in Valencia City brings you closer to nature.

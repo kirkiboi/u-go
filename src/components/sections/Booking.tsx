@@ -39,7 +39,7 @@ export default function BookingCTA() {
                         backgroundColor: "var(--color-forest-700)",
                         boxShadow: "0 8px 24px rgba(13, 26, 16, 0.35)",
                     }}>
-                    <span>Book a Cottage</span>
+                    <span>Book With Us</span>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

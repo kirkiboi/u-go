@@ -39,8 +39,7 @@ export async function editRoom(roomId: number, formData: FormData) {
     let imageUrl = existingRoom.image;
 
     if (imageFile instanceof File && imageFile.size > 0) {
-        const imageUrl = await uploadImage("rooms", imageFile);
-
+        imageUrl = await uploadImage("rooms", imageFile);
     }
 
     await updateRoom(roomId, {

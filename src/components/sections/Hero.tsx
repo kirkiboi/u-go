@@ -26,12 +26,12 @@ export default function Hero() {
                         <span className="text-white/40">•</span>
                         <span>Restaurant</span>
                         <span className="text-white/40">•</span>
-                        <span>Spa Complex</span>
+                        <span>Pine Trees</span>
                     </div>
                 </div>
                 <div className="flex-1 flex flex-col items-center justify-center gap-5 p-6">
                     <p className="max-w-md text-center text-sm leading-relaxed text-white/85">
-                        Our cottages in Valencia City are strategically placed in a
+                        Our cottages and houses in Valencia City are strategically placed in a
                         perfect spot for an escape from the hustle and bustle of the
                         city and a chance to recharge your batteries.
                     </p>
