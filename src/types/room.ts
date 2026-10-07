@@ -5,11 +5,11 @@ export type Room = {
     price: string;
     image: string;
     maxGuests?: number;
-    rooms?: number;
+    rooms?: number | null;
     beds?: number;
-    bedType?: string;
-    bedrooms?: number;
-    bathrooms?: number;
+    bedType?: string | null;
+    bedrooms?: number | null;
+    bathrooms?: number | null;
     hasPrivatePool?: boolean;
     hasKitchen?: boolean;
     hasWifi?: boolean;

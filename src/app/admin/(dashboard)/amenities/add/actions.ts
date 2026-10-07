@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createAmenity } from "@/services/amenity";
-import { put } from "@vercel/blob";
+import { uploadImage } from "@/services/imageService";
 import { requireAdmin } from "@/lib/authorization";
 
 export async function addAmenity(formData: FormData) {
@@ -16,18 +16,12 @@ export async function addAmenity(formData: FormData) {
         throw new Error("All fields are required.");
     }
 
-    const blob = await put(
-        `amenities/${Date.now()}-${image.name}`,
-        image,
-        {
-            access: "public",
-        }
-    );
+    const imageUrl = await uploadImage("amenities", image);
 
     await createAmenity({
         name,
         description,
-        image: blob.url,
+        image: imageUrl,
         timeDescription,
     });
 
