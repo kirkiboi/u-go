@@ -3,8 +3,10 @@
 import { redirect } from "next/navigation";
 import { createAmenity } from "@/services/amenity";
 import { put } from "@vercel/blob";
+import { requireAdmin } from "@/lib/authorization";
 
 export async function addAmenity(formData: FormData) {
+    await requireAdmin();
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const timeDescription = formData.get("timeDescription") as string;

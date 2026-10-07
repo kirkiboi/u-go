@@ -3,8 +3,10 @@
 import { uploadImage } from "@/services/imageService";
 import { redirect } from "next/navigation";
 import { createRoom } from "@/services/room";
+import { requireAdmin } from "@/lib/authorization";
 
 export async function addRoom(formData: FormData) {
+    await requireAdmin();
     const name = formData.get("name");
     const description = formData.get("description");
     const price = formData.get("price");

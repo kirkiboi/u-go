@@ -4,11 +4,13 @@ import { redirect } from "next/navigation";
 import { getAmenityById, updateAmenity } from "@/services/amenity";
 import { deleteImage, uploadImage } from "@/services/imageService";
 import { put } from "@vercel/blob";
+import { requireAdmin } from "@/lib/authorization";
 
 export async function editAmenity(
     amenityId: number,
     formData: FormData
 ) {
+    await requireAdmin();
     const amenity = await getAmenityById(amenityId);
 
     if (!amenity) {

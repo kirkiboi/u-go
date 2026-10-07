@@ -3,8 +3,10 @@
 import { redirect } from "next/navigation";
 import { getRoomById, updateRoom } from "@/services/room";
 import { uploadImage } from "@/services/imageService";
+import { requireAdmin } from "@/lib/authorization";
 
 export async function editRoom(roomId: number, formData: FormData) {
+    await requireAdmin();
     const name = formData.get("name");
     const description = formData.get("description");
     const price = formData.get("price");
