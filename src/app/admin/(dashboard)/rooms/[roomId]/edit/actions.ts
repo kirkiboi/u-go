@@ -31,6 +31,26 @@ export async function editRoom(roomId: number, formData: FormData) {
     ) {
         throw new Error("Invalid room data.");
     }
+    const maxGuestsNumber = Number(maxGuests);
+    const bedsNumber = Number(beds);
+    const bathroomsNumber = Number(bathrooms);
+    const bedroomsNumber =
+        typeof bedrooms === "string" && bedrooms.trim()
+            ? Number(bedrooms)
+            : undefined;
+
+    if (
+        !Number.isInteger(maxGuestsNumber) ||
+        maxGuestsNumber < 1 ||
+        !Number.isInteger(bedsNumber) ||
+        bedsNumber < 1 ||
+        !Number.isInteger(bathroomsNumber) ||
+        bathroomsNumber < 1 ||
+        (bedroomsNumber !== undefined &&
+            (!Number.isInteger(bedroomsNumber) || bedroomsNumber < 1))
+    ) {
+        throw new Error("Invalid numeric values.");
+    }
 
     const existingRoom = await getRoomById(roomId);
 
@@ -50,17 +70,14 @@ export async function editRoom(roomId: number, formData: FormData) {
         description,
         price,
         image: imageUrl,
-        maxGuests: Number(maxGuests),
-        beds: Number(beds),
+        maxGuests: maxGuestsNumber,
+        beds: bedsNumber,
         bedType:
             typeof bedType === "string" && bedType.trim()
                 ? bedType
                 : undefined,
-        bedrooms:
-            typeof bedrooms === "string" && bedrooms.trim()
-                ? Number(bedrooms)
-                : undefined,
-        bathrooms: Number(bathrooms),
+        bedrooms: bedroomsNumber,
+        bathrooms: bathroomsNumber,
 
         hasWifi: formData.get("hasWifi") === "on",
         hasParking: formData.get("hasParking") === "on",

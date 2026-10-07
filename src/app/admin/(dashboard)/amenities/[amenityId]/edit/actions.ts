@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { getAmenityById, updateAmenity } from "@/services/amenity";
 import { deleteImage, uploadImage } from "@/services/imageService";
-import { put } from "@vercel/blob";
 import { requireAdmin } from "@/lib/authorization";
 
 export async function editAmenity(
@@ -32,16 +31,6 @@ export async function editAmenity(
     let imageUrl = amenity.image;
 
     if (image && image.size > 0) {
-        const blob = await put(
-            `amenities/${Date.now()}-${image.name}`,
-            image,
-            {
-                access: "public",
-                oidcToken: process.env.VERCEL_OIDC_TOKEN,
-                storeId: process.env.BLOB_STORE_ID,
-            }
-        );
-
         imageUrl = await uploadImage("amenities", image);
         await deleteImage(amenity.image);
     }
