@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAmenityById } from "@/services/amenity";
 import DeleteAmenityButton from "@/components/admin/deleteAmenityButton";
+import Image from "next/image";
 
 interface AmenityPageProps {
     params: Promise<{
@@ -115,9 +116,11 @@ export default async function AmenityDetailsPage({
                         </h2>
 
                         <div className="mt-4 overflow-hidden rounded-lg border">
-                            <img
+                            <Image
                                 src={amenity.image}
                                 alt={`${amenity.name} amenity`}
+                                width={1200}
+                                height={800}
                                 className="h-auto max-h-[500px] w-full object-cover"
                             />
                         </div>

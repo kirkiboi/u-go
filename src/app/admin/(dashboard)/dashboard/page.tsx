@@ -104,7 +104,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="rounded-xl border bg-white shadow-sm" style={{ borderColor: "var(--color-border)" }}>
                             <div className="border-b px-6 py-4" style={{ borderColor: "var(--color-border)" }}>
-                                <h2 className="text-lg font-semibold" style={{ color: "var(--color-forest-900)" }}>Today's Tasks</h2>
+                                <h2 className="text-lg font-semibold" style={{ color: "var(--color-forest-900)" }}>Today&apos;s Tasks</h2>
                             </div>
                             <div className="p-4 space-y-4">
                                 <div className="flex items-start gap-3">

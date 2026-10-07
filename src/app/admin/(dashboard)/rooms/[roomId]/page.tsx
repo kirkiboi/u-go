@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getRoomById } from "@/services/room";
 import DeleteRoomButton from "@/components/admin/deleteRoomButton";
+import Image from "next/image";
 
 export default async function RoomDetailsPage({
     params,
@@ -260,9 +261,11 @@ export default async function RoomDetailsPage({
                             Room Image
                         </h2>
                         <div className="mt-4 overflow-hidden rounded-lg border">
-                            <img
+                            <Image
                                 src={room.image}
                                 alt={`${room.name} room`}
+                                width={1200}
+                                height={800}
                                 className="h-auto max-h-[500px] w-full object-cover"
                             />
                         </div>

@@ -2,6 +2,7 @@ import { getRoomById } from "@/services/room";
 import { editRoom } from "./actions";
 import CancelEditButton from "@/components/admin/editRoomButtonCancel";
 import SaveEditRoomButton from "@/components/admin/saveEditRoomButton";
+import Image from "next/image";
 
 function toTimeInputValue(time: string) {
     const normalized = time.trim().toUpperCase();
@@ -405,11 +406,12 @@ export default async function EditRoomPage({
                             </h2>
 
                             <div className="mt-4">
-                                <div className="overflow-hidden rounded-lg border">
-                                    <img
+                                <div className="relative h-64 overflow-hidden rounded-lg border">
+                                    <Image
                                         src={room.image}
                                         alt={`${room.name} room`}
-                                        className="h-64 w-full object-cover"
+                                        fill
+                                        className="object-cover"
                                     />
                                 </div>
 

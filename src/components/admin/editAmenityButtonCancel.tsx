@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import CancelModal from "@/components/reusable/cancelModal";
 
 export default function CancelEditAmenityButton({
@@ -10,12 +9,6 @@ export default function CancelEditAmenityButton({
     amenityId: number;
 }) {
     const [isConfirming, setIsConfirming] = useState(false);
-    const router = useRouter();
-
-    const handleConfirm = () => {
-        router.push(`/admin/amenities/${amenityId}`);
-    };
-
     return (
         <>
             <button

@@ -16,7 +16,7 @@ export default function Footer() {
             <div className="mx-auto max-w-7xl">
                 <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
                     <div className="lg:col-span-2">
-                        <a
+                        <Link
                             href="/"
                             className="inline-flex flex-col leading-tight">
                             <span
@@ -34,7 +34,7 @@ export default function Footer() {
                                 }}>
                                 Home &amp; Retreat
                             </span>
-                        </a>
+                        </Link>
                         <p className="mt-5 max-w-md text-sm leading-relaxed text-white/60">
                             A peaceful mountain escape in Valencia City,
                             Bukidnon. Come for the scenery, stay for the

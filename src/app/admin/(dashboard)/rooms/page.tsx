@@ -29,7 +29,7 @@ export default async function RoomsPage() {
                             style={{
                                 color: "var(--color-muted)",
                             }}>
-                            You don't have any rooms yet. Let's add your first
+                            You don&apos;t have any rooms yet. Let&apos;s add your first
                             one and get your resort ready for bookings.
                         </p>
 

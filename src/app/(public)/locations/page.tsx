@@ -1,4 +1,5 @@
 import ScrollReveal from "@/components/reusable/ScrollReveal";
+import Image from "next/image";
 
 export default function LocationPage() {
   return (
@@ -161,10 +162,10 @@ export default function LocationPage() {
                 The Surrounding Beauty
               </h3>
               <p className="text-stone-600 mb-6 leading-relaxed">
-                Located in the heart of Bukidnon, U-GO Mountain Resort offers a perfect starting point to explore the province's natural wonders.
+                Located in the heart of Bukidnon, U-GO Mountain Resort offers a perfect starting point to explore the province&apos;s natural wonders.
               </p>
               <p className="text-stone-600 mb-8 leading-relaxed">
-                Whether you're taking a scenic drive through the winding mountain roads or visiting nearby agricultural attractions, every moment in Valencia City brings you closer to nature.
+                Whether you&apos;re taking a scenic drive through the winding mountain roads or visiting nearby agricultural attractions, every moment in Valencia City brings you closer to nature.
               </p>
 
               <div className="space-y-4">
@@ -192,10 +193,12 @@ export default function LocationPage() {
               </div>
             </div>
             <div className="h-[500px] rounded-3xl overflow-hidden shadow-lg relative">
-              <img
-                src="images/test1.jpg"
+              <Image
+                src="/images/test1.jpg"
                 alt="Mountain road landscape"
-                className="absolute inset-0 w-full h-full object-cover" />
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
         </section>

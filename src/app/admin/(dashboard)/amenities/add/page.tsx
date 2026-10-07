@@ -117,7 +117,7 @@ export default function AddAmenityPage() {
                                     color: "var(--color-muted)",
                                 }}>
                                 Can be a time range or a descriptive
-                                phrase such as "Best After 8:00 PM".
+                                phrase such as &quot;Best After 8:00 PM&quot;.
                             </p>
                         </div>
 

@@ -1,13 +1,16 @@
 import type { Room } from "@/types/room";
+import Image from "next/image";
 import Link from "next/link";
 function RoomCard({ room }: { room: Room }) {
     return (
         <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl bg-white shadow-lg md:flex">
-            <div className="h-[400px] md:w-1/2">
-                <img
+            <div className="relative h-[400px] md:w-1/2">
+                <Image
                     src={room.image}
                     alt="Mountain cottage surrounded by nature"
-                    className="h-full w-full object-cover" />
+                    fill
+                    className="object-cover"
+                />
             </div>
             <div className="flex flex-col justify-center p-8 md:w-1/2 lg:p-10">
                 <h3

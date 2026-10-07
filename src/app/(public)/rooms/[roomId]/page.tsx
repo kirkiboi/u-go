@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRoomById } from "@/services/room";
+import Image from "next/image";
 
 interface RoomPageProps {
     params: Promise<{
@@ -24,11 +25,12 @@ export default async function RoomPage({ params }: RoomPageProps) {
             <section className="px-6 pb-2 pt-12">
                 <div className="mx-auto max-w-7xl">
                     <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-center">
-                        <div className="aspect-[4/3] overflow-hidden rounded-2xl">
-                            <img
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+                            <Image
                                 src={room.image}
                                 alt={room.name}
-                                className="h-full w-full object-cover"
+                                fill
+                                className="object-cover"
                             />
                         </div>
                         <div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/reusable/ScrollReveal";
 import { getRooms } from "@/services/room";
+import Image from "next/image";
 
 export default async function RoomsPage() {
   const rooms = await getRooms();
@@ -51,10 +52,11 @@ export default async function RoomsPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="rounded-3xl overflow-hidden shadow-xl bg-white border border-[var(--color-border)] flex flex-col lg:flex-row">
           <div className="lg:w-3/5 h-[400px] lg:h-auto relative">
-            <img
+            <Image
               src={featuredRoom.image}
               alt={featuredRoom.name}
-              className="absolute inset-0 w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
 
             <div className="absolute top-4 left-4 bg-[var(--color-forest-800)] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
@@ -201,11 +203,12 @@ export default async function RoomsPage() {
                       ? "md:flex-row-reverse"
                       : "md:flex-row"
                       } bg-white rounded-2xl overflow-hidden shadow-sm border border-[var(--color-border)] hover:shadow-md transition-shadow`}>
-                    <div className="w-full md:w-1/2 h-64 md:h-[400px]">
-                      <img
+                    <div className="relative w-full md:w-1/2 h-64 md:h-[400px]">
+                      <Image
                         src={room.image}
                         alt={room.name}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </div>
 

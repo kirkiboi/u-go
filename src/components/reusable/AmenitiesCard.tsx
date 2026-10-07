@@ -1,3 +1,4 @@
+import Image from "next/image";
 type Amenity = {
     name: string;
     description: string;
@@ -8,12 +9,12 @@ function AmenityCard({ amenity }: { amenity: Amenity }) {
     return (
         <article
             className="group relative h-[360px] overflow-hidden rounded-2xl">
-            <img
+            <Image
                 src={amenity.image}
                 alt={amenity.name}
-                className="absolute inset-0 h-full w-full 
-                            object-cover object-center transition-transform 
-                            duration-700 group-hover:scale-105"/>
+                fill
+                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+            />
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
 

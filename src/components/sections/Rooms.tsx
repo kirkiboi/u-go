@@ -47,7 +47,7 @@ export default function Rooms({ rooms }: RoomsProps) {
                             color: "var(--color-stone-600)",
                         }}>
                         Find a comfortable retreat surrounded by the beauty
-                        of Valencia City's mountains.
+                        of Valencia City&apos;s mountains.
                     </p>
                 </div>
                 <div className="relative flex items-center justify-center">

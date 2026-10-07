@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAmenityById } from "@/services/amenity";
 import { editAmenity } from "./actions";
 import SaveEditAmenityButton from "@/components/admin/saveEditAmenityButton";
 import CancelEditAmenityButton from "@/components/admin/editAmenityButtonCancel";
+import Image from "next/image";
 
 interface EditAmenityPageProps {
     params: Promise<{
@@ -132,7 +132,7 @@ export default async function EditAmenityPage({
                                         color: "var(--color-muted)",
                                     }}>
                                     Can be a time range or a descriptive
-                                    phrase such as "Best After 8:00 PM".
+                                    phrase such as &quot;Best After 8:00 PM&quot;.
                                 </p>
                             </div>
                         </div>
@@ -147,11 +147,12 @@ export default async function EditAmenityPage({
                             </h2>
 
                             <div className="mt-4">
-                                <div className="overflow-hidden rounded-lg border">
-                                    <img
+                                <div className="relative h-64 overflow-hidden rounded-lg border">
+                                    <Image
                                         src={amenity.image}
                                         alt={`${amenity.name} amenity`}
-                                        className="h-64 w-full object-cover"
+                                        fill
+                                        className="object-cover"
                                     />
                                 </div>
 

@@ -28,7 +28,7 @@ export default async function AmenitiesPage() {
                             style={{
                                 color: "var(--color-muted)",
                             }}>
-                            You don't have any amenities yet. Let's add your
+                            You don&apos;t have any amenities yet. Let&apos;s add your
                             first one and make your resort ready for guests.
                         </p>
                         <Link
