@@ -9,8 +9,6 @@ export async function uploadImage(
         file,
         {
             access: "public",
-            oidcToken: process.env.VERCEL_OIDC_TOKEN,
-            storeId: process.env.BLOB_STORE_ID,
         }
     );
 
@@ -18,8 +16,5 @@ export async function uploadImage(
 }
 
 export async function deleteImage(imageUrl: string) {
-    await del(imageUrl, {
-        oidcToken: process.env.VERCEL_OIDC_TOKEN,
-        storeId: process.env.BLOB_STORE_ID,
-    });
+    await del(imageUrl);
 }

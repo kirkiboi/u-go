@@ -19,8 +19,6 @@ export async function addAmenity(formData: FormData) {
         image,
         {
             access: "public",
-            oidcToken: process.env.VERCEL_OIDC_TOKEN,
-            storeId: process.env.BLOB_STORE_ID,
         }
     );
 
