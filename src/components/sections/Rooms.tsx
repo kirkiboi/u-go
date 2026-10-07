@@ -4,31 +4,11 @@ import { useState } from "react";
 import RoomCard from "@/components/reusable/RoomCard";
 import type { Room } from "@/types/room";
 
-const rooms: Room[] = [
-    {
-        name: "Cabin House",
-        description:
-            "A cozy mountain escape for up to 3 guests, offering a peaceful atmosphere surrounded by trees and nature.",
-        price: "₱2,999",
-        image: "/images/ugo_cabinsandbonfire.jpg",
-    },
-    {
-        name: "Pinetree House",
-        description:
-            "A good for 6 people house designed for a relaxing escape, surrounded by pine trees, peaceful scenery, and the beauty of nature, with its own kitchen.",
-        price: "₱4,500",
-        image: "/images/ugo_house_outside.jpg",
-    },
-    {
-        name: "Mountain View Cottage",
-        description:
-            "A spacious getaway for up to 15 guests, perfect for groups seeking a relaxing stay surrounded by nature, peaceful scenery, and an exclusive swimming pool.",
-        price: "₱8,999",
-        image: "/images/ugo_houses_with_pool.jpg",
-    },
-];
+type RoomsProps = {
+    rooms: Room[];
+};
 
-export default function Rooms() {
+export default function Rooms({ rooms }: RoomsProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const currentRoom = rooms[currentIndex];
     const previousRoom = () => {
@@ -82,7 +62,8 @@ export default function Rooms() {
                             <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                d="M15 19l-7-7 7-7" />
+                                d="M15 19l-7-7 7-7"
+                            />
                         </svg>
                     </button>
                     <RoomCard room={currentRoom} />
@@ -112,9 +93,9 @@ export default function Rooms() {
                 <div className="mt-8 flex justify-center gap-2">
                     {rooms.map((room, index) => (
                         <button
-                            key={room.name}
+                            key={room.id}
                             onClick={() => setCurrentIndex(index)}
-                            aria-label={`View ${room.name} `}
+                            aria-label={`View ${room.name}`}
                             className="h-2 rounded-full transition-all duration-300 cursor-pointer"
                             style={{
                                 width: index === currentIndex ? "24px" : "8px",

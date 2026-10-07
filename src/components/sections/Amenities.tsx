@@ -1,34 +1,19 @@
 import AmenityCard from "@/components/reusable/AmenitiesCard";
 import Link from "next/link";
 
-const amenities = [
-    {
-        name: "Swimming Pool",
-        description:
-            "Take a refreshing swim while enjoying the peaceful mountain surroundings.",
-        image: "/images/swimming_pool.jpg",
-    },
-    {
-        name: "Bonfire",
-        description:
-            "Gather around the crackling fire for warmth, late-night conversations, and starlit ambiance.",
-        image: "/images/amenities_bonfire.jpg",
-    },
-    {
-        name: "Cottage Town",
-        description:
-            "Relax and explore our collection of comfortable cottages surrounded by nature.",
-        image: "/images/ugo_house_outside.jpg",
-    },
-    {
-        name: "Mountain Views",
-        description:
-            "Wake up to breathtaking panoramic vistas overlooking the rolling landscapes of Valencia City.",
-        image: "/images/amenities_mountain_views.jpg",
-    },
-];
+type Amenity = {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    timeDescription: string;
+};
 
-export default function Amenities() {
+type AmenitiesProps = {
+    amenities: Amenity[];
+};
+
+export default function Amenities({ amenities }: AmenitiesProps) {
     return (
         <section
             id="amenities"
@@ -61,31 +46,43 @@ export default function Amenities() {
                 <div className="grid gap-6 md:grid-cols-2">
                     {amenities.map((amenity) => (
                         <AmenityCard
-                            key={amenity.name}
-                            amenity={amenity} />
+                            key={amenity.id}
+                            amenity={{
+                                name: amenity.name,
+                                description: amenity.description,
+                                image: amenity.image,
+                            }}
+                        />
                     ))}
                 </div>
                 <div className="mt-12 flex flex-col items-center justify-between gap-6 rounded-2xl border border-white/10 px-8 py-8 text-center md:flex-row md:text-left">
                     <div>
-                        <h3 className="mt-2 text-2xl font-semibold text-white md:text-3xl" style={{ fontFamily: "var(--font-display)", }}>
+                        <h3
+                            className="mt-2 text-2xl font-semibold text-white md:text-3xl"
+                            style={{
+                                fontFamily: "var(--font-display)",
+                            }}>
                             See it for yourself
                         </h3>
-                        <p className="mt-2 max-w-xl text-sm leading-relaxed" style={{ color: "var(--color-forest-200)", }}>
-                            Explore the surroundings, discover hidden corners, and experience U-Go Mountain Resort as if you were already here.
+
+                        <p
+                            className="mt-2 max-w-xl text-sm leading-relaxed"
+                            style={{
+                                color: "var(--color-forest-200)",
+                            }}>
+                            Explore the surroundings, discover hidden corners,
+                            and experience U-Go Mountain Resort as if you were
+                            already here.
                         </p>
                     </div>
                     <Link
                         href="/amenities"
-                        className="group inline-flex shrink-0 items-center gap-3 rounded-full
-                        border px-6 py-3 text-sm font-semibold transition-all duration-300
-                        hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-forest-900)]"
+                        className="group inline-flex shrink-0 items-center gap-3 rounded-full border px-6 py-3 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-forest-900)]"
                         style={{
                             borderColor: "var(--color-forest-300)",
                             color: "var(--color-forest-300)",
                         }}>
-                        <span>
-                            Take a walk
-                        </span>
+                        <span>Take a walk</span>
 
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +94,8 @@ export default function Amenities() {
                             <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                d="M5 12h14m-6-6 6 6-6 6" />
+                                d="M5 12h14m-6-6 6 6-6 6"
+                            />
                         </svg>
                     </Link>
                 </div>
