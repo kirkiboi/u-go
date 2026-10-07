@@ -194,92 +194,94 @@ export default async function RoomsPage() {
           <ScrollReveal>
             <div className="grid grid-cols-1 gap-12">
               {otherRooms.map((room, index) => (
-                <div
-                  key={room.id}
-                  className={`flex flex-col ${index % 2 === 1
-                    ? "md:flex-row-reverse"
-                    : "md:flex-row"
-                    } bg-white rounded-2xl overflow-hidden shadow-sm border border-[var(--color-border)] hover:shadow-md transition-shadow`}>
-                  <div className="w-full md:w-1/2 h-64 md:h-[400px]">
-                    <img
-                      src={room.image}
-                      alt={room.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                <ScrollReveal key={room.id}>
+                  <div
+                    key={room.id}
+                    className={`flex flex-col ${index % 2 === 1
+                      ? "md:flex-row-reverse"
+                      : "md:flex-row"
+                      } bg-white rounded-2xl overflow-hidden shadow-sm border border-[var(--color-border)] hover:shadow-md transition-shadow`}>
+                    <div className="w-full md:w-1/2 h-64 md:h-[400px]">
+                      <img
+                        src={room.image}
+                        alt={room.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
 
-                  <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
-                    <div className="flex justify-between items-start mb-4">
-                      <h4
-                        className="text-2xl font-bold"
-                        style={{
-                          fontFamily:
-                            "var(--font-display)",
-                          color:
-                            "var(--color-forest-900)",
-                        }}>
-                        {room.name}
-                      </h4>
+                    <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
+                      <div className="flex justify-between items-start mb-4">
+                        <h4
+                          className="text-2xl font-bold"
+                          style={{
+                            fontFamily:
+                              "var(--font-display)",
+                            color:
+                              "var(--color-forest-900)",
+                          }}>
+                          {room.name}
+                        </h4>
 
-                      <p className="text-xl font-semibold text-[var(--color-forest-800)] text-right">
-                        {room.price}
-                        <span className="text-sm font-normal text-stone-500 block md:inline">
-                          {" "}
-                          / night
-                        </span>
+                        <p className="text-xl font-semibold text-[var(--color-forest-800)] text-right">
+                          {room.price}
+                          <span className="text-sm font-normal text-stone-500 block md:inline">
+                            {" "}
+                            / night
+                          </span>
+                        </p>
+                      </div>
+
+                      <p className="text-stone-600 mb-6 flex-grow">
+                        {room.description}
                       </p>
-                    </div>
 
-                    <p className="text-stone-600 mb-6 flex-grow">
-                      {room.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-x-6 gap-y-3 mb-8 text-sm text-stone-700">
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold">
-                          {room.maxGuests}
-                        </span>{" "}
-                        Guests
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold">
-                          {room.beds}
-                        </span>{" "}
-                        {room.bedType ?? "Beds"}
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold">
-                          {room.bathrooms}
-                        </span>{" "}
-                        Bathrooms
-                      </div>
-
-                      {room.hasKitchen && (
+                      <div className="flex flex-wrap gap-x-6 gap-y-3 mb-8 text-sm text-stone-700">
                         <div className="flex items-center gap-1">
-                          Kitchen included
+                          <span className="font-semibold">
+                            {room.maxGuests}
+                          </span>{" "}
+                          Guests
                         </div>
-                      )}
-                    </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 border-t border-[var(--color-border)] pt-6">
-                      <Link
-                        href="/booking"
-                        className="flex-1 text-center bg-[var(--color-forest-800)] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[var(--color-forest-700)] transition-colors">
-                        Book This Room
-                      </Link>
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold">
+                            {room.beds}
+                          </span>{" "}
+                          {room.bedType ?? "Beds"}
+                        </div>
 
-                      <Link
-                        href={`/rooms/${room.id}`}
-                        className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-semibold border border-[var(--color-border)] text-stone-700 hover:bg-stone-50 transition-colors">
-                        <span>
-                          Take a look inside
-                        </span>
-                      </Link>
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold">
+                            {room.bathrooms}
+                          </span>{" "}
+                          Bathrooms
+                        </div>
+
+                        {room.hasKitchen && (
+                          <div className="flex items-center gap-1">
+                            Kitchen included
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-4 border-t border-[var(--color-border)] pt-6">
+                        <Link
+                          href="/booking"
+                          className="flex-1 text-center bg-[var(--color-forest-800)] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[var(--color-forest-700)] transition-colors">
+                          Book This Room
+                        </Link>
+
+                        <Link
+                          href={`/rooms/${room.id}`}
+                          className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-semibold border border-[var(--color-border)] text-stone-700 hover:bg-stone-50 transition-colors">
+                          <span>
+                            Take a look inside
+                          </span>
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </ScrollReveal>

@@ -1,3 +1,5 @@
+import ScrollReveal from "@/components/reusable/ScrollReveal";
+
 export default function LocationPage() {
   return (
     <main className="min-h-screen pt-24 pb-16 bg-[var(--color-bg)]">
@@ -151,51 +153,53 @@ export default function LocationPage() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h3 className="text-3xl font-bold mb-6" style={{ fontFamily: "var(--font-display)", color: "var(--color-forest-900)" }}>
-              The Surrounding Beauty
-            </h3>
-            <p className="text-stone-600 mb-6 leading-relaxed">
-              Located in the heart of Bukidnon, U-Go Mountain Resort offers a perfect starting point to explore the province's natural wonders.
-            </p>
-            <p className="text-stone-600 mb-8 leading-relaxed">
-              Whether you're taking a scenic drive through the winding mountain roads or visiting nearby agricultural attractions, every moment in Valencia City brings you closer to nature.
-            </p>
+      <ScrollReveal>
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h3 className="text-3xl font-bold mb-6" style={{ fontFamily: "var(--font-display)", color: "var(--color-forest-900)" }}>
+                The Surrounding Beauty
+              </h3>
+              <p className="text-stone-600 mb-6 leading-relaxed">
+                Located in the heart of Bukidnon, U-Go Mountain Resort offers a perfect starting point to explore the province's natural wonders.
+              </p>
+              <p className="text-stone-600 mb-8 leading-relaxed">
+                Whether you're taking a scenic drive through the winding mountain roads or visiting nearby agricultural attractions, every moment in Valencia City brings you closer to nature.
+              </p>
 
-            <div className="space-y-4">
-              <h4 className="font-semibold text-[var(--color-forest-900)]">Nearby Points of Interest:</h4>
-              <ul className="space-y-3">
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-[var(--color-forest-500)] mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-stone-700">Lake Apo <span className="text-stone-400 text-sm ml-2">(45 mins drive)</span></span>
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-[var(--color-forest-500)] mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-stone-700">Valencia City Center <span className="text-stone-400 text-sm ml-2">(20 mins drive)</span></span>
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 text-[var(--color-forest-500)] mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-stone-700">Local Pine Forest Trails <span className="text-stone-400 text-sm ml-2">(10 mins drive)</span></span>
-                </li>
-              </ul>
+              <div className="space-y-4">
+                <h4 className="font-semibold text-[var(--color-forest-900)]">Nearby Points of Interest:</h4>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <svg className="w-5 h-5 text-[var(--color-forest-500)] mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-stone-700">Lake Apo <span className="text-stone-400 text-sm ml-2">(45 mins drive)</span></span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-5 h-5 text-[var(--color-forest-500)] mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-stone-700">Valencia City Center <span className="text-stone-400 text-sm ml-2">(20 mins drive)</span></span>
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="w-5 h-5 text-[var(--color-forest-500)] mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-stone-700">Local Pine Forest Trails <span className="text-stone-400 text-sm ml-2">(10 mins drive)</span></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="h-[500px] rounded-3xl overflow-hidden shadow-lg relative">
+              <img
+                src="images/test1.jpg"
+                alt="Mountain road landscape"
+                className="absolute inset-0 w-full h-full object-cover" />
             </div>
           </div>
-          <div className="h-[500px] rounded-3xl overflow-hidden shadow-lg relative">
-            <img
-              src="images/test1.jpg"
-              alt="Mountain road landscape"
-              className="absolute inset-0 w-full h-full object-cover" />
-          </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
     </main>
   );
 }
