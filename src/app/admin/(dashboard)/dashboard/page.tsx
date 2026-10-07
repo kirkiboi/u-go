@@ -82,7 +82,7 @@ export default function AdminDashboard() {
                                 <h2 className="text-lg font-semibold" style={{ color: "var(--color-forest-900)" }}>Quick Actions</h2>
                             </div>
                             <div className="p-4 space-y-3">
-                                <Link href="/admin/rooms/add-rooms" className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-gray-50" style={{ borderColor: "var(--color-border)" }}>
+                                <Link href="/admin/rooms/add" className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-gray-50" style={{ borderColor: "var(--color-border)" }}>
                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: "var(--color-forest-100)", color: "var(--color-forest-700)" }}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                                     </div>
