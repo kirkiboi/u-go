@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { getRoomById, updateRoom } from "@/services/room";
-import { uploadImage } from "@/services/imageService";
+import { uploadImage, deleteImage } from "@/services/imageService";
 import { requireAdmin } from "@/lib/authorization";
 
 export async function editRoom(roomId: number, formData: FormData) {
@@ -42,6 +42,7 @@ export async function editRoom(roomId: number, formData: FormData) {
 
     if (imageFile instanceof File && imageFile.size > 0) {
         imageUrl = await uploadImage("rooms", imageFile);
+        await deleteImage(existingRoom.image);
     }
 
     await updateRoom(roomId, {
