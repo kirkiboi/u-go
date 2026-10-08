@@ -51,3 +51,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}

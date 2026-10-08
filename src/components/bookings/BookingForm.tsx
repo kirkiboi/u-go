@@ -10,8 +10,6 @@ type BookingFormProps = {
 export default function BookingForm({ rooms }: BookingFormProps) {
 
     const [step, setStep] = useState(1);
-    const [adults, setAdults] = useState(2);
-    const [children, setChildren] = useState(0);
     const [checkIn, setCheckIn] = useState("2026-10-15");
     const [checkOut, setCheckOut] = useState("2026-10-17");
     const [firstName, setFirstName] = useState("");
@@ -87,17 +85,33 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                 </h3>
                                 <div className="space-y-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-stone-700 mb-2">Select Accommodation</label>
-                                        <select
-                                            value={selectedRoomId}
-                                            onChange={(e) => setSelectedRoomId(Number(e.target.value))}
-                                            className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none transition-colors hover: cursor-pointer">
-                                            {rooms.map((room) => (
-                                                <option key={room.id} value={room.id}>
-                                                    {room.name} - ₱{room.price}/night
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <label className="block text-sm font-medium text-stone-700 mb-2">
+                                            Select Accommodation
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                value={selectedRoomId}
+                                                onChange={(e) => setSelectedRoomId(Number(e.target.value))}
+                                                className="w-full appearance-none border-stone-300 rounded-lg p-3 pr-10 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none transition-colors hover:cursor-pointer">
+                                                {rooms.map((room) => (
+                                                    <option key={room.id} value={room.id}>
+                                                        {room.name} - ₱{room.price}/night
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <svg
+                                                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="m6 9 6 6 6-6"
+                                                />
+                                            </svg>
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="flex flex-col">
@@ -149,26 +163,6 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                                 type="date"
                                                 className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none"
                                             />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                        <div className="col-span-2 md:col-span-2">
-                                            <label className="block text-sm font-medium text-stone-700 mb-2">Adults</label>
-                                            <select
-                                                value={adults}
-                                                onChange={(e) => setAdults(Number(e.target.value))}
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none transition-colors">
-                                                {[1, 2, 3, 4, 5, 6].map(n => <option key={n}>{n}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="col-span-2 md:col-span-2">
-                                            <label className="block text-sm font-medium text-stone-700 mb-2">Children</label>
-                                            <select
-                                                value={children}
-                                                onChange={(e) => setChildren(Number(e.target.value))}
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none transition-colors">
-                                                {[0, 1, 2, 3, 4].map(n => <option key={n}>{n}</option>)}
-                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -255,19 +249,7 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                             {selectedRoom.name}
                                         </h4>
                                         <div className="flex items-center text-sm text-stone-500 mt-1">
-                                            <svg
-                                                className="w-4 h-4 mr-1"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                                                />
-                                            </svg>
-                                            {adults} Adults, {children} Children
+                                            Max Guests: {selectedRoom.maxGuests}
                                         </div>
                                     </div>
                                 )}
