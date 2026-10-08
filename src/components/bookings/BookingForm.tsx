@@ -20,6 +20,17 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const [phone, setPhone] = useState("");
     const [specialRequests, setSpecialRequests] = useState("");
 
+    const today = new Date();
+    today.setDate(today.getDate() + 1);
+    const minimumCheckInDate = today
+        .toISOString()
+        .split("T")[0];
+    const minimumCheckOut = new Date(checkIn);
+    minimumCheckOut.setDate(minimumCheckOut.getDate() + 1);
+    const minimumCheckOutDate = minimumCheckOut
+        .toISOString()
+        .split("T")[0];
+
     const [selectedRoomId, setSelectedRoomId] = useState(
         rooms[0]?.id ?? 0
     );
@@ -89,19 +100,55 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                         </select>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-stone-700 mb-2">Check-in Date</label>
-                                            <input value={checkIn}
-                                                onChange={(e) => setCheckIn(e.target.value)}
+                                        <div className="flex flex-col">
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                Check-in Date
+                                            </label>
+                                            <input
+                                                value={checkIn}
+                                                onChange={(e) => {
+                                                    const newCheckIn =
+                                                        e.target.value;
+                                                    setCheckIn(newCheckIn);
+                                                    const nextDay =
+                                                        new Date(newCheckIn);
+                                                    nextDay.setDate(
+                                                        nextDay.getDate() + 1
+                                                    );
+                                                    const newMinimumCheckOut =
+                                                        nextDay
+                                                            .toISOString()
+                                                            .split("T")[0];
+                                                    if (
+                                                        checkOut <
+                                                        newMinimumCheckOut
+                                                    ) {
+                                                        setCheckOut(
+                                                            newMinimumCheckOut
+                                                        );
+                                                    }
+                                                }}
                                                 type="date"
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none" />
+                                                min={minimumCheckInDate}
+                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none"
+                                            />
+                                            <p className="mt-1 text-xs text-stone-500 leading-relaxed">
+                                                Check-in must be a day after today. We thoroughly prepare the space for your visit.
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-stone-700 mb-2">Check-out Date</label>
-                                            <input value={checkOut}
-                                                onChange={(e) => setCheckOut(e.target.value)}
+                                            <input
+                                                value={checkOut}
+                                                onChange={(e) =>
+                                                    setCheckOut(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                min={minimumCheckOutDate}
                                                 type="date"
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none" />
+                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none"
+                                            />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
