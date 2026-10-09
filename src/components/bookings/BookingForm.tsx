@@ -17,6 +17,7 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [specialRequests, setSpecialRequests] = useState("");
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const today = new Date();
     today.setDate(today.getDate() + 1);
@@ -45,6 +46,48 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const subtotal = selectedRoom
         ? Number(selectedRoom.price) * nights
         : 0;
+    const handleConfirmBooking = () => {
+        const newErrors: Record<string, string> = {};
+        if (!selectedRoom) {
+            newErrors.room = "Please select an accommodation.";
+        }
+        if (!checkIn || !checkOut) {
+            newErrors.dates = "Please select both dates.";
+        } else {
+            const checkInDate = new Date(`${checkIn}T00:00:00`);
+            const checkOutDate = new Date(`${checkOut}T00:00:00`);
+            const tomorrow = new Date();
+            tomorrow.setHours(0, 0, 0, 0);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            if (checkInDate < tomorrow) {
+                newErrors.checkIn = "Check-in must be at least tomorrow.";
+            }
+            if (checkOutDate <= checkInDate) {
+                newErrors.checkOut =
+                    "Check-out must be at least one day after check-in.";
+            }
+        }
+        if (!firstName.trim()) {
+            newErrors.firstName = "Please enter your first name.";
+        }
+        if (!lastName.trim()) {
+            newErrors.lastName = "Please enter your last name.";
+        }
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email.trim()) {
+            newErrors.email = "Please enter your email address.";
+        } else if (!emailPattern.test(email.trim())) {
+            newErrors.email = "Please enter a valid email address.";
+        }
+        if (!phone.trim()) {
+            newErrors.phone = "Please enter your phone number.";
+        }
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) {
+            return;
+        }
+    };
+
     return (
         <main className="min-h-screen pt-24 pb-16 bg-[var(--color-bg)]">
             <section className="px-4 py-12 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto">
@@ -274,8 +317,19 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                 <span className="font-bold text-lg text-stone-800">Total Price</span>
                                 <span className="font-bold text-2xl text-[var(--color-forest-900)]">₱{subtotal.toLocaleString("en-PH")}</span>
                             </div>
-
-                            <button className="w-full bg-[var(--color-forest-800)] text-white py-4 rounded-xl font-bold text-lg hover:bg-[var(--color-forest-700)] transition-colors shadow-lg hover:shadow-xl active:scale-[0.98]">
+                            {Object.keys(errors).length > 0 && (
+                                <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                                    <ul className="list-disc space-y-1 pl-5">
+                                        {Object.values(errors).map((message, index) => (
+                                            <li key={index}>{message}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            <button
+                                type="button"
+                                onClick={handleConfirmBooking}
+                                className="w-full bg-[var(--color-forest-800)] text-white py-4 rounded-xl font-bold text-lg hover:bg-[var(--color-forest-700)] transition-colors shadow-lg hover:shadow-xl active:scale-[0.98] hover:cursor-pointer">
                                 Confirm Booking
                             </button>
                         </div>

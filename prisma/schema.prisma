@@ -21,7 +21,7 @@ model Room {
   id             Int      @id @default(autoincrement())
   name           String
   description    String
-  price          String
+  price          Int
   image          String
   maxGuests      Int
   rooms          Int?
@@ -36,6 +36,7 @@ model Room {
   hasAC          Boolean  @default(false)
   checkInTime    String
   checkOutTime   String
+  bookings       Booking[]
 }
 
 model Amenity {
@@ -44,4 +45,38 @@ model Amenity {
   description    String
   image          String
   timeDescription           String
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
+
+model Booking {
+  id            Int           @id @default(autoincrement())
+  booking_ref   String        @unique
+  room_id       Int
+  room          Room          @relation(fields: [room_id], references: [id], onDelete: Restrict)
+  guest_fname   String
+  guest_lname   String
+  guest_email   String
+  guest_phone   String
+  check_in      DateTime      @db.Date
+  check_out     DateTime      @db.Date
+  room_price    Int
+  total         Int
+  status        BookingStatus @default(CONFIRMED)
+  payment_status PaymentStatus @default(PENDING)
+  special_req   String?
+  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime      @updatedAt @db.Timestamptz(6)
+  @@index([room_id, check_in, check_out])
+  @@index([guest_email])
+  @@index([status, payment_status])
 }
