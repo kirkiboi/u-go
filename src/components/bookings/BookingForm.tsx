@@ -10,8 +10,8 @@ type BookingFormProps = {
 export default function BookingForm({ rooms }: BookingFormProps) {
 
     const [step, setStep] = useState(1);
-    const [checkIn, setCheckIn] = useState("2026-10-15");
-    const [checkOut, setCheckOut] = useState("2026-10-17");
+    const [checkIn, setCheckIn] = useState("");
+    const [checkOut, setCheckOut] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
@@ -24,11 +24,15 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const minimumCheckInDate = today
         .toISOString()
         .split("T")[0];
-    const minimumCheckOut = new Date(checkIn);
-    minimumCheckOut.setDate(minimumCheckOut.getDate() + 1);
-    const minimumCheckOutDate = minimumCheckOut
-        .toISOString()
-        .split("T")[0];
+
+
+    const minimumCheckOutDate = checkIn
+        ? (() => {
+            const date = new Date(checkIn);
+            date.setDate(date.getDate() + 1);
+            return date.toISOString().split("T")[0];
+        })()
+        : "";
 
     const [selectedRoomId, setSelectedRoomId] = useState(
         rooms[0]?.id ?? 0
