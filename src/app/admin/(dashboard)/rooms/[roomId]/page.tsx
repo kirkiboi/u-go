@@ -138,14 +138,25 @@ export default async function RoomDetailsPage({
                                     </p>
                                 </div>
                             )}
-                            <div>
-                                <p className="text-xs text-gray-500">
-                                    Bathrooms
-                                </p>
-                                <p className="mt-1 font-semibold">
-                                    {room.bathrooms}
-                                </p>
-                            </div>
+                            {room.bathrooms !== null && room.bathrooms !== undefined ? (
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Bathroom
+                                    </p>
+                                    <p className="mt-1 font-semibold">
+                                        {room.bathrooms}
+                                    </p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Bathroom
+                                    </p>
+                                    <p className="mt-1 font-semibold">
+                                        0
+                                    </p>
+                                </div>
+                            )}
                             <div>
                                 <p className="text-xs text-gray-500">
                                     Bed Type

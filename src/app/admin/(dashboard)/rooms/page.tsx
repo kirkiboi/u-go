@@ -103,16 +103,16 @@ export default async function RoomsPage() {
 
                                                 <span>
                                                     <strong>
-                                                        {room.bedrooms}
+                                                        {room.checkInTime}
                                                     </strong>{" "}
-                                                    bedrooms
+                                                    Check In
                                                 </span>
 
                                                 <span>
                                                     <strong>
-                                                        {room.bathrooms}
+                                                        {room.checkOutTime}
                                                     </strong>{" "}
-                                                    bathrooms
+                                                    Check Out
                                                 </span>
 
                                                 <span
