@@ -2,6 +2,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { Room } from "@/types/room";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 
 type BookingFormProps = {
     rooms: Room[];
@@ -53,7 +55,7 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const handleConfirmBooking = () => {
         const newErrors: Record<string, string> = {};
         if (!selectedRoom) {
-            newErrors.room = "Please select an accommodation.";
+            newErrors.room = "Please provide your stay dates.";
         }
         if (!checkIn || !checkOut) {
             newErrors.dates = "Please select both dates.";
@@ -253,12 +255,27 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-stone-700 mb-2">Phone Number</label>
-                                            <input
-                                                type="tel"
-                                                placeholder="+63 912 345 6789"
+                                            <PhoneInput
+                                                defaultCountry="ph"
                                                 value={phone}
-                                                onChange={(e) => setPhone(e.target.value)}
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none" />
+                                                onChange={(phone) => setPhone(phone)}
+                                                placeholder="912 345 6789"
+                                                className="phone-input-wrapper w-full"
+                                                inputClassName="!w-full !h-auto !flex-1 !border-0 !bg-transparent !p-3 !text-base !text-stone-900 !outline-none !shadow-none"
+                                                countrySelectorStyleProps={{
+                                                    buttonClassName:
+                                                        "!h-full !border-0 !bg-transparent !px-3 !rounded-l-lg",
+                                                    dropdownStyleProps: {
+                                                        className: "!text-sm",
+                                                    },
+                                                }}
+                                                style={{
+                                                    width: "100%",
+                                                    border: "1px solid #d6d3d1",
+                                                    borderRadius: "0.5rem",
+                                                    overflow: "visible",
+                                                }}
+                                            />
                                         </div>
                                     </div>
                                     <div>
@@ -313,13 +330,21 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-stone-600">Length of stay</span>
-                                    <span className="font-semibold text-stone-800">{nights} {nights === 1 ? "night" : "nights"}</span>
+                                    {checkIn && checkOut && (
+                                        <span className="font-semibold text-stone-800">
+                                            {nights} {nights === 1 ? "night" : "nights"}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
 
                             <div className="flex justify-between items-center mb-8">
                                 <span className="font-bold text-lg text-stone-800">Total Price</span>
-                                <span className="font-bold text-2xl text-[var(--color-forest-900)]">₱{subtotal.toLocaleString("en-PH")}</span>
+                                {checkIn && checkOut && (
+                                    <span className="font-bold text-2xl text-[var(--color-forest-900)]">
+                                        ₱{subtotal.toLocaleString("en-PH")}
+                                    </span>
+                                )}
                             </div>
                             {Object.keys(errors).length > 0 && (
                                 <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
