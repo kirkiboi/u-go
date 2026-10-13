@@ -20,6 +20,9 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const [phone, setPhone] = useState("");
     const [specialRequests, setSpecialRequests] = useState("");
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [apiError, setApiError] = useState("");
+    const [bookingMessage, setBookingMessage] = useState("");
 
     const today = new Date();
     today.setDate(today.getDate() + 1);
@@ -52,10 +55,13 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const subtotal = selectedRoom
         ? Number(selectedRoom.price) * nights
         : 0;
-    const handleConfirmBooking = () => {
+    const handleConfirmBooking = async () => {
+        if (isSubmitting) return;
+        setApiError("");
+        setBookingMessage("");
         const newErrors: Record<string, string> = {};
         if (!selectedRoom) {
-            newErrors.room = "Please provide your stay dates.";
+            newErrors.room = "Please select an accommodation.";
         }
         if (!checkIn || !checkOut) {
             newErrors.dates = "Please select both dates.";
@@ -89,8 +95,50 @@ export default function BookingForm({ rooms }: BookingFormProps) {
             newErrors.phone = "Please enter your phone number.";
         }
         setErrors(newErrors);
-        if (Object.keys(newErrors).length > 0) {
-            return;
+
+        if (Object.keys(newErrors).length > 0) return;
+
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch("/api/bookings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    roomId: selectedRoom!.id,
+                    firstName: firstName.trim(),
+                    lastName: lastName.trim(),
+                    email: email.trim(),
+                    phone: phone.trim(),
+                    checkIn,
+                    checkOut,
+                    specialRequests,
+                }),
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                setApiError(
+                    result.error || "Unable to create your booking. Please try again."
+                );
+                return;
+            }
+            if (typeof result.checkoutUrl !== "string") {
+                setApiError(
+                    "Payment checkout could not be opened. Please contact the resort before trying again."
+                );
+                return;
+            }
+            window.location.assign(result.checkoutUrl);
+
+        } catch (error) {
+            console.error("Booking submission failed:", error);
+            setApiError(
+                "Unable to connect to the server. Please try again."
+            );
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -355,11 +403,22 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                     </ul>
                                 </div>
                             )}
+                            {apiError && (
+                                <p role="alert" className="mb-4 text-sm text-red-600">
+                                    {apiError}
+                                </p>
+                            )}
+                            {bookingMessage && (
+                                <p role="status" className="mb-4 text-sm text-green-700">
+                                    {bookingMessage}
+                                </p>
+                            )}
                             <button
                                 type="button"
                                 onClick={handleConfirmBooking}
-                                className="w-full bg-[var(--color-forest-800)] text-white py-4 rounded-xl font-bold text-lg hover:bg-[var(--color-forest-700)] transition-colors shadow-lg hover:shadow-xl active:scale-[0.98] hover:cursor-pointer">
-                                Confirm Booking
+                                disabled={isSubmitting}
+                                className="your-existing-button-classes">
+                                {isSubmitting ? "Creating Booking..." : "Confirm Booking"}
                             </button>
                         </div>
                     </div>

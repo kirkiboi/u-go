@@ -48,6 +48,7 @@ model Amenity {
 }
 
 enum BookingStatus {
+  PENDING
   CONFIRMED
   CANCELLED
   COMPLETED
@@ -55,6 +56,7 @@ enum BookingStatus {
 enum PaymentStatus {
   PENDING
   PAID
+  FAILED
   REFUNDED
 }
 
@@ -71,11 +73,13 @@ model Booking {
   check_out     DateTime      @db.Date
   room_price    Int
   total         Int
-  status        BookingStatus @default(CONFIRMED)
+  status BookingStatus @default(PENDING)
   payment_status PaymentStatus @default(PENDING)
   special_req   String?
   createdAt     DateTime      @default(now()) @db.Timestamptz(6)
   updatedAt     DateTime      @updatedAt @db.Timestamptz(6)
+  paymongo_session_id String?   @unique
+  payment_expires_at  DateTime? @db.Timestamptz(6)
   @@index([room_id, check_in, check_out])
   @@index([guest_email])
   @@index([status, payment_status])
