@@ -166,13 +166,31 @@ export async function POST(request: Request) {
                 { status: 200 }
             );
         }
-        await prisma.booking.update({
-            where: { id: booking.id },
+        const confirmation = await prisma.booking.updateMany({
+            where: {
+                id: booking.id,
+                status: "PENDING",
+                payment_status: "PENDING",
+                OR: [
+                    { payment_expires_at: null },
+                    { payment_expires_at: { gte: new Date() } },
+                ],
+            },
             data: {
                 status: "CONFIRMED",
                 payment_status: "PAID",
             },
         });
+        if (confirmation.count !== 1) {
+            console.warn("Payment received but booking was not confirmed.", {
+                bookingRef,
+                reason: "Booking state changed or payment deadline passed.",
+            });
+            return NextResponse.json(
+                { received: true, requiresReview: true },
+                { status: 200 }
+            );
+        }
         return NextResponse.json(
             {
                 received: true,

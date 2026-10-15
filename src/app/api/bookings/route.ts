@@ -107,7 +107,7 @@ export async function POST(request: Request) {
             (1000 * 60 * 60 * 24);
         const now = new Date();
         const paymentExpiresAt = new Date(
-            now.getTime() + 15 * 60 * 1000
+            now.getTime() + 10 * 60 * 1000
         );
 
         const booking = await prisma.$transaction(
