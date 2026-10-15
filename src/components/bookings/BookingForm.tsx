@@ -417,7 +417,12 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                 type="button"
                                 onClick={handleConfirmBooking}
                                 disabled={isSubmitting}
-                                className="your-existing-button-classes">
+                                className="w-full bg-[var(--color-forest-800)] text-white py-4 rounded-xl font-bold text-lg hover:bg-[var(--color-forest-700)] transition-colors shadow-lg hover:shadow-xl active:scale-[0.98] hover:cursor-pointer"
+                                style={{
+                                    background:
+                                        "var(--color-forest-600)",
+                                    color: "white",
+                                }}>
                                 {isSubmitting ? "Creating Booking..." : "Confirm Booking"}
                             </button>
                         </div>

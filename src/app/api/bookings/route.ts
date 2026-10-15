@@ -4,11 +4,9 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
-
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-
         const roomId = Number(body.roomId);
         const firstName =
             typeof body.firstName === "string" ? body.firstName.trim() : "";
@@ -26,7 +24,6 @@ export async function POST(request: Request) {
             typeof body.specialRequests === "string"
                 ? body.specialRequests.trim()
                 : "";
-
         const validDate = (value: string): boolean => {
             if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
             const date = new Date(`${value}T00:00:00.000Z`);
@@ -35,8 +32,6 @@ export async function POST(request: Request) {
                 date.toISOString().slice(0, 10) === value
             );
         };
-
-
 
         if (!Number.isSafeInteger(roomId) || roomId < 1) {
             return NextResponse.json(
@@ -217,7 +212,7 @@ export async function POST(request: Request) {
                                 ],
                                 description: `Accommodation booking ${booking.booking_ref}`,
                                 reference_number: booking.booking_ref,
-                                success_url: `${appUrl}/booking?payment=returned&ref=${booking.booking_ref}`,
+                                success_url: `${appUrl}/booking/confirmation?ref=${booking.booking_ref}`,
                                 cancel_url: `${appUrl}/booking?payment=cancelled&ref=${booking.booking_ref}`,
                                 send_email_receipt: true,
                             },
@@ -227,7 +222,6 @@ export async function POST(request: Request) {
             );
 
             const checkoutResult = await checkoutResponse.json();
-
             const checkoutSessionId = checkoutResult?.data?.id;
             const checkoutUrl = checkoutResult?.data?.attributes?.checkout_url;
 
