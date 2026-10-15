@@ -1,18 +1,18 @@
-import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { bookingRateLimit } from "@/lib/rateLimit";
+import { NextResponse, type NextRequest } from "next/server";
+import { getClientIp } from "@/lib/clientIP";
 
 export const runtime = "nodejs";
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
-        const forwardedFor = request.headers.get("x-forwarded-for");
-        const clientIp = forwardedFor?.split(",")[0]?.trim();
+        const clientIp = getClientIp(request);
         if (!clientIp) {
             return NextResponse.json(
                 { error: "Unable to identify your connection." },
-                { status: 400 }
+                { status: 503 }
             );
         }
 
