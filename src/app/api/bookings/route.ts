@@ -256,22 +256,24 @@ export async function POST(request: NextRequest) {
                 typeof checkoutSessionId !== "string" ||
                 typeof checkoutUrl !== "string"
             ) {
-                console.error(
-                    "PayMongo checkout creation failed:",
-                    checkoutResult
-                );
-
-                await prisma.booking.update({
-                    where: { id: booking.id },
-                    data: {
-                        status: "CANCELLED",
-                        payment_status: "FAILED",
-                        payment_expires_at: new Date(),
-                    },
-                });
-
+                console.error("PayMongo checkout creation failed:", checkoutResult);
+                try {
+                    await prisma.booking.update({
+                        where: { id: booking.id },
+                        data: {
+                            status: "CANCELLED",
+                            payment_status: "FAILED",
+                            payment_expires_at: new Date(),
+                        },
+                    });
+                } catch (cleanupError) {
+                    console.error(
+                        `CRITICAL: Failed to cleanup booking ${booking.id} after PayMongo rejection:`,
+                        cleanupError
+                    );
+                }
                 return NextResponse.json(
-                    { error: "Unable to start payment. Please try again." },
+                    { error: "Payment gateway error. Please try again." },
                     { status: 502 }
                 );
             }
@@ -299,19 +301,14 @@ export async function POST(request: NextRequest) {
             );
         } catch (paymentError) {
             console.error(
-                "PayMongo checkout request failed:",
-                paymentError
+                "PayMongo checkout request failed; booking left pending until expiry:",
+                {
+                    bookingRef: booking.booking_ref,
+                    error: paymentError,
+                }
             );
-            await prisma.booking.update({
-                where: { id: booking.id },
-                data: {
-                    status: "CANCELLED",
-                    payment_status: "FAILED",
-                    payment_expires_at: new Date(),
-                },
-            });
             return NextResponse.json(
-                { error: "Unable to start payment. Please try again." },
+                { error: "Unable to initialize payment. Please try again." },
                 { status: 502 }
             );
         }
