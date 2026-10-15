@@ -2,10 +2,36 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { bookingRateLimit } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export async function POST(request: Request) {
     try {
+        const forwardedFor = request.headers.get("x-forwarded-for");
+        const clientIp = forwardedFor?.split(",")[0]?.trim();
+        if (!clientIp) {
+            return NextResponse.json(
+                { error: "Unable to identify your connection." },
+                { status: 400 }
+            );
+        }
+
+        const { success, reset } = await bookingRateLimit.limit(clientIp);
+        if (!success) {
+            return NextResponse.json(
+                {
+                    error: "Too many booking attempts. Please try again later.",
+                },
+                {
+                    status: 429,
+                    headers: {
+                        "Retry-After": String(
+                            Math.max(1, Math.ceil((reset - Date.now()) / 1000))
+                        ),
+                    },
+                }
+            );
+        }
         const body = await request.json();
         const roomId = Number(body.roomId);
         const firstName =
