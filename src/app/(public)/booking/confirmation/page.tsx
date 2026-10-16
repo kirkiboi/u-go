@@ -90,6 +90,11 @@ export default async function BookingConfirmationPage({
                                 </div>
                             </div>
                         </div>
+                        <Link
+                            href="/"
+                            className="mt-8 inline-block text-sm font-medium underline underline-offset-4">
+                            Return to Website
+                        </Link>
                     </>
                 ) : isCancelled ? (
                     <>
@@ -137,11 +142,6 @@ export default async function BookingConfirmationPage({
                         </p>
                     </>
                 )}
-                <Link
-                    href="/"
-                    className="mt-8 inline-block text-sm font-medium underline underline-offset-4">
-                    Return to Website
-                </Link>
             </section>
         </main>
     );

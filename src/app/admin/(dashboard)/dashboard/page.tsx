@@ -1,6 +1,115 @@
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import RoomAvailabilityCalendar from "@/components/admin/roomAvailabilityCalendar";
 
-export default function AdminDashboard() {
+function getManilaDateParts(date: Date) {
+    const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Manila",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).formatToParts(date);
+
+    return Object.fromEntries(
+        parts.map((part) => [part.type, part.value])
+    );
+}
+
+function formatDate(date: Date) {
+    return new Intl.DateTimeFormat("en-PH", {
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+    }).format(date);
+}
+
+export default async function AdminDashboard() {
+    const now = new Date();
+    const dateParts = getManilaDateParts(now);
+    const year = Number(dateParts.year);
+    const month = Number(dateParts.month);
+    const todayKey =
+        `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+    const today = new Date(`${todayKey}T00:00:00.000Z`);
+    const monthStart = new Date(
+        Date.UTC(year, month - 1, 1) - 8 * 60 * 60 * 1000
+    );
+    const nextMonthStart = new Date(
+        Date.UTC(year, month, 1) - 8 * 60 * 60 * 1000
+    );
+    const [
+        rooms,
+        activeBookings,
+        recentBookings,
+        paidBookingValue,
+        availabilityBookings,
+    ] = await Promise.all([
+        prisma.room.findMany({
+            orderBy: { id: "asc" },
+            select: {
+                id: true,
+                name: true,
+            },
+        }),
+        prisma.booking.count({
+            where: {
+                status: "CONFIRMED",
+                check_out: { gte: today },
+            },
+        }),
+        prisma.booking.findMany({
+            orderBy: { createdAt: "desc" },
+            take: 5,
+            include: {
+                room: {
+                    select: { name: true },
+                },
+            },
+        }),
+        prisma.booking.aggregate({
+            where: {
+                payment_status: "PAID",
+                createdAt: {
+                    gte: monthStart,
+                    lt: nextMonthStart,
+                },
+            },
+            _sum: {
+                total: true,
+            },
+        }),
+        prisma.booking.findMany({
+            where: {
+                check_out: { gte: today },
+                OR: [
+                    { status: "CONFIRMED" },
+                    {
+                        status: "PENDING",
+                        payment_status: "PENDING",
+                        payment_expires_at: { gt: now },
+                    },
+                ],
+            },
+            select: {
+                id: true,
+                room_id: true,
+                check_in: true,
+                check_out: true,
+                status: true,
+                payment_status: true,
+            },
+        }),
+    ]);
+    const calendarBookings = availabilityBookings.map((booking) => ({
+        id: booking.id,
+        roomId: booking.room_id,
+        checkIn: booking.check_in.toISOString().slice(0, 10),
+        checkOut: booking.check_out.toISOString().slice(0, 10),
+        status: booking.status as "CONFIRMED" | "PENDING",
+        paymentStatus: booking.payment_status as "PAID" | "PENDING",
+    }));
+    const revenue = paidBookingValue._sum.total ?? 0;
+
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-7xl">
@@ -20,22 +129,72 @@ export default function AdminDashboard() {
                         Overview
                     </h1>
                 </div>
-                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="rounded-xl border bg-white p-6 shadow-sm" style={{ borderColor: "var(--color-border)" }}>
-                        <p className="text-sm font-medium" style={{ color: "var(--color-muted)" }}>Total Revenue (This Month)</p>
-                        <p className="mt-2 text-3xl font-bold" style={{ color: "var(--color-forest-900)" }}>₱145,980</p>
-                        <p className="mt-2 text-xs text-green-600 font-medium">+12.5% from last month</p>
+                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div
+                        className="rounded-xl border bg-white p-6 shadow-sm"
+                        style={{ borderColor: "var(--color-border)" }}>
+                        <p
+                            className="text-sm font-medium"
+                            style={{ color: "var(--color-muted)" }}>
+                            Paid Booking Value (Created This Month)
+                        </p>
+                        <p
+                            className="mt-2 text-3xl font-bold"
+                            style={{ color: "var(--color-forest-900)" }}>
+                            ₱{revenue.toLocaleString("en-PH")}
+                        </p>
+                        <p
+                            className="mt-2 text-xs"
+                            style={{ color: "var(--color-muted)" }}>
+                            Total value of paid bookings created this month
+                        </p>
                     </div>
-                    <div className="rounded-xl border bg-white p-6 shadow-sm" style={{ borderColor: "var(--color-border)" }}>
-                        <p className="text-sm font-medium" style={{ color: "var(--color-muted)" }}>Active Bookings</p>
-                        <p className="mt-2 text-3xl font-bold" style={{ color: "var(--color-forest-900)" }}>24</p>
-                        <p className="mt-2 text-xs text-green-600 font-medium">+3 new today</p>
+
+                    <div
+                        className="rounded-xl border bg-white p-6 shadow-sm"
+                        style={{ borderColor: "var(--color-border)" }}>
+                        <p
+                            className="text-sm font-medium"
+                            style={{ color: "var(--color-muted)" }}>
+                            Active Bookings
+                        </p>
+                        <p
+                            className="mt-2 text-3xl font-bold"
+                            style={{ color: "var(--color-forest-900)" }}>
+                            {activeBookings}
+                        </p>
+                        <p
+                            className="mt-2 text-xs"
+                            style={{ color: "var(--color-muted)" }}>
+                            Confirmed stays that have not checked out
+                        </p>
                     </div>
-                    <div className="rounded-xl border bg-white p-6 shadow-sm" style={{ borderColor: "var(--color-border)" }}>
-                        <p className="text-sm font-medium" style={{ color: "var(--color-muted)" }}>Available Rooms</p>
-                        <p className="mt-2 text-3xl font-bold" style={{ color: "var(--color-forest-900)" }}>8</p>
-                        <p className="mt-2 text-xs" style={{ color: "var(--color-muted)" }}>Out of 12 total rooms</p>
+
+                    <div
+                        className="rounded-xl border bg-white p-6 shadow-sm"
+                        style={{ borderColor: "var(--color-border)" }}>
+                        <p
+                            className="text-sm font-medium"
+                            style={{ color: "var(--color-muted)" }}>
+                            Total Rooms
+                        </p>
+                        <p
+                            className="mt-2 text-3xl font-bold"
+                            style={{ color: "var(--color-forest-900)" }}>
+                            {rooms.length}
+                        </p>
+                        <p
+                            className="mt-2 text-xs"
+                            style={{ color: "var(--color-muted)" }}>
+                            Accommodations registered in the database
+                        </p>
                     </div>
+                </div>
+                <div className="mt-8">
+                    <RoomAvailabilityCalendar
+                        rooms={rooms}
+                        bookings={calendarBookings}
+                    />
                 </div>
                 <div className="mt-8 grid gap-8 lg:grid-cols-3">
                     <div className="lg:col-span-2 rounded-xl border bg-white shadow-sm" style={{ borderColor: "var(--color-border)" }}>
@@ -52,23 +211,63 @@ export default function AdminDashboard() {
                                         <th className="px-6 py-3 font-medium">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
-                                    <tr className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium" style={{ color: "var(--color-forest-900)" }}>Juan Dela Cruz</td>
-                                        <td className="px-6 py-4" style={{ color: "var(--color-muted)" }}>Cabin House</td>
-                                        <td className="px-6 py-4" style={{ color: "var(--color-muted)" }}>Sep 28 - Sep 30</td>
-                                        <td className="px-6 py-4">
-                                            <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: "var(--color-forest-100)", color: "var(--color-forest-700)" }}>Confirmed</span>
-                                        </td>
-                                    </tr>
-                                    <tr className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium" style={{ color: "var(--color-forest-900)" }}>Maria Santos</td>
-                                        <td className="px-6 py-4" style={{ color: "var(--color-muted)" }}>Mountain View Cottage</td>
-                                        <td className="px-6 py-4" style={{ color: "var(--color-muted)" }}>Oct 4 - Oct 6</td>
-                                        <td className="px-6 py-4">
-                                            <span className="rounded-full px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-800">Pending</span>
-                                        </td>
-                                    </tr>
+                                <tbody
+                                    className="divide-y"
+                                    style={{ borderColor: "var(--color-border)" }}
+                                >
+                                    {recentBookings.length === 0 ? (
+                                        <tr>
+                                            <td
+                                                colSpan={4}
+                                                className="px-6 py-10 text-center"
+                                                style={{ color: "var(--color-muted)" }}
+                                            >
+                                                No bookings have been created yet.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        recentBookings.map((booking) => {
+                                            const statusStyles: Record<string, string> = {
+                                                PENDING: "bg-amber-100 text-amber-800",
+                                                CONFIRMED:
+                                                    "bg-[var(--color-forest-100)] text-[var(--color-forest-700)]",
+                                                CANCELLED: "bg-red-100 text-red-800",
+                                                COMPLETED: "bg-gray-100 text-gray-700",
+                                            };
+
+                                            return (
+                                                <tr
+                                                    key={booking.id}
+                                                    className="transition-colors hover:bg-gray-50">
+                                                    <td
+                                                        className="px-6 py-4 font-medium"
+                                                        style={{ color: "var(--color-forest-900)" }}>
+                                                        {booking.guest_fname} {booking.guest_lname}
+                                                    </td>
+                                                    <td
+                                                        className="px-6 py-4"
+                                                        style={{ color: "var(--color-muted)" }}>
+                                                        {booking.room.name}
+                                                    </td>
+                                                    <td
+                                                        className="px-6 py-4"
+                                                        style={{ color: "var(--color-muted)" }}>
+                                                        {formatDate(booking.check_in)} –{" "}
+                                                        {formatDate(booking.check_out)}
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <span
+                                                            className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusStyles[booking.status] ??
+                                                                "bg-gray-100 text-gray-700"
+                                                                }`}>
+                                                            {booking.status.charAt(0) +
+                                                                booking.status.slice(1).toLowerCase()}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -100,34 +299,6 @@ export default function AdminDashboard() {
                                         <p className="text-xs" style={{ color: "var(--color-muted)" }}>Register a new resort facility</p>
                                     </div>
                                 </Link>
-                            </div>
-                        </div>
-                        <div className="rounded-xl border bg-white shadow-sm" style={{ borderColor: "var(--color-border)" }}>
-                            <div className="border-b px-6 py-4" style={{ borderColor: "var(--color-border)" }}>
-                                <h2 className="text-lg font-semibold" style={{ color: "var(--color-forest-900)" }}>Today&apos;s Tasks</h2>
-                            </div>
-                            <div className="p-4 space-y-4">
-                                <div className="flex items-start gap-3">
-                                    <input type="checkbox" className="mt-1 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer" />
-                                    <div>
-                                        <p className="text-sm font-medium" style={{ color: "var(--color-forest-900)" }}>Review Pending Bookings</p>
-                                        <p className="text-xs" style={{ color: "var(--color-muted)" }}>3 bookings awaiting confirmation</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <input type="checkbox" className="mt-1 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer" />
-                                    <div>
-                                        <p className="text-sm font-medium" style={{ color: "var(--color-forest-900)" }}>Update Room Availability</p>
-                                        <p className="text-xs" style={{ color: "var(--color-muted)" }}>Check for maintenance schedules</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <input type="checkbox" className="mt-1 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer" />
-                                    <div>
-                                        <p className="text-sm font-medium" style={{ color: "var(--color-forest-900)" }}>Respond to Guest Inquiries</p>
-                                        <p className="text-xs" style={{ color: "var(--color-muted)" }}>5 new messages from potential guests</p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
