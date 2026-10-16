@@ -153,21 +153,6 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                 <p className="text-lg text-stone-600 mb-8">
                     Complete the details below to secure your mountain getaway.
                 </p>
-
-                <div className="flex items-center justify-center max-w-md mx-auto mb-8">
-                    {[1, 2, 3].map((s) => (
-                        <div key={s} className="flex items-center">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= s ? 'bg-[var(--color-forest-800)] text-white' : 'bg-stone-200 text-stone-500'
-                                }`}>
-                                {s}
-                            </div>
-                            {s < 3 && (
-                                <div className={`w-16 h-1 mx-2 rounded ${step > s ? 'bg-[var(--color-forest-800)]' : 'bg-stone-200'
-                                    }`} />
-                            )}
-                        </div>
-                    ))}
-                </div>
             </section>
 
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
