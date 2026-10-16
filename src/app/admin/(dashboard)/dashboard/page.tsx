@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import RoomAvailabilityCalendar from "@/components/admin/roomAvailabilityCalendar";
 import RoomAvailabilityModal from "@/components/admin/roomAvailabilityModal";
+import ActiveBookingsModal from "@/components/admin/activeBookingsModal";
 
 function getManilaDateParts(date: Date) {
     const parts = new Intl.DateTimeFormat("en-US", {
@@ -40,22 +40,25 @@ export default async function AdminDashboard() {
     );
     const [
         rooms,
-        activeBookings,
+        activeBookingRecords,
         recentBookings,
         paidBookingValue,
         availabilityBookings,
     ] = await Promise.all([
         prisma.room.findMany({
             orderBy: { id: "asc" },
-            select: {
-                id: true,
-                name: true,
-            },
+            select: { id: true, name: true },
         }),
-        prisma.booking.count({
+        prisma.booking.findMany({
             where: {
                 status: "CONFIRMED",
                 check_out: { gte: today },
+            },
+            orderBy: { check_in: "asc" },
+            include: {
+                room: {
+                    select: { name: true },
+                },
             },
         }),
         prisma.booking.findMany({
@@ -75,9 +78,7 @@ export default async function AdminDashboard() {
                     lt: nextMonthStart,
                 },
             },
-            _sum: {
-                total: true,
-            },
+            _sum: { total: true },
         }),
         prisma.booking.findMany({
             where: {
@@ -101,6 +102,20 @@ export default async function AdminDashboard() {
             },
         }),
     ]);
+    const activeBookings = activeBookingRecords.length;
+    const activeBookingsForModal = activeBookingRecords.map((booking) => ({
+        id: booking.id,
+        booking_ref: booking.booking_ref,
+        guest_fname: booking.guest_fname,
+        guest_lname: booking.guest_lname,
+        guest_email: booking.guest_email,
+        guest_phone: booking.guest_phone,
+        check_in: booking.check_in.toISOString().slice(0, 10),
+        check_out: booking.check_out.toISOString().slice(0, 10),
+        total: booking.total,
+        payment_status: booking.payment_status,
+        room: booking.room,
+    }));
     const calendarBookings = availabilityBookings.map((booking) => ({
         id: booking.id,
         roomId: booking.room_id,
@@ -150,27 +165,7 @@ export default async function AdminDashboard() {
                             Total value of paid bookings created this month
                         </p>
                     </div>
-
-                    <div
-                        className="rounded-xl border bg-white p-6 shadow-sm"
-                        style={{ borderColor: "var(--color-border)" }}>
-                        <p
-                            className="text-sm font-medium"
-                            style={{ color: "var(--color-muted)" }}>
-                            Active Bookings
-                        </p>
-                        <p
-                            className="mt-2 text-3xl font-bold"
-                            style={{ color: "var(--color-forest-900)" }}>
-                            {activeBookings}
-                        </p>
-                        <p
-                            className="mt-2 text-xs"
-                            style={{ color: "var(--color-muted)" }}>
-                            Confirmed stays that have not checked out
-                        </p>
-                    </div>
-
+                    <ActiveBookingsModal bookings={activeBookingsForModal} />
                     <div>
                         <RoomAvailabilityModal
                             rooms={rooms}
