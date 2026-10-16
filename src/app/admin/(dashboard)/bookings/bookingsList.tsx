@@ -51,27 +51,46 @@ export default function BookingsList({
     bookings,
 }: BookingsListProps) {
     const [search, setSearch] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [dateFilter, setDateFilter] = useState("all");
 
     const filteredBookings = useMemo(() => {
         const query = search.trim().toLowerCase();
-        if (!query) {
-            return bookings;
-        }
+        const now = new Date();
+        const today = [
+            now.getFullYear(),
+            String(now.getMonth() + 1).padStart(2, "0"),
+            String(now.getDate()).padStart(2, "0"),
+        ].join("-");
 
         return bookings.filter((booking) => {
             const firstName = booking.guest_fname.toLowerCase();
             const lastName = booking.guest_lname.toLowerCase();
             const fullName = `${firstName} ${lastName}`;
             const reference = booking.booking_ref.toLowerCase();
-
-            return (
+            const matchesSearch =
+                !query ||
                 firstName.includes(query) ||
                 lastName.includes(query) ||
                 fullName.includes(query) ||
-                reference.includes(query)
-            );
+                reference.includes(query);
+            const matchesStatus =
+                statusFilter === "all" ||
+                booking.status === statusFilter;
+            const checkInDate = booking.check_in
+                .toISOString()
+                .slice(0, 10);
+
+            const matchesDate =
+                dateFilter === "all" ||
+                (dateFilter === "upcoming" && checkInDate > today) ||
+                (dateFilter === "today" && checkInDate === today) ||
+                (dateFilter === "past" && checkInDate < today);
+
+            return matchesSearch && matchesStatus && matchesDate;
         });
-    }, [bookings, search]);
+    }, [bookings, search, statusFilter, dateFilter]);
+
 
     return (
         <section className="min-h-screen px-8 py-8">
@@ -109,51 +128,29 @@ export default function BookingsList({
                         className="w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                         style={{ borderColor: "var(--color-border)" }}
                     />
+
                     <select
                         aria-label="Filter by booking status"
-                        defaultValue="all"
+                        value={statusFilter}
+                        onChange={(event) => setStatusFilter(event.target.value)}
                         className="rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                        style={{
-                            borderColor: "var(--color-border)",
-                        }}>
-                        <option value="all">
-                            All statuses
-                        </option>
-                        <option value="pending">
-                            Pending
-                        </option>
-                        <option value="confirmed">
-                            Confirmed
-                        </option>
-                        <option value="checked-in">
-                            Checked In
-                        </option>
-                        <option value="checked-out">
-                            Checked Out
-                        </option>
-                        <option value="cancelled">
-                            Cancelled
-                        </option>
+                        style={{ borderColor: "var(--color-border)" }}>
+                        <option value="all">All statuses</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="COMPLETED">Completed</option>
                     </select>
                     <select
                         aria-label="Filter by booking date"
-                        defaultValue="all"
+                        value={dateFilter}
+                        onChange={(event) => setDateFilter(event.target.value)}
                         className="rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                        style={{
-                            borderColor: "var(--color-border)",
-                        }}>
-                        <option value="all">
-                            All dates
-                        </option>
-                        <option value="upcoming">
-                            Upcoming
-                        </option>
-                        <option value="today">
-                            Today
-                        </option>
-                        <option value="past">
-                            Past
-                        </option>
+                        style={{ borderColor: "var(--color-border)" }}>
+                        <option value="all">All dates</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="today">Today</option>
+                        <option value="past">Past</option>
                     </select>
                 </div>
                 <div className="mt-6">
@@ -195,22 +192,20 @@ export default function BookingsList({
                                         </p>
                                         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                             <div>
-                                                <p
-                                                    className="text-xs"
-                                                    style={{ color: "var(--color-muted)" }}>
+                                                <p className="mt-1 text-sm font-medium">
                                                     Accommodation
                                                 </p>
-                                                <p className="mt-1 text-sm font-medium">
+                                                <p className="text-xs"
+                                                    style={{ color: "var(--color-muted)" }}>
                                                     {booking.room.name}
                                                 </p>
                                             </div>
                                             <div>
-                                                <p
-                                                    className="text-xs"
-                                                    style={{ color: "var(--color-muted)" }}>
+                                                <p className="mt-1 text-sm font-medium">
                                                     Stay
                                                 </p>
-                                                <p className="mt-1 text-sm font-medium">
+                                                <p className="text-xs"
+                                                    style={{ color: "var(--color-muted)" }}>
                                                     {booking.check_in.toISOString().slice(0, 10)}
                                                 </p>
                                                 <p
@@ -220,14 +215,13 @@ export default function BookingsList({
                                                 </p>
                                             </div>
                                             <div>
-                                                <p
-                                                    className="text-xs"
-                                                    style={{ color: "var(--color-muted)" }}>
+                                                <p className="mt-1 text-sm font-semibold"
+                                                    style={{ color: "var(--color-forest-700)" }}>
                                                     Total
                                                 </p>
                                                 <p
-                                                    className="mt-1 text-sm font-semibold"
-                                                    style={{ color: "var(--color-forest-700)" }}>
+                                                    className="text-xs"
+                                                    style={{ color: "var(--color-muted)" }}>
                                                     ₱{booking.total.toLocaleString("en-PH")}
                                                 </p>
                                             </div>
