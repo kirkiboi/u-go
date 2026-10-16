@@ -1,86 +1,26 @@
-const bookings = [
-    {
-        id: "BK-2026-001",
-        guestName: "Juan Dela Cruz",
-        email: "juan@example.com",
-        room: "Cabin House",
-        checkIn: "September 28, 2026",
-        checkOut: "September 30, 2026",
-        guests: 3,
-        nights: 2,
-        total: "₱5,998",
-        status: "Confirmed",
-    },
-    {
-        id: "BK-2026-002",
-        guestName: "Maria Santos",
-        email: "maria@example.com",
-        room: "Mountain View Cottage",
-        checkIn: "October 4, 2026",
-        checkOut: "October 6, 2026",
-        guests: 8,
-        nights: 2,
-        total: "₱17,998",
-        status: "Pending",
-    },
-    {
-        id: "BK-2026-003",
-        guestName: "Carlos Reyes",
-        email: "carlos@example.com",
-        room: "Pinetree House",
-        checkIn: "October 10, 2026",
-        checkOut: "October 12, 2026",
-        guests: 5,
-        nights: 2,
-        total: "₱9,000",
-        status: "Checked In",
-    },
-    {
-        id: "BK-2026-004",
-        guestName: "Ana Garcia",
-        email: "ana@example.com",
-        room: "Cabin House",
-        checkIn: "October 15, 2026",
-        checkOut: "October 17, 2026",
-        guests: 2,
-        nights: 2,
-        total: "₱5,998",
-        status: "Cancelled",
-    },
-];
-
+import { prisma } from "@/lib/prisma";
 function getStatusStyles(status: string) {
     switch (status) {
-        case "Confirmed":
+        case "CONFIRMED":
             return {
                 backgroundColor: "var(--color-forest-100)",
                 color: "var(--color-forest-700)",
             };
-
-        case "Pending":
+        case "PENDING":
             return {
                 backgroundColor: "#fef3c7",
                 color: "#92400e",
             };
-
-        case "Checked In":
+        case "COMPLETED":
             return {
                 backgroundColor: "#dbeafe",
                 color: "#1d4ed8",
             };
-
-        case "Checked Out":
-            return {
-                backgroundColor: "#f3f4f6",
-                color: "#4b5563",
-            };
-
-        case "Cancelled":
+        case "CANCELLED":
             return {
                 backgroundColor: "#fee2e2",
                 color: "#b91c1c",
             };
-
         default:
             return {
                 backgroundColor: "#f3f4f6",
@@ -89,7 +29,19 @@ function getStatusStyles(status: string) {
     }
 }
 
-export default function BookingsPage() {
+export default async function BookingsPage() {
+    const bookings = await prisma.booking.findMany({
+        orderBy: {
+            createdAt: "desc",
+        },
+        include: {
+            room: {
+                select: {
+                    name: true,
+                },
+            },
+        },
+    });
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-7xl">
@@ -206,15 +158,14 @@ export default function BookingsPage() {
                                                 color:
                                                     "var(--color-forest-900)",
                                             }}>
-                                            {booking.guestName}
+                                            {booking.guest_fname} {booking.guest_lname}
                                         </h2>
-
                                         <span
                                             className="rounded-full px-2.5 py-1 text-xs font-medium"
                                             style={getStatusStyles(
                                                 booking.status
                                             )}>
-                                            {booking.status}
+                                            {booking.status.charAt(0) + booking.status.slice(1).toLowerCase()}
                                         </span>
                                     </div>
                                     <p
@@ -223,7 +174,7 @@ export default function BookingsPage() {
                                             color:
                                                 "var(--color-muted)",
                                         }}>
-                                        {booking.id}
+                                        {booking.booking_ref}
                                     </p>
                                     <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                         <div>
@@ -236,7 +187,7 @@ export default function BookingsPage() {
                                                 Accommodation
                                             </p>
                                             <p className="mt-1 text-sm font-medium">
-                                                {booking.room}
+                                                {booking.room.name}
                                             </p>
                                         </div>
                                         <div>
@@ -249,7 +200,7 @@ export default function BookingsPage() {
                                                 Stay
                                             </p>
                                             <p className="mt-1 text-sm font-medium">
-                                                {booking.checkIn}
+                                                {booking.check_in.toISOString().slice(0, 10)}
                                             </p>
                                             <p
                                                 className="text-xs"
@@ -257,7 +208,7 @@ export default function BookingsPage() {
                                                     color:
                                                         "var(--color-muted)",
                                                 }}>
-                                                to {booking.checkOut}
+                                                to {booking.check_out.toISOString().slice(0, 10)}
                                             </p>
                                         </div>
                                         <div>
@@ -268,9 +219,6 @@ export default function BookingsPage() {
                                                         "var(--color-muted)",
                                                 }}>
                                                 Guests
-                                            </p>
-                                            <p className="mt-1 text-sm font-medium">
-                                                {booking.guests} guests
                                             </p>
                                         </div>
                                         <div>
@@ -288,7 +236,7 @@ export default function BookingsPage() {
                                                     color:
                                                         "var(--color-forest-700)",
                                                 }}>
-                                                {booking.total}
+                                                ₱{booking.total.toLocaleString("en-PH")}
                                             </p>
                                         </div>
                                     </div>
