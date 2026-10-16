@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import RoomAvailabilityCalendar from "@/components/admin/roomAvailabilityCalendar";
+import RoomAvailabilityModal from "@/components/admin/roomAvailabilityModal";
 
 function getManilaDateParts(date: Date) {
     const parts = new Intl.DateTimeFormat("en-US", {
@@ -170,31 +171,12 @@ export default async function AdminDashboard() {
                         </p>
                     </div>
 
-                    <div
-                        className="rounded-xl border bg-white p-6 shadow-sm"
-                        style={{ borderColor: "var(--color-border)" }}>
-                        <p
-                            className="text-sm font-medium"
-                            style={{ color: "var(--color-muted)" }}>
-                            Total Rooms
-                        </p>
-                        <p
-                            className="mt-2 text-3xl font-bold"
-                            style={{ color: "var(--color-forest-900)" }}>
-                            {rooms.length}
-                        </p>
-                        <p
-                            className="mt-2 text-xs"
-                            style={{ color: "var(--color-muted)" }}>
-                            Accommodations registered in the database
-                        </p>
+                    <div>
+                        <RoomAvailabilityModal
+                            rooms={rooms}
+                            bookings={calendarBookings}
+                        />
                     </div>
-                </div>
-                <div className="mt-8">
-                    <RoomAvailabilityCalendar
-                        rooms={rooms}
-                        bookings={calendarBookings}
-                    />
                 </div>
                 <div className="mt-8 grid gap-8 lg:grid-cols-3">
                     <div className="lg:col-span-2 rounded-xl border bg-white shadow-sm" style={{ borderColor: "var(--color-border)" }}>
