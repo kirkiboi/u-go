@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { Prisma } from "@prisma/client";
 
 type BookingWithRoom = Prisma.BookingGetPayload<{
@@ -53,7 +53,8 @@ export default function BookingsList({
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [dateFilter, setDateFilter] = useState("all");
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const bookingsPerPage = 5;
     const filteredBookings = useMemo(() => {
         const query = search.trim().toLowerCase();
         const now = new Date();
@@ -90,7 +91,20 @@ export default function BookingsList({
             return matchesSearch && matchesStatus && matchesDate;
         });
     }, [bookings, search, statusFilter, dateFilter]);
+    const totalPages = Math.ceil(
+        filteredBookings.length / bookingsPerPage
+    );
+    const paginatedBookings = useMemo(() => {
+        const startIndex = (currentPage - 1) * bookingsPerPage;
 
+        return filteredBookings.slice(
+            startIndex,
+            startIndex + bookingsPerPage
+        );
+    }, [filteredBookings, currentPage]);
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, statusFilter, dateFilter]);
 
     return (
         <section className="min-h-screen px-8 py-8">
@@ -101,23 +115,20 @@ export default function BookingsList({
                         style={{ color: "var(--color-forest-500)" }}>
                         Booking Management
                     </p>
-
                     <h1
                         className="text-2xl font-semibold"
                         style={{ color: "var(--color-forest-900)" }}>
                         Booking Overview
                     </h1>
                 </div>
-
                 <div
-                    className="mt-8 rounded-xl border bg-white p-4 shadow-sm"
+                    className="mt-8 flex flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm lg:flex-row"
                     style={{ borderColor: "var(--color-border)" }}>
                     <label
                         htmlFor="booking-search"
                         className="sr-only">
                         Search bookings by guest name or reference number
                     </label>
-
                     <input
                         id="booking-search"
                         type="search"
@@ -125,47 +136,128 @@ export default function BookingsList({
                         onChange={(event) => setSearch(event.target.value)}
                         placeholder="Search by guest name or booking reference..."
                         autoComplete="off"
-                        className="w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                        className="w-full min-w-0 flex-1 rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                         style={{ borderColor: "var(--color-border)" }}
                     />
 
-                    <select
-                        aria-label="Filter by booking status"
-                        value={statusFilter}
-                        onChange={(event) => setStatusFilter(event.target.value)}
-                        className="rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                        style={{ borderColor: "var(--color-border)" }}>
-                        <option value="all">All statuses</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="CONFIRMED">Confirmed</option>
-                        <option value="CANCELLED">Cancelled</option>
-                        <option value="COMPLETED">Completed</option>
-                    </select>
-                    <select
-                        aria-label="Filter by booking date"
-                        value={dateFilter}
-                        onChange={(event) => setDateFilter(event.target.value)}
-                        className="rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
-                        style={{ borderColor: "var(--color-border)" }}>
-                        <option value="all">All dates</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="today">Today</option>
-                        <option value="past">Past</option>
-                    </select>
+                    <div className="relative w-full lg:w-44">
+                        <select
+                            aria-label="Filter by booking status"
+                            value={statusFilter}
+                            onChange={(event) => setStatusFilter(event.target.value)}
+                            className="w-full appearance-none rounded-lg border border-stone-300 bg-white px-4 py-2.5 pr-10 text-sm outline-none transition-colors hover:cursor-pointer focus:border-[var(--color-forest-500)] focus:ring-[var(--color-forest-500)]"
+                            style={{ borderColor: "var(--color-border)" }}>
+                            <option value="all">All statuses</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="CONFIRMED">Confirmed</option>
+                            <option value="CANCELLED">Cancelled</option>
+                            <option value="COMPLETED">Completed</option>
+                        </select>
+                        <svg
+                            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="m6 9 6 6 6-6"
+                            />
+                        </svg>
+                    </div>
+                    <div className="relative w-full lg:w-40">
+                        <select
+                            aria-label="Filter by booking date"
+                            value={dateFilter}
+                            onChange={(event) => setDateFilter(event.target.value)}
+                            className="w-full appearance-none rounded-lg border border-stone-300 bg-white px-4 py-2.5 pr-10 text-sm outline-none transition-colors hover:cursor-pointer focus:border-[var(--color-forest-500)] focus:ring-[var(--color-forest-500)]"
+                            style={{ borderColor: "var(--color-border)" }}>
+                            <option value="all">All dates</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="today">Today</option>
+                            <option value="past">Past</option>
+                        </select>
+                        <svg
+                            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="m6 9 6 6 6-6"
+                            />
+                        </svg>
+                    </div>
                 </div>
-                <div className="mt-6">
-                    <p
-                        className="text-sm"
-                        style={{ color: "var(--color-muted)" }}
-                        aria-live="polite">
-                        {filteredBookings.length}{" "}
-                        {filteredBookings.length === 1 ? "booking" : "bookings"}
-                        {search.trim() ? " found" : ""}
-                    </p>
-                </div>
+
+                {filteredBookings.length > 0 && (
+                    <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
+                        <p
+                            className="text-sm"
+                            style={{ color: "var(--color-muted)" }}>
+                            Showing{" "}
+                            {(currentPage - 1) * bookingsPerPage + 1}
+                            {"–"}
+                            {Math.min(
+                                currentPage * bookingsPerPage,
+                                filteredBookings.length
+                            )}{" "}
+                            of {filteredBookings.length} bookings
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setCurrentPage((page) => page - 1)}
+                                disabled={currentPage === 1}
+                                className="rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover: cursor-pointer bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                style={{ borderColor: "var(--color-border)" }}>
+                                Previous
+                            </button>
+                            {Array.from(
+                                { length: totalPages },
+                                (_, index) => index + 1
+                            ).map((page) => (
+                                <button
+                                    key={page}
+                                    type="button"
+                                    onClick={() => setCurrentPage(page)}
+                                    aria-current={currentPage === page ? "page" : undefined}
+                                    className="rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover: cursor-pointer"
+                                    style={{
+                                        borderColor:
+                                            currentPage === page
+                                                ? "var(--color-forest-500)"
+                                                : "var(--color-border)",
+                                        backgroundColor:
+                                            currentPage === page
+                                                ? "var(--color-forest-100)"
+                                                : "white",
+                                        color:
+                                            currentPage === page
+                                                ? "var(--color-forest-900)"
+                                                : "var(--color-muted)",
+                                    }}>
+                                    {page}
+                                </button>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={() => setCurrentPage((page) => page + 1)}
+                                disabled={currentPage === totalPages}
+                                className="rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover: cursor-pointer bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                style={{ borderColor: "var(--color-border)" }}>
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <div className="mt-3 space-y-4">
-                    {filteredBookings.length > 0 ? (
-                        filteredBookings.map((booking) => (
+                    {paginatedBookings.length > 0 ? (
+                        paginatedBookings.map((booking) => (
                             <div
                                 key={booking.id}
                                 className="rounded-xl border bg-white p-6 shadow-sm"
