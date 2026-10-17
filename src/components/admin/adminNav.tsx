@@ -9,6 +9,7 @@ const NAV_LINKS = [
     { label: "Rooms", href: "/admin/rooms" },
     { label: "Amenities", href: "/admin/amenities" },
     { label: "Bookings", href: "/admin/bookings" },
+    { label: "Activity Logs", href: "/admin/activities" },
 ] as const;
 
 export default function AdminNavbar() {
