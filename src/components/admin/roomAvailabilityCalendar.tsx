@@ -121,7 +121,7 @@ export default function RoomAvailabilityCalendar({
                             )
                         }
                         disabled={isCurrentMonth}
-                        className="rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40"
+                        className="rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40 hover: cursor-pointer"
                         style={{ borderColor: "var(--color-border)" }}
                         aria-label="Previous month">
                         &larr;
@@ -140,7 +140,7 @@ export default function RoomAvailabilityCalendar({
                                 new Date(year, monthIndex + 1, 1)
                             )
                         }
-                        className="rounded-lg border px-3 py-2 text-sm"
+                        className="rounded-lg border px-3 py-2 text-sm hover: cursor-pointer"
                         style={{ borderColor: "var(--color-border)" }}
                         aria-label="Next month">
                         &rarr;

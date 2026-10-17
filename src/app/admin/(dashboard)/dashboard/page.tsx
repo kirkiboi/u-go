@@ -131,15 +131,16 @@ export default async function AdminDashboard() {
             <div className="mx-auto max-w-7xl">
                 <div>
                     <p
-                        className="w-full text-sm font-medium"
+                        className="text-sm font-medium"
                         style={{
                             color: "var(--color-forest-500)",
                         }}>
                         Admin Dashboard
                     </p>
                     <h1
-                        className="text-2xl font-semibold"
+                        className="mt-1 text-3xl font-bold"
                         style={{
+                            fontFamily: "var(--font-display)",
                             color: "var(--color-forest-900)",
                         }}>
                         Overview

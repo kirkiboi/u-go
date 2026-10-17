@@ -24,23 +24,21 @@ export default function AdminNavbar() {
                 style={{
                     borderColor: "var(--color-forest-800)",
                 }}>
-                <Link href="/admin/dashboard" className="block">
-                    <span
-                        className="text-[10px] font-semibold uppercase tracking-[0.2em]"
-                        style={{
-                            color: "var(--color-forest-300)",
-                        }}>
-                        U-GO CLIFF RESORT
-                    </span>
-                    <span
-                        className="mt-1 block text-xl font-bold"
-                        style={{
-                            fontFamily: "var(--font-display)",
-                            color: "white",
-                        }}>
-                        Admin Portal
-                    </span>
-                </Link>
+                <span
+                    className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+                    style={{
+                        color: "var(--color-forest-300)",
+                    }}>
+                    U-GO CLIFF RESORT
+                </span>
+                <span
+                    className="mt-1 block text-xl font-bold"
+                    style={{
+                        fontFamily: "var(--font-display)",
+                        color: "white",
+                    }}>
+                    Admin Portal
+                </span>
             </div>
 
             <nav

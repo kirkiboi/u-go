@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import type { Prisma } from "@prisma/client";
+import Link from "next/link";
 
 type BookingWithRoom = Prisma.BookingGetPayload<{
     include: {
@@ -111,13 +112,18 @@ export default function BookingsList({
             <div className="mx-auto max-w-7xl">
                 <div>
                     <p
-                        className="w-full text-sm font-medium"
-                        style={{ color: "var(--color-forest-500)" }}>
+                        className="text-sm font-medium"
+                        style={{
+                            color: "var(--color-forest-500)",
+                        }}>
                         Booking Management
                     </p>
                     <h1
-                        className="text-2xl font-semibold"
-                        style={{ color: "var(--color-forest-900)" }}>
+                        className="mt-1 text-3xl font-bold"
+                        style={{
+                            fontFamily: "var(--font-display)",
+                            color: "var(--color-forest-900)",
+                        }}>
                         Booking Overview
                     </h1>
                 </div>
@@ -306,16 +312,17 @@ export default function BookingsList({
                                                     to {booking.check_out.toISOString().slice(0, 10)}
                                                 </p>
                                             </div>
-                                            <div>
-                                                <p className="mt-1 text-sm font-semibold"
-                                                    style={{ color: "var(--color-forest-700)" }}>
-                                                    Total
-                                                </p>
-                                                <p
-                                                    className="text-xs"
-                                                    style={{ color: "var(--color-muted)" }}>
-                                                    ₱{booking.total.toLocaleString("en-PH")}
-                                                </p>
+                                            <div className="flex shrink-0 items-center lg:justify-end">
+                                                <Link
+                                                    href={`/admin/bookings/${booking.id}`}
+                                                    className="inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-stone-50"
+                                                    style={{
+                                                        borderColor: "var(--color-border)",
+                                                        color: "var(--color-forest-700)",
+                                                    }}>
+                                                    View Details
+                                                    <span aria-hidden="true">→</span>
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>
