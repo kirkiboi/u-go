@@ -51,6 +51,7 @@ enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
+  CHECKED_IN
   COMPLETED
 }
 enum PaymentStatus {
@@ -83,4 +84,18 @@ model Booking {
   @@index([room_id, check_in, check_out])
   @@index([guest_email])
   @@index([status, payment_status])
+}
+
+model BookingAuditLog {
+  id             Int      @id @default(autoincrement())
+  booking_id     Int
+  admin_user_id  Int
+  action         String
+  reason         String
+  previous_data  Json
+  new_data       Json
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([booking_id, createdAt])
+  @@index([admin_user_id, createdAt])
 }
