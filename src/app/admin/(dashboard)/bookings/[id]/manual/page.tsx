@@ -56,14 +56,6 @@ export default async function ManualOverridePage({
             requirement: "Requires a paid booking.",
         },
         {
-            title: "Check In Guest",
-            description:
-                "Mark the guest as arrived and currently staying at the resort.",
-            href: `${basePath}/check-in`,
-            enabled: isConfirmed && isPaid,
-            requirement: "Requires a confirmed, paid booking.",
-        },
-        {
             title: "Complete Stay",
             description:
                 "Mark the stay as finished after the guest has checked out.",
