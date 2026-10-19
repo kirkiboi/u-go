@@ -43,7 +43,7 @@ export default async function CheckInPage({
         <main className="mx-auto max-w-2xl space-y-6 p-6">
             <header>
                 <h1 className="mt-4 text-2xl font-bold text-stone-900">
-                    Check In Guest
+                    Check In
                 </h1>
                 <p className="mt-2 text-sm text-stone-600">
                     Confirm that the guest has arrived at the resort and is
@@ -62,7 +62,7 @@ export default async function CheckInPage({
                         </dd>
                     </div>
                     <div>
-                        <dt className="text-sm text-stone-500">Booking Status</dt>
+                        <dt className="text-sm text-stone-500">Current Status</dt>
                         <dd className="mt-1 font-medium text-stone-900">
                             {booking.status.replaceAll("_", " ")}
                         </dd>

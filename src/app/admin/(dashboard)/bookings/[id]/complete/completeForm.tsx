@@ -57,32 +57,35 @@ export default function CompleteStayForm({
     }
 
     return (
-        <div className="mt-6">
-            <p className="text-sm text-stone-600">
-                Only confirm this action once the guest has finished their
-                stay. This action changes the booking status to Completed.
+        <section className="space-y-4 rounded-xl border border-stone-200 bg-white p-5">
+            <h2 className="font-semibold text-stone-900">
+                Confirm Completed Stay
+            </h2>
+            <p className="text-sm leading-6 text-stone-600">
+                This will change the booking status from CHECKED-IN to
+                COMPLETED. Continue only if the guest has finished their stay.
             </p>
             {error && (
                 <p
                     role="alert"
-                    className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                    className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
                     {error}
                 </p>
             )}
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-wrap gap-3">
                 <button
                     type="button"
                     onClick={handleCompleteStay}
                     disabled={loading}
-                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-60">
+                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-2.5 text-sm font-medium text-white cursor-pointer hover:bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-50">
                     {loading ? "Completing Stay..." : "Confirm Completed Stay"}
                 </button>
                 <Link
                     href="/admin/bookings"
-                    className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover:bg-stone-50">
+                    className="rounded-lg border border-stone-300 px-5 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50">
                     Cancel
                 </Link>
             </div>
-        </div>
+        </section>
     );
 }

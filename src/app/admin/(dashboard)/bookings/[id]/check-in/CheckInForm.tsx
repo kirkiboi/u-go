@@ -62,12 +62,11 @@ export default function CheckInForm({
     return (
         <section className="space-y-4 rounded-xl border border-stone-200 bg-white p-5">
             <h2 className="font-semibold text-stone-900">
-                Confirm check-in
+                Confirm Check-In
             </h2>
             <p className="text-sm leading-6 text-stone-600">
                 This will change the booking status from CONFIRMED to
-                CHECKED_IN. The payment status will remain unchanged. Continue
-                only if the guest has actually arrived.
+                CHECKED-IN. Continue only if the guest has arrived.
             </p>
             {error && (
                 <p
