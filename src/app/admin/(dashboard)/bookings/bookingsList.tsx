@@ -333,6 +333,13 @@ export default function BookingsList({
                                                         </Link>
                                                     )
                                                 }
+                                                {booking.status === "CHECKED_IN" && (
+                                                    <Link
+                                                        href={`/admin/bookings/${booking.id}/complete`}
+                                                        className="rounded-lg bg-[var(--color-forest-800)] px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-[var(--color-forest-900)]">
+                                                        Complete Stay
+                                                    </Link>
+                                                )}
                                                 <Link
                                                     href={`/admin/bookings/${booking.id}`}
                                                     className="inline-flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-colors hover:bg-stone-50"
