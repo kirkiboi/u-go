@@ -2,6 +2,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import ConfirmationModal from "@/components/reusable/ConfirmationModal";
 
 export default function CompleteStayForm({
     bookingId,
@@ -10,6 +11,7 @@ export default function CompleteStayForm({
 }) {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
     const [error, setError] = useState("");
     async function handleCompleteStay() {
         setLoading(true);
@@ -72,20 +74,32 @@ export default function CompleteStayForm({
                     {error}
                 </p>
             )}
-            <div className="flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <button
                     type="button"
-                    onClick={handleCompleteStay}
+                    onClick={() => setIsConfirming(true)}
                     disabled={loading}
-                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-2.5 text-sm font-medium text-white cursor-pointer hover:bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-50">
-                    {loading ? "Completing Stay..." : "Confirm Completed Stay"}
+                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-3 text-sm font-medium text-white transition hover: cursor-pointer bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-60">
+                    Complete Stay
                 </button>
                 <Link
                     href="/admin/bookings"
-                    className="rounded-lg border border-stone-300 px-5 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50">
+                    className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover:bg-stone-50">
                     Cancel
                 </Link>
             </div>
+            <ConfirmationModal
+                isOpen={isConfirming}
+                title="Confirm Stay Completion"
+                description="Are you sure the guest has finished their stay? The booking status will change to Completed."
+                confirmLabel="Confirm Completion"
+                isLoading={loading}
+                onCancel={() => setIsConfirming(false)}
+                onConfirm={async () => {
+                    setIsConfirming(false);
+                    await handleCompleteStay();
+                }}
+            />
         </section>
     );
 }

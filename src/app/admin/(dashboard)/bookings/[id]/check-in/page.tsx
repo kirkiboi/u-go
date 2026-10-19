@@ -16,6 +16,13 @@ export default async function CheckInPage({
     }
     const { id } = await params;
     const bookingId = Number(id);
+    const formatDate = (date: Date) =>
+        date.toLocaleDateString("en-PH", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            timeZone: "UTC",
+        });
     if (!Number.isSafeInteger(bookingId) || bookingId < 1) {
         notFound();
     }
@@ -76,13 +83,13 @@ export default async function CheckInPage({
                     <div>
                         <dt className="text-sm text-stone-500">Check-in Date</dt>
                         <dd className="mt-1 font-medium text-stone-900">
-                            {booking.check_in.toISOString().slice(0, 10)}
+                            {formatDate(booking.check_in)}
                         </dd>
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Check-out Date</dt>
                         <dd className="mt-1 font-medium text-stone-900">
-                            {booking.check_out.toISOString().slice(0, 10)}
+                            {formatDate(booking.check_out)}
                         </dd>
                     </div>
                 </dl>
