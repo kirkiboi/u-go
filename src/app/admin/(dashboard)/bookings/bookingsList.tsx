@@ -340,6 +340,13 @@ export default function BookingsList({
                                                         Complete Stay
                                                     </Link>
                                                 )}
+                                                {booking.status === "CONFIRMED" && (
+                                                    <Link
+                                                        href={`/admin/bookings/${booking.id}/cancel`}
+                                                        className="rounded-lg border border-red-200 px-4 py-2 text-center text-sm font-medium text-red-700 transition hover:bg-red-50">
+                                                        Cancel Booking
+                                                    </Link>
+                                                )}
                                                 <Link
                                                     href={`/admin/bookings/${booking.id}`}
                                                     className="inline-flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-colors hover:bg-stone-50"
