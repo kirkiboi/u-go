@@ -59,15 +59,18 @@ export default function CancelBookingForm({
     }
 
     return (
-        <div className="mt-6">
-            <p className="text-sm text-stone-600">
+        <section className="space-y-4 rounded-xl border border-stone-200 bg-white p-5">
+            <h2 className="font-semibold text-stone-900">
+                Confirm Booking Cancellation
+            </h2>
+            <p className="text-sm leading-6 text-stone-600">
                 Cancelling this booking will release its reservation status.
                 This action does not issue a refund.
             </p>
             {error && (
                 <p
                     role="alert"
-                    className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                    className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
                     {error}
                 </p>
             )}
@@ -76,7 +79,7 @@ export default function CancelBookingForm({
                     type="button"
                     onClick={() => setIsConfirming(true)}
                     disabled={loading}
-                    className="rounded-lg bg-red-700 px-5 py-3 text-sm font-medium text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60">
+                    className="rounded-lg bg-red-700 px-5 py-3 text-sm font-medium text-white transition hover: cursor-pointer bg-red-800 disabled:cursor-not-allowed disabled:opacity-60">
                     Cancel Booking
                 </button>
                 <Link
@@ -90,10 +93,11 @@ export default function CancelBookingForm({
                 title="Confirm Booking Cancellation"
                 description="Are you sure you want to cancel this booking? This changes the booking status to Cancelled but does not issue a refund."
                 confirmLabel="Confirm Cancellation"
+                variant="danger"
                 isLoading={loading}
                 onCancel={() => setIsConfirming(false)}
                 onConfirm={handleCancelBooking}
             />
-        </div>
+        </section>
     );
 }

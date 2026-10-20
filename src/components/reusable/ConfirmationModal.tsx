@@ -6,6 +6,7 @@ interface ConfirmationModalProps {
     description: string;
     confirmLabel?: string;
     isLoading?: boolean;
+    variant?: "default" | "danger";
     onCancel: () => void;
     onConfirm: () => void;
 }
@@ -16,6 +17,7 @@ export default function ConfirmationModal({
     description,
     confirmLabel = "Confirm",
     isLoading = false,
+    variant = "default",
     onCancel,
     onConfirm,
 }: ConfirmationModalProps) {
@@ -52,7 +54,7 @@ export default function ConfirmationModal({
                         disabled={isLoading}
                         className="cursor-pointer rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
                         style={{
-                            backgroundColor: "var(--color-forest-700)",
+                            backgroundColor: variant === "danger" ? "#b91c1c" : "var(--color-forest-700)",
                         }}>
                         {isLoading ? "Please wait..." : confirmLabel}
                     </button>

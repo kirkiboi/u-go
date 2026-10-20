@@ -325,9 +325,9 @@ export default function BookingsList({
                                                     booking.payment_status === "PAID" && (
                                                         <Link
                                                             href={`/admin/bookings/${booking.id}/check-in`}
-                                                            className="inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                                                            className="inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 cursor-pointer hover:shadow-md"
                                                             style={{
-                                                                backgroundColor: "var(--color-forest-800)",
+                                                                backgroundColor: "var(--color-forest-700)",
                                                             }}>
                                                             Check In Guest
                                                         </Link>
@@ -355,7 +355,6 @@ export default function BookingsList({
                                                         color: "var(--color-forest-700)",
                                                     }}>
                                                     View Details
-                                                    <span aria-hidden="true">→</span>
                                                 </Link>
                                             </div>
                                         </div>

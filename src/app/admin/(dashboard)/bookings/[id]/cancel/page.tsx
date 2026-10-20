@@ -45,68 +45,68 @@ export default async function CancelBookingPage({
         });
 
     return (
-        <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
-            <Link
-                href={`/admin/bookings/${booking.id}`}
-                className="text-sm text-[var(--color-forest-700)] hover:underline">
-                ← Back to booking details
-            </Link>
+        <main className="mx-auto max-w-2xl space-y-6 p-6">
 
-            <section className="mt-6 rounded-xl border border-[var(--color-border)] bg-white p-6 shadow-sm sm:p-8">
-                <h1 className="text-2xl font-semibold text-[var(--color-forest-900)]">
-                    Cancel Booking
+            <header>
+                <h1 className="mt-4 text-2xl font-bold text-stone-900">
+                    Cancel Reservation
                 </h1>
                 <p className="mt-2 text-sm text-stone-600">
                     Review the booking details before cancelling this reservation.
                 </p>
-                <div className="mt-6 space-y-3 rounded-lg bg-stone-50 p-4 text-sm">
-                    <p>
-                        <span className="font-medium text-stone-700">
-                            Booking reference:
-                        </span>{" "}
-                        {booking.booking_ref}
-                    </p>
-                    <p>
-                        <span className="font-medium text-stone-700">
-                            Guest:
-                        </span>{" "}
-                        {booking.guest_fname} {booking.guest_lname}
-                    </p>
-                    <p>
-                        <span className="font-medium text-stone-700">
-                            Check-in:
-                        </span>{" "}
-                        {formatDate(booking.check_in)}
-                    </p>
-                    <p>
-                        <span className="font-medium text-stone-700">
-                            Check-out:
-                        </span>{" "}
-                        {formatDate(booking.check_out)}
-                    </p>
-                    <p>
-                        <span className="font-medium text-stone-700">
-                            Booking status:
-                        </span>{" "}
-                        {booking.status.replaceAll("_", " ")}
-                    </p>
-                    <p>
-                        <span className="font-medium text-stone-700">
-                            Payment status:
-                        </span>{" "}
-                        {booking.payment_status.replaceAll("_", " ")}
-                    </p>
-                </div>
-                {eligible ? (
-                    <CancelBookingForm bookingId={booking.id} />
-                ) : (
-                    <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            </header>
+
+            <section className="rounded-xl border border-stone-200 bg-white p-5">
+                <h2 className="text-lg font-semibold text-stone-900">
+                    {booking.booking_ref}
+                </h2>
+                <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <dt className="text-sm text-stone-500">Guest</dt>
+                        <dd className="mt-1 font-medium text-stone-900">
+                            {booking.guest_fname} {booking.guest_lname}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt className="text-sm text-stone-500">Current Status</dt>
+                        <dd className="mt-1 font-medium text-stone-900">
+                            {booking.status.replaceAll("_", " ")}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt className="text-sm text-stone-500">Payment Status</dt>
+                        <dd className="mt-1 font-medium text-stone-900">
+                            {booking.payment_status.replaceAll("_", " ")}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt className="text-sm text-stone-500">Check-in Date</dt>
+                        <dd className="mt-1 font-medium text-stone-900">
+                            {formatDate(booking.check_in)}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt className="text-sm text-stone-500">Check-out Date</dt>
+                        <dd className="mt-1 font-medium text-stone-900">
+                            {formatDate(booking.check_out)}
+                        </dd>
+                    </div>
+                </dl>
+            </section>
+            {eligible ? (
+                <CancelBookingForm bookingId={booking.id} />
+            ) : (
+                <section className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+                    <h2 className="font-semibold text-amber-900">
+                        Cancellation unavailable
+                    </h2>
+                    <p className="mt-2 text-sm text-amber-800">
                         Only confirmed bookings can be cancelled through this
                         action. Refresh the booking details to see the latest
                         status.
-                    </div>
-                )}
-            </section>
+                    </p>
+                </section>
+            )}
         </main>
     );
 }
