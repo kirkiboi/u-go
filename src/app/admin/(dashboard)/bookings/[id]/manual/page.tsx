@@ -56,18 +56,10 @@ export default async function ManualOverridePage({
             requirement: "Requires a paid booking.",
         },
         {
-            title: "Complete Stay",
-            description:
-                "Mark the stay as finished after the guest has checked out.",
-            href: `${basePath}/complete`,
-            enabled: booking.status === "CHECKED_IN",
-            requirement: "Requires a checked-in guest.",
-        },
-        {
             title: "Cancel Reservation",
             description:
                 "Cancel a confirmed reservation. A refund, if needed, is handled separately.",
-            href: `${basePath}/cancel`,
+            href: `/admin/bookings/${booking.id}/cancel`,
             enabled: isConfirmed,
             requirement: "Requires a confirmed booking.",
         },
@@ -75,7 +67,7 @@ export default async function ManualOverridePage({
             title: "Reschedule Reservation",
             description:
                 "Change the stay dates while keeping the reservation confirmed.",
-            href: `${basePath}/reschedule`,
+            href: `/admin/bookings/${booking.id}/reschedule`,
             enabled: isConfirmed,
             requirement: "Requires a confirmed booking and available dates.",
         },

@@ -1,5 +1,4 @@
 "use client";
-
 import { useMemo, useState, useEffect } from "react";
 import type { Prisma } from "@prisma/client";
 import Link from "next/link";
@@ -338,13 +337,6 @@ export default function BookingsList({
                                                         href={`/admin/bookings/${booking.id}/complete`}
                                                         className="rounded-lg bg-[var(--color-forest-800)] px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-[var(--color-forest-900)]">
                                                         Complete Stay
-                                                    </Link>
-                                                )}
-                                                {booking.status === "CONFIRMED" && (
-                                                    <Link
-                                                        href={`/admin/bookings/${booking.id}/cancel`}
-                                                        className="rounded-lg border border-red-200 px-4 py-2 text-center text-sm font-medium text-red-700 transition hover:bg-red-50">
-                                                        Cancel Booking
                                                     </Link>
                                                 )}
                                                 <Link
