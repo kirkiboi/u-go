@@ -14,6 +14,8 @@ type ActiveBooking = {
     payment_status: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
     room: {
         name: string;
+        checkInTime: string;
+        checkOutTime: string;
     };
 };
 type Props = {
@@ -24,8 +26,11 @@ function formatDate(date: string) {
         month: "short",
         day: "numeric",
         year: "numeric",
-        timeZone: "UTC",
-    }).format(new Date(`${date.slice(0, 10)}T00:00:00.000Z`));
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Manila",
+    }).format(new Date(date));
 }
 function getNights(checkIn: string, checkOut: string) {
     const start = new Date(`${checkIn.slice(0, 10)}T00:00:00.000Z`);
@@ -59,7 +64,7 @@ export default function ActiveBookingsModal({ bookings }: Props) {
                 <p
                     className="mt-2 text-xs"
                     style={{ color: "var(--color-muted)" }}>
-                    Confirmed stays that have not checked out
+                    Confirmed reservations that have not checked-in yet.
                 </p>
             </button>
 
@@ -86,23 +91,7 @@ export default function ActiveBookingsModal({ bookings }: Props) {
                                     }}>
                                     Active Bookings
                                 </h2>
-                                <p
-                                    className="mt-1 text-sm"
-                                    style={{ color: "var(--color-muted)" }}>
-                                    Manage and review your guests' confirmed stays.
-                                </p>
                             </div>
-
-                            <button
-                                type="button"
-                                onClick={() => setIsOpen(false)}
-                                className="shrink-0 rounded-lg border px-3 py-2 text-sm hover:bg-gray-50"
-                                style={{
-                                    borderColor: "var(--color-border)",
-                                }}
-                                aria-label="Close active bookings">
-                                Close ✕
-                            </button>
                         </div>
 
                         {bookings.length === 0 ? (
@@ -153,27 +142,13 @@ export default function ActiveBookingsModal({ bookings }: Props) {
                                                         {booking.guest_fname}{" "}
                                                         {booking.guest_lname}
                                                     </p>
-                                                    <p
-                                                        className="mt-1 break-all text-sm"
-                                                        style={{
-                                                            color: "var(--color-muted)",
-                                                        }}>
-                                                        {booking.guest_email}
-                                                    </p>
-                                                    <p
-                                                        className="mt-1 text-sm"
-                                                        style={{
-                                                            color: "var(--color-muted)",
-                                                        }}>
-                                                        {booking.guest_phone}
-                                                    </p>
                                                 </div>
                                                 <span
                                                     className={`w-fit p-1 rounded - full px-3 py-1 text-xs font-semibold ${paymentPaid
                                                         ? "bg-green-100 text-green-800"
                                                         : "bg-amber-100 text-amber-800"
                                                         } `}>
-                                                    Payment: {booking.payment_status}
+                                                    {booking.payment_status}
                                                 </span>
                                             </div>
                                             <div
@@ -202,13 +177,13 @@ export default function ActiveBookingsModal({ bookings }: Props) {
                                                         }}>
                                                         Length of stay
                                                     </p>
-                                                    <p className="mt-1 font-semibold">
-                                                        {getNights(
-                                                            booking.check_in,
-                                                            booking.check_out,
-                                                        )}{" "}
-                                                        nights
-                                                    </p>
+                                                    {getNights(
+                                                        booking.check_in,
+                                                        booking.check_out,
+                                                    )}{" "}
+                                                    {getNights(booking.check_in, booking.check_out) === 1
+                                                        ? "night"
+                                                        : "nights"}
                                                 </div>
                                                 <div>
                                                     <p
@@ -219,9 +194,7 @@ export default function ActiveBookingsModal({ bookings }: Props) {
                                                         Check-in
                                                     </p>
                                                     <p className="mt-1 font-medium">
-                                                        {formatDate(
-                                                            booking.check_in,
-                                                        )}
+                                                        {formatDate(booking.check_in)} · {booking.room.checkInTime}
                                                     </p>
                                                 </div>
                                                 <div>
@@ -233,32 +206,9 @@ export default function ActiveBookingsModal({ bookings }: Props) {
                                                         Check-out
                                                     </p>
                                                     <p className="mt-1 font-medium">
-                                                        {formatDate(
-                                                            booking.check_out,
-                                                        )}
+                                                        {formatDate(booking.check_out)} · {booking.room.checkOutTime}
                                                     </p>
                                                 </div>
-                                            </div>
-                                            <div
-                                                className="mt-4 flex items-center justify-between border-t pt-4"
-                                                style={{
-                                                    borderColor:
-                                                        "var(--color-border)",
-                                                }}>
-                                                <span
-                                                    className="text-sm"
-                                                    style={{
-                                                        color: "var(--color-muted)",
-                                                    }}>
-                                                    Total booking amount
-                                                </span>
-                                                <span
-                                                    className="text-lg font-bold"
-                                                    style={{
-                                                        color: "var(--color-forest-900)",
-                                                    }}>
-                                                    ₱{booking.total.toLocaleString("en-PH",)}
-                                                </span>
                                             </div>
                                         </article>
                                     );

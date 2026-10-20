@@ -59,7 +59,7 @@ export default function BookingsList({
     const [statusFilter, setStatusFilter] = useState("CONFIRMED");
     const [dateFilter, setDateFilter] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
-    const bookingsPerPage = 5;
+    const bookingsPerPage = 6;
     const filteredBookings = useMemo(() => {
         const query = search.trim().toLowerCase();
         const now = new Date();
@@ -266,97 +266,105 @@ export default function BookingsList({
                     </div>
                 )}
 
-                <div className="mt-3 space-y-4">
+                <div className="mt-3 grid grid-cols-1 gap-4 xl:grid-cols-2">
                     {paginatedBookings.length > 0 ? (
                         paginatedBookings.map((booking) => (
                             <div
                                 key={booking.id}
-                                className="rounded-xl border bg-white p-6 shadow-sm"
+                                className="rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
                                 style={{ borderColor: "var(--color-border)" }}>
-                                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                                    <div className="min-w-0 flex-1">
-                                        <div className="flex flex-wrap items-center gap-3">
-                                            <h2
-                                                className="text-lg font-semibold"
-                                                style={{ color: "var(--color-forest-900)" }}>
-                                                {booking.guest_fname} {booking.guest_lname}
-                                            </h2>
-                                            <span
-                                                className="rounded-full px-2.5 py-1 text-xs font-medium"
-                                                style={getStatusStyles(booking.status)}>
-                                                {booking.status
-                                                    .replaceAll("_", " ").toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase())}
-                                            </span>
-                                        </div>
+                                <div className="flex min-w-0 items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <h2
+                                            className="truncate text-base font-semibold"
+                                            style={{ color: "var(--color-forest-900)" }}>
+                                            {booking.guest_fname} {booking.guest_lname}
+                                        </h2>
                                         <p
-                                            className="mt-1 text-xs"
+                                            className="mt-1 truncate text-xs"
                                             style={{ color: "var(--color-muted)" }}>
                                             {booking.booking_ref}
                                         </p>
-                                        <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                                            <div className="grid flex-1 gap-4 sm:grid-cols-2">
-                                                <div>
-                                                    <p className="mt-1 text-sm font-medium">
-                                                        Accommodation
-                                                    </p>
-                                                    <p className="text-xs"
-                                                        style={{ color: "var(--color-muted)" }}>
-                                                        {booking.room.name}
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="mt-1 text-sm font-medium">
-                                                        Stay
-                                                    </p>
-                                                    <p className="text-xs"
-                                                        style={{ color: "var(--color-muted)" }}>
-                                                        {booking.check_in.toISOString().slice(0, 10)}
-                                                    </p>
-                                                    <p
-                                                        className="text-xs"
-                                                        style={{ color: "var(--color-muted)" }}>
-                                                        to {booking.check_out.toISOString().slice(0, 10)}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="flex shrink-0 flex-col gap-2 sm:w-44">
-                                                {booking.status === "CONFIRMED" &&
-                                                    booking.payment_status === "PAID" && (
-                                                        <Link
-                                                            href={`/admin/bookings/${booking.id}/check-in`}
-                                                            className="inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 cursor-pointer hover:shadow-md"
-                                                            style={{
-                                                                backgroundColor: "var(--color-forest-700)",
-                                                            }}>
-                                                            Check In Guest
-                                                        </Link>
-                                                    )
-                                                }
-                                                {booking.status === "CHECKED_IN" && (
-                                                    <Link
-                                                        href={`/admin/bookings/${booking.id}/complete`}
-                                                        className="rounded-lg bg-[var(--color-forest-800)] px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-[var(--color-forest-900)]">
-                                                        Complete Stay
-                                                    </Link>
-                                                )}
-                                                <Link
-                                                    href={`/admin/bookings/${booking.id}`}
-                                                    className="inline-flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-colors hover:bg-stone-50"
-                                                    style={{
-                                                        borderColor: "var(--color-border)",
-                                                        color: "var(--color-forest-700)",
-                                                    }}>
-                                                    View Details
-                                                </Link>
-                                            </div>
-                                        </div>
                                     </div>
+                                    <span
+                                        className="shrink-0 rounded-full px-2 py-1 text-[11px] font-medium"
+                                        style={getStatusStyles(booking.status)}>
+                                        {booking.status
+                                            .replaceAll("_", " ")
+                                            .toLowerCase()
+                                            .replace(/\b\w/g, (char) => char.toUpperCase())}
+                                    </span>
+                                </div>
+                                <div
+                                    className="mt-4 grid grid-cols-2 gap-3 border-t pt-3 sm:grid-cols-3"
+                                    style={{ borderColor: "var(--color-border)" }}>
+                                    <div className="min-w-0">
+                                        <p
+                                            className="text-xs"
+                                            style={{ color: "var(--color-muted)" }}>
+                                            Accommodation
+                                        </p>
+                                        <p className="mt-1 break-words text-sm font-medium">
+                                            {booking.room.name}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p
+                                            className="text-xs"
+                                            style={{ color: "var(--color-muted)" }}>
+                                            Check-in
+                                        </p>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {booking.check_in.toISOString().slice(0, 10)}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p
+                                            className="text-xs"
+                                            style={{ color: "var(--color-muted)" }}>
+                                            Check-out
+                                        </p>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {booking.check_out.toISOString().slice(0, 10)}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div
+                                    className="mt-4 flex flex-wrap gap-2 border-t pt-3"
+                                    style={{ borderColor: "var(--color-border)" }}>
+                                    {booking.status === "CONFIRMED" &&
+                                        booking.payment_status === "PAID" && (
+                                            <Link
+                                                href={`/admin/bookings/${booking.id}/check-in`}
+                                                className="inline-flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold text-white transition hover:brightness-110 sm:flex-none"
+                                                style={{
+                                                    backgroundColor: "var(--color-forest-700)",
+                                                }}>
+                                                Check In Guest
+                                            </Link>
+                                        )}
+                                    {booking.status === "CHECKED_IN" && (
+                                        <Link
+                                            href={`/admin/bookings/${booking.id}/complete`}
+                                            className="inline-flex flex-1 items-center justify-center rounded-lg bg-[var(--color-forest-800)] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[var(--color-forest-900)] sm:flex-none">
+                                            Complete Stay
+                                        </Link>
+                                    )}
+                                    <Link
+                                        href={`/admin/bookings/${booking.id}`}
+                                        className="inline-flex flex-1 items-center justify-center rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-stone-50 sm:flex-none"
+                                        style={{
+                                            borderColor: "var(--color-border)",
+                                            color: "var(--color-forest-700)",
+                                        }}>
+                                        View Details
+                                    </Link>
                                 </div>
                             </div>
                         ))
                     ) : (
                         <div
-                            className="rounded-xl border bg-white px-6 py-12 text-center"
+                            className="col-span-full rounded-xl border bg-white px-6 py-12 text-center"
                             style={{ borderColor: "var(--color-border)" }}>
                             <h2
                                 className="text-base font-semibold"

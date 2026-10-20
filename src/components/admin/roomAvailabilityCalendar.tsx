@@ -96,7 +96,7 @@ export default function RoomAvailabilityCalendar({
 
     return (
         <section
-            className="rounded-xl border bg-white p-5 shadow-sm sm:p-6"
+            className="bg-white p-5-sm sm:p-6"
             style={{ borderColor: "var(--color-border)" }}>
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>

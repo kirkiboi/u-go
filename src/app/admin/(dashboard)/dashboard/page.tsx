@@ -57,7 +57,11 @@ export default async function AdminDashboard() {
             orderBy: { check_in: "asc" },
             include: {
                 room: {
-                    select: { name: true },
+                    select: {
+                        name: true,
+                        checkInTime: true,
+                        checkOutTime: true,
+                    },
                 },
             },
         }),
