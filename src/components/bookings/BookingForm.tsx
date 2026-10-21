@@ -1,16 +1,35 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Room } from "@/types/room";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
+import { DayPicker } from "react-day-picker";
 
 type BookingFormProps = {
     rooms: Room[];
 };
+type UnavailableRange = {
+    checkIn: string;
+    checkOut: string;
+};
+function dateToKey(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
+    return `${year}-${month}-${day}`;
+}
+function keyToDate(key: string): Date {
+    const [year, month, day] = key.split("-").map(Number);
+
+    return new Date(year, month - 1, day, 12);
+}
 export default function BookingForm({ rooms }: BookingFormProps) {
-
+    const [activeDatePicker, setActiveDatePicker] = useState<"checkIn" | "checkOut" | null>(null);
+    const [unavailableRanges, setUnavailableRanges] = useState<UnavailableRange[]>([]);
+    const [availabilityLoading, setAvailabilityLoading] = useState(false);
+    const [availabilityError, setAvailabilityError] = useState("");
     const [step, setStep] = useState(1);
     const [checkIn, setCheckIn] = useState("");
     const [checkOut, setCheckOut] = useState("");
@@ -23,14 +42,11 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [apiError, setApiError] = useState("");
     const [bookingMessage, setBookingMessage] = useState("");
-
     const today = new Date();
     today.setDate(today.getDate() + 1);
     const minimumCheckInDate = today
         .toISOString()
         .split("T")[0];
-
-
     const minimumCheckOutDate = checkIn
         ? (() => {
             const date = new Date(checkIn);
@@ -38,13 +54,77 @@ export default function BookingForm({ rooms }: BookingFormProps) {
             return date.toISOString().split("T")[0];
         })()
         : "";
-
     const [selectedRoomId, setSelectedRoomId] = useState(
         rooms[0]?.id ?? 0
     );
     const selectedRoom = rooms.find(
         (room) => room.id === selectedRoomId
     );
+    const isCheckInUnavailable = (date: Date): boolean => {
+        const dateKey = dateToKey(date);
+        return unavailableRanges.some(
+            (range) => range.checkIn <= dateKey && dateKey < range.checkOut
+        );
+    };
+    const isCheckoutUnavailable = (
+        checkoutKey: string,
+        checkInKey: string
+    ): boolean => {
+        if (checkoutKey <= checkInKey) {
+            return true;
+        }
+        return unavailableRanges.some(
+            (range) =>
+                range.checkIn < checkoutKey &&
+                range.checkOut > checkInKey
+        );
+    };
+
+    useEffect(() => {
+        if (!selectedRoomId) {
+            setUnavailableRanges([]);
+            return;
+        }
+        let cancelled = false;
+        async function fetchAvailability() {
+            setAvailabilityLoading(true);
+            setAvailabilityError("");
+            setUnavailableRanges([]);
+            setCheckIn("");
+            setCheckOut("");
+            setActiveDatePicker(null);
+            try {
+                const response = await fetch(
+                    `/api/rooms/${selectedRoomId}/availability`,
+                    { cache: "no-store" }
+                );
+                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error(
+                        result.error || "Unable to retrieve availability."
+                    );
+                }
+                if (!cancelled) {
+                    setUnavailableRanges(result.unavailableRanges);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    console.error("Availability fetch failed:", error);
+                    setAvailabilityError(
+                        "Unable to load availability. Please try again."
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setAvailabilityLoading(false);
+                }
+            }
+        }
+        fetchAvailability();
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedRoomId]);
     const nights = Math.max(
         1,
         Math.ceil(
@@ -196,55 +276,99 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="flex flex-col">
+                                        <div className="flex flex-col relative">
                                             <label className="block text-sm font-medium text-stone-700 mb-2">
                                                 Check-in Date
                                             </label>
-                                            <input
-                                                value={checkIn}
-                                                onChange={(e) => {
-                                                    const newCheckIn =
-                                                        e.target.value;
-                                                    setCheckIn(newCheckIn);
-                                                    const nextDay =
-                                                        new Date(newCheckIn);
-                                                    nextDay.setDate(
-                                                        nextDay.getDate() + 1
-                                                    );
-                                                    const newMinimumCheckOut =
-                                                        nextDay
-                                                            .toISOString()
-                                                            .split("T")[0];
-                                                    if (
-                                                        checkOut <
-                                                        newMinimumCheckOut
-                                                    ) {
-                                                        setCheckOut(
-                                                            newMinimumCheckOut
-                                                        );
-                                                    }
-                                                }}
-                                                type="date"
-                                                min={minimumCheckInDate}
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none"
-                                            />
-                                            <p className="mt-1 text-xs text-stone-500 leading-relaxed">
-                                                Check-in must be a day after today. We thoroughly prepare the space for your visit.
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-stone-700 mb-2">Check-out Date</label>
-                                            <input
-                                                value={checkOut}
-                                                onChange={(e) =>
-                                                    setCheckOut(
-                                                        e.target.value
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setActiveDatePicker(
+                                                        activeDatePicker === "checkIn" ? null : "checkIn"
                                                     )
                                                 }
-                                                min={minimumCheckOutDate}
-                                                type="date"
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none"
-                                            />
+                                                disabled={availabilityLoading || !!availabilityError}
+                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-2 focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none text-left bg-white text-stone-700 disabled:opacity-50">
+                                                {checkIn || "Select check-in date"}
+                                            </button>
+                                            <p className="mt-1 text-xs text-stone-500 leading-relaxed">
+                                                Check-in must be a day after today. We thoroughly prepare the
+                                                space for your visit. Greyed-out dates are taken.
+                                            </p>
+                                            {activeDatePicker === "checkIn" && (
+                                                <div className="absolute left-0 top-full z-30 mt-2 rounded-xl border border-stone-200 bg-white p-3 shadow-xl">
+                                                    <DayPicker
+                                                        mode="single"
+                                                        selected={checkIn ? keyToDate(checkIn) : undefined}
+                                                        disabled={(date) =>
+                                                            dateToKey(date) < minimumCheckInDate ||
+                                                            isCheckInUnavailable(date) ||
+                                                            availabilityLoading ||
+                                                            !!availabilityError
+                                                        }
+                                                        onSelect={(date) => {
+                                                            if (!date) return;
+                                                            const newCheckIn = dateToKey(date);
+                                                            setCheckIn(newCheckIn);
+                                                            if (
+                                                                !checkOut ||
+                                                                checkOut <= newCheckIn ||
+                                                                isCheckoutUnavailable(checkOut, newCheckIn)
+                                                            ) {
+                                                                setCheckOut("");
+                                                            }
+                                                            setActiveDatePicker(null);
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col relative">
+                                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                                                Check-out Date
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    checkIn &&
+                                                    setActiveDatePicker(
+                                                        activeDatePicker === "checkOut" ? null : "checkOut"
+                                                    )
+                                                }
+                                                disabled={
+                                                    !checkIn ||
+                                                    availabilityLoading ||
+                                                    !!availabilityError
+                                                }
+                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-2 focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none text-left bg-white text-stone-700 disabled:opacity-50">
+                                                {checkOut || "Select check-out date"}
+                                            </button>
+                                            {activeDatePicker === "checkOut" && checkIn && (
+                                                <div className="absolute left-0 top-full z-30 mt-2 rounded-xl border border-stone-200 bg-white p-3 shadow-xl">
+                                                    <DayPicker
+                                                        mode="single"
+                                                        selected={checkOut ? keyToDate(checkOut) : undefined}
+                                                        disabled={(date) =>
+                                                            dateToKey(date) <= checkIn ||
+                                                            isCheckoutUnavailable(dateToKey(date), checkIn) ||
+                                                            availabilityLoading ||
+                                                            !!availabilityError
+                                                        }
+                                                        onSelect={(date) => {
+                                                            if (!date || !checkIn) return;
+
+                                                            const newCheckOut = dateToKey(date);
+
+                                                            if (
+                                                                !isCheckoutUnavailable(newCheckOut, checkIn)
+                                                            ) {
+                                                                setCheckOut(newCheckOut);
+                                                                setActiveDatePicker(null);
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

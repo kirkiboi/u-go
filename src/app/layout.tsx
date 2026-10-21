@@ -1,4 +1,5 @@
 import "./globals.css";
+import "react-day-picker/style.css";
 export default function RootLayout({
     children,
 }: Readonly<{
