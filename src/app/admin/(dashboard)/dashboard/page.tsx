@@ -106,7 +106,6 @@ export default async function AdminDashboard() {
             },
         }),
     ]);
-    const activeBookings = activeBookingRecords.length;
     const activeBookingsForModal = activeBookingRecords.map((booking) => ({
         id: booking.id,
         booking_ref: booking.booking_ref,

@@ -30,7 +30,6 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const [unavailableRanges, setUnavailableRanges] = useState<UnavailableRange[]>([]);
     const [availabilityLoading, setAvailabilityLoading] = useState(false);
     const [availabilityError, setAvailabilityError] = useState("");
-    const [step, setStep] = useState(1);
     const [checkIn, setCheckIn] = useState("");
     const [checkOut, setCheckOut] = useState("");
     const [firstName, setFirstName] = useState("");
@@ -47,13 +46,6 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const minimumCheckInDate = today
         .toISOString()
         .split("T")[0];
-    const minimumCheckOutDate = checkIn
-        ? (() => {
-            const date = new Date(checkIn);
-            date.setDate(date.getDate() + 1);
-            return date.toISOString().split("T")[0];
-        })()
-        : "";
     const [selectedRoomId, setSelectedRoomId] = useState(
         rooms[0]?.id ?? 0
     );
@@ -82,7 +74,6 @@ export default function BookingForm({ rooms }: BookingFormProps) {
 
     useEffect(() => {
         if (!selectedRoomId) {
-            setUnavailableRanges([]);
             return;
         }
         let cancelled = false;

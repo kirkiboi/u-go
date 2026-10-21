@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import type { Prisma } from "@prisma/client";
 import Link from "next/link";
 
@@ -99,17 +99,17 @@ export default function BookingsList({
     const totalPages = Math.ceil(
         filteredBookings.length / bookingsPerPage
     );
+    const safeCurrentPage = Math.min(
+        currentPage,
+        Math.max(1, totalPages)
+    );
     const paginatedBookings = useMemo(() => {
-        const startIndex = (currentPage - 1) * bookingsPerPage;
-
+        const startIndex = (safeCurrentPage - 1) * bookingsPerPage;
         return filteredBookings.slice(
             startIndex,
             startIndex + bookingsPerPage
         );
-    }, [filteredBookings, currentPage]);
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [search, statusFilter, dateFilter]);
+    }, [filteredBookings, safeCurrentPage]);
 
     return (
         <section className="min-h-screen px-8 py-8">

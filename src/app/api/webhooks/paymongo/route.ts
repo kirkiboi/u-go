@@ -4,7 +4,28 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
-
+type PayMongoPayment = {
+    attributes?: {
+        status?: string;
+        amount?: number;
+        currency?: string;
+    };
+};
+type PayMongoWebhookEvent = {
+    data?: {
+        attributes?: {
+            livemode?: boolean;
+            type?: string;
+            data?: {
+                id?: string;
+                attributes?: {
+                    reference_number?: string;
+                    payments?: PayMongoPayment[];
+                };
+            };
+        };
+    };
+};
 function verifyPayMongoSignature(
     rawBody: string,
     signatureHeader: string | null,
@@ -47,10 +68,10 @@ export async function POST(request: Request) {
         );
     }
 
-    let event: any;
+    let event: PayMongoWebhookEvent;
 
     try {
-        event = JSON.parse(rawBody);
+        event = JSON.parse(rawBody) as PayMongoWebhookEvent;
     } catch {
         return NextResponse.json(
             { error: "Invalid JSON payload." },
@@ -119,8 +140,7 @@ export async function POST(request: Request) {
         }
 
         const paidPayment = payments.find(
-            (payment: any) =>
-                payment?.attributes?.status === "paid"
+            (payment) => payment.attributes?.status === "paid"
         );
         if (!paidPayment) {
             return NextResponse.json(
