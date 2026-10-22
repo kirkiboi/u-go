@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 type PayMongoPayment = {
+    id?: string;
     attributes?: {
         status?: string;
         amount?: number;
@@ -148,6 +149,19 @@ export async function POST(request: Request) {
                 { status: 400 }
             );
         }
+        if (
+            typeof paidPayment.id !== "string" ||
+            paidPayment.id.trim().length === 0
+        ) {
+            console.error("Paid payment is missing its payment ID.", {
+                bookingRef,
+                sessionId,
+            });
+            return NextResponse.json(
+                { received: true, requiresReview: true },
+                { status: 200 }
+            );
+        }
 
         const paidAttributes = paidPayment.attributes;
         const expectedAmount = booking.total * 100;
@@ -199,6 +213,7 @@ export async function POST(request: Request) {
             data: {
                 status: "CONFIRMED",
                 payment_status: "PAID",
+                paymongo_payment_id: paidPayment.id,
             },
         });
         if (confirmation.count !== 1) {

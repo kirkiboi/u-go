@@ -81,9 +81,19 @@ model Booking {
   updatedAt     DateTime      @updatedAt @db.Timestamptz(6)
   paymongo_session_id String?   @unique
   payment_expires_at  DateTime? @db.Timestamptz(6)
+  paymongo_payment_id  String?   @unique
+  paymongo_refund_status PayMongoRefundStatus?
+  paymongo_refund_reason String?  
   @@index([room_id, check_in, check_out])
   @@index([guest_email])
   @@index([status, payment_status])
+}
+
+enum PayMongoRefundStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
 }
 
 model BookingAuditLog {
@@ -95,7 +105,6 @@ model BookingAuditLog {
   previous_data  Json
   new_data       Json
   createdAt      DateTime @default(now()) @db.Timestamptz(6)
-
   @@index([booking_id, createdAt])
   @@index([admin_user_id, createdAt])
 }

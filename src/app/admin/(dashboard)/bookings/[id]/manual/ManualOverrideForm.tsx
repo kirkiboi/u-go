@@ -1,7 +1,7 @@
 
 "use client";
 import { useState } from "react";
-type BookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
+import type { BookingStatus } from "@prisma/client";
 
 type Props = {
     bookingId: number;
@@ -21,7 +21,9 @@ export default function ManualOverrideForm({
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [success, setSuccess] = useState(false);
-    const isCompleted = currentStatus === "COMPLETED";
+    const isLocked =
+        currentStatus === "COMPLETED" ||
+        currentStatus === "CHECKED_IN";
     const canConfirm = paymentStatus === "PAID";
 
     async function handleSubmit(
@@ -79,9 +81,11 @@ export default function ManualOverrideForm({
                 <p className="font-semibold text-stone-900">{paymentStatus}</p>
             </div>
 
-            {isCompleted ? (
+            {isLocked ? (
                 <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-800">
-                    Completed bookings are locked from manual changes.
+                    {currentStatus === "COMPLETED"
+                        ? "Completed bookings are locked from manual changes."
+                        : "Checked-in bookings are locked from manual changes."}
                 </p>
             ) : (
                 <>
