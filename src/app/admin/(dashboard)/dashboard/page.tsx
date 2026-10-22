@@ -33,10 +33,10 @@ export default async function AdminDashboard() {
         `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
     const today = new Date(`${todayKey}T00:00:00.000Z`);
     const monthStart = new Date(
-        Date.UTC(year, month - 1, 1) - 8 * 60 * 60 * 1000
+        `${year}-${String(month).padStart(2, "0")}-01T00:00:00+08:00`
     );
     const nextMonthStart = new Date(
-        Date.UTC(year, month, 1) - 8 * 60 * 60 * 1000
+        `${month === 12 ? year + 1 : year}-${String(month === 12 ? 1 : month + 1).padStart(2, "0")}-01T00:00:00+08:00`
     );
     const [
         rooms,

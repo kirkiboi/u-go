@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/authorization";
 
 type BookingDetailPageProps = {
     params: Promise<{ id: string }>;
@@ -88,6 +89,7 @@ function DetailItem({
 export default async function BookingDetailPage({
     params,
 }: BookingDetailPageProps) {
+    await requireAdmin();
     const { id } = await params;
     const bookingId = Number(id);
     if (!Number.isInteger(bookingId) || bookingId < 1) {
