@@ -354,7 +354,7 @@ export async function POST(request: NextRequest) {
                 );
             }
         }
-        console.error(" testing mali:", error);
+        console.error("Unexpected error in POST /api/bookings:", error);
         return NextResponse.json(
             { error: "Something went wrong while creating your booking." },
             { status: 500 }

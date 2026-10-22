@@ -248,7 +248,7 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                                 className="w-full appearance-none border-stone-300 rounded-lg p-3 pr-10 border focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none transition-colors hover:cursor-pointer">
                                                 {rooms.map((room) => (
                                                     <option key={room.id} value={room.id}>
-                                                        {room.name} - ₱{room.price}/night
+                                                        {room.name} - ₱{Number(room.price).toLocaleString("en-PH")}/night
                                                     </option>
                                                 ))}
                                             </select>
@@ -279,7 +279,7 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                                     )
                                                 }
                                                 disabled={availabilityLoading || !!availabilityError}
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-2 focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none text-left bg-white text-stone-700 disabled:opacity-50">
+                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-2 focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none text-left bg-white text-stone-700 disabled:opacity-50 hover: cursor-pointer">
                                                 {checkIn || "Select check-in date"}
                                             </button>
                                             <p className="mt-1 text-xs text-stone-500 leading-relaxed">
@@ -331,7 +331,7 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                                                     availabilityLoading ||
                                                     !!availabilityError
                                                 }
-                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-2 focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none text-left bg-white text-stone-700 disabled:opacity-50">
+                                                className="w-full border-stone-300 rounded-lg p-3 border focus:ring-2 focus:ring-[var(--color-forest-500)] focus:border-[var(--color-forest-500)] outline-none text-left bg-white text-stone-700 disabled:opacity-50 hover: cursor-pointer">
                                                 {checkOut || "Select check-out date"}
                                             </button>
                                             {activeDatePicker === "checkOut" && checkIn && (

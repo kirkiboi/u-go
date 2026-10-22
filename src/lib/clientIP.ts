@@ -1,11 +1,19 @@
-
 import type { NextRequest } from "next/server";
 export function getClientIp(request: NextRequest): string | null {
-    // local development
+
     if (process.env.NODE_ENV === "development") {
         return "local-development";
     }
-    // prod.
-    const clientIp = request.headers.get("x-real-ip")?.trim();
-    return clientIp || null;
+
+    const forwardedFor = request.headers.get("x-forwarded-for");
+
+    if (forwardedFor) {
+        const clientIp = forwardedFor.split(",")[0]?.trim();
+        if (clientIp) {
+            return clientIp;
+        }
+    }
+
+    const realIp = request.headers.get("x-real-ip")?.trim();
+    return realIp || null;
 }
