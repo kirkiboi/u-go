@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/prisma";
@@ -14,6 +13,7 @@ type PayMongoPayment = {
 };
 type PayMongoWebhookEvent = {
     data?: {
+        id?: string;
         attributes?: {
             livemode?: boolean;
             type?: string;
@@ -22,8 +22,10 @@ type PayMongoWebhookEvent = {
                 attributes?: {
                     reference_number?: string;
                     payments?: PayMongoPayment[];
+                    status?: string;
                 };
             };
+            status?: string;
         };
     };
 };
@@ -93,10 +95,100 @@ export async function POST(request: Request) {
             { status: 401 }
         );
     }
-    if (eventAttributes?.type !== "checkout_session.payment.paid") {
+    const eventType = eventAttributes?.type;
+    if (
+        eventType === "payment.refunded" ||
+        eventType === "payment.refund.updated"
+    ) {
+        const refund = eventAttributes?.data;
+        const refundId = refund?.id;
+        const refundStatus = refund?.attributes?.status;
+
+        if (typeof refundId !== "string" || typeof refundStatus !== "string") {
+            console.error("Invalid PayMongo refund webhook payload.", { eventType, });
+            return NextResponse.json(
+                { error: "Invalid refund event data." },
+                { status: 400 }
+            );
+        }
+
+        const statusMap = {
+            pending: "PENDING",
+            processing: "PROCESSING",
+            succeeded: "SUCCEEDED",
+            failed: "FAILED",
+        } as const;
+
+        if (!(refundStatus in statusMap)) {
+            console.warn("Unknown PayMongo refund status.", {
+                refundId,
+                refundStatus,
+            });
+            return NextResponse.json(
+                { received: true, requiresReview: true },
+                { status: 200 }
+            );
+        }
+        const mappedStatus = statusMap[refundStatus as keyof typeof statusMap];
+        try {
+            const booking = await prisma.booking.findFirst({
+                where: { paymongo_refund_id: refundId },
+                select: {
+                    id: true,
+                    payment_status: true,
+                    paymongo_refund_status: true,
+                },
+            });
+            if (!booking) {
+                console.warn("No booking matches the PayMongo refund event.", { refundId, eventType });
+                return NextResponse.json(
+                    { received: true, requiresReview: true },
+                    { status: 200 }
+                );
+            }
+            if (booking.paymongo_refund_status === "SUCCEEDED" && mappedStatus !== "SUCCEEDED") {
+                return NextResponse.json(
+                    { received: true, alreadyProcessed: true },
+                    { status: 200 }
+                );
+            }
+            await prisma.booking.update({
+                where: { id: booking.id },
+                data: {
+                    paymongo_refund_status: mappedStatus,
+                    ...(mappedStatus === "SUCCEEDED"
+                        ? { payment_status: "REFUNDED" }
+                        : {}),
+                },
+            });
+            return NextResponse.json(
+                {
+                    received: true,
+                    refundId,
+                    refundStatus: mappedStatus,
+                },
+                { status: 200 }
+            );
+        } catch (error) {
+            console.error("PayMongo refund webhook processing failed:", {
+                refundId,
+                error,
+            });
+            return NextResponse.json(
+                { error: "Unable to process refund webhook." },
+                { status: 500 }
+            );
+        }
+    }
+    if (eventType !== "checkout_session.payment.paid") {
         return NextResponse.json({ received: true }, { status: 200 });
     }
-
+    if (!eventAttributes) {
+        return NextResponse.json(
+            { error: "Invalid webhook event data." },
+            { status: 400 }
+        );
+    }
     const session = eventAttributes.data;
     const sessionId = session?.id;
     const attributes = session?.attributes;
