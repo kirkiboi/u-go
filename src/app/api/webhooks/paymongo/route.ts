@@ -23,6 +23,7 @@ type PayMongoWebhookEvent = {
                     reference_number?: string;
                     payments?: PayMongoPayment[];
                     status?: string;
+                    payment_id?: string;
                 };
             };
             status?: string;
@@ -100,17 +101,78 @@ export async function POST(request: Request) {
         eventType === "payment.refunded" ||
         eventType === "payment.refund.updated"
     ) {
-        const refund = eventAttributes?.data;
-        const refundId = refund?.id;
-        const refundStatus = refund?.attributes?.status;
+        const resource = eventAttributes?.data;
+        const resourceId = resource?.id;
+        const resourceStatus = resource?.attributes?.status;
 
-        if (typeof refundId !== "string" || typeof refundStatus !== "string") {
-            console.error("Invalid PayMongo refund webhook payload.", { eventType, });
+        if (
+            typeof resourceId !== "string" ||
+            typeof resourceStatus !== "string"
+        ) {
+            console.error("Invalid PayMongo refund webhook payload.", {
+                eventType,
+            });
+
             return NextResponse.json(
                 { error: "Invalid refund event data." },
                 { status: 400 }
             );
         }
+        if (eventType === "payment.refunded") {
+            if (resourceStatus !== "refunded") {
+                return NextResponse.json(
+                    { received: true, requiresReview: true },
+                    { status: 200 }
+                );
+            }
+            try {
+                const booking = await prisma.booking.findUnique({
+                    where: { paymongo_payment_id: resourceId },
+                    select: {
+                        id: true,
+                        payment_status: true,
+                        paymongo_refund_status: true,
+                    },
+                });
+                if (!booking) {
+                    console.warn(
+                        "No booking matches the refunded PayMongo payment.",
+                        { paymentId: resourceId }
+                    );
+                    return NextResponse.json(
+                        { received: true, requiresReview: true },
+                        { status: 200 }
+                    );
+                }
+                await prisma.booking.update({
+                    where: { id: booking.id },
+                    data: {
+                        payment_status: "REFUNDED",
+                        paymongo_refund_status: "SUCCEEDED",
+                    },
+                });
+                return NextResponse.json(
+                    {
+                        received: true,
+                        paymentId: resourceId,
+                        paymentStatus: "REFUNDED",
+                        refundStatus: "SUCCEEDED",
+                    },
+                    { status: 200 }
+                );
+            } catch (error) {
+                console.error(
+                    "PayMongo refunded-payment webhook processing failed:",
+                    { paymentId: resourceId, error }
+                );
+                return NextResponse.json(
+                    { error: "Unable to process refunded payment webhook." },
+                    { status: 500 }
+                );
+            }
+        }
+        const refundId = resourceId;
+        const paymentId = resource?.attributes?.payment_id;
 
         const statusMap = {
             pending: "PENDING",
@@ -119,45 +181,77 @@ export async function POST(request: Request) {
             failed: "FAILED",
         } as const;
 
-        if (!(refundStatus in statusMap)) {
+        if (!(resourceStatus in statusMap)) {
             console.warn("Unknown PayMongo refund status.", {
                 refundId,
-                refundStatus,
+                refundStatus: resourceStatus,
             });
             return NextResponse.json(
                 { received: true, requiresReview: true },
                 { status: 200 }
             );
         }
-        const mappedStatus = statusMap[refundStatus as keyof typeof statusMap];
+
+        const mappedStatus =
+            statusMap[resourceStatus as keyof typeof statusMap];
+
         try {
             const booking = await prisma.booking.findFirst({
-                where: { paymongo_refund_id: refundId },
+                where: {
+                    OR: [
+                        { paymongo_refund_id: refundId },
+                        ...(typeof paymentId === "string"
+                            ? [{ paymongo_payment_id: paymentId }]
+                            : []),
+                    ],
+                },
                 select: {
                     id: true,
-                    payment_status: true,
+                    paymongo_refund_id: true,
                     paymongo_refund_status: true,
+                    payment_status: true,
                 },
             });
             if (!booking) {
-                console.warn("No booking matches the PayMongo refund event.", { refundId, eventType });
+                console.warn(
+                    "No booking matches the PayMongo refund event.",
+                    { refundId, paymentId }
+                );
                 return NextResponse.json(
                     { received: true, requiresReview: true },
                     { status: 200 }
                 );
             }
-            if (booking.paymongo_refund_status === "SUCCEEDED" && mappedStatus !== "SUCCEEDED") {
+            if (booking.paymongo_refund_status === "SUCCEEDED") {
                 return NextResponse.json(
                     { received: true, alreadyProcessed: true },
+                    { status: 200 }
+                );
+            }
+            if (
+                booking.paymongo_refund_id &&
+                booking.paymongo_refund_id !== refundId
+            ) {
+                console.error(
+                    "PayMongo refund ID does not match the booking record.",
+                    {
+                        bookingId: booking.id,
+                        existingRefundId: booking.paymongo_refund_id,
+                        receivedRefundId: refundId,
+                    }
+                );
+                return NextResponse.json(
+                    { received: true, requiresReview: true },
                     { status: 200 }
                 );
             }
             await prisma.booking.update({
                 where: { id: booking.id },
                 data: {
+                    paymongo_refund_id: refundId,
                     paymongo_refund_status: mappedStatus,
                     ...(mappedStatus === "SUCCEEDED"
-                        ? { payment_status: "REFUNDED" }
+                        ? { payment_status: "REFUNDED" as const }
                         : {}),
                 },
             });
@@ -170,10 +264,11 @@ export async function POST(request: Request) {
                 { status: 200 }
             );
         } catch (error) {
-            console.error("PayMongo refund webhook processing failed:", {
-                refundId,
-                error,
-            });
+            console.error(
+                "PayMongo refund webhook processing failed:",
+                { refundId, error }
+            );
+
             return NextResponse.json(
                 { error: "Unable to process refund webhook." },
                 { status: 500 }
