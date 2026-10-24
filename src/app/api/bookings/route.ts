@@ -25,38 +25,25 @@ export async function POST(request: NextRequest) {
                 {
                     status: 429,
                     headers: {
-                        "Retry-After": String(
-                            Math.max(1, Math.ceil((reset - Date.now()) / 1000))
-                        ),
+                        "Retry-After": String(Math.max(1, Math.ceil((reset - Date.now()) / 1000))),
                     },
                 }
             );
         }
         const body = await request.json();
         const roomId = Number(body.roomId);
-        const firstName =
-            typeof body.firstName === "string" ? body.firstName.trim() : "";
-        const lastName =
-            typeof body.lastName === "string" ? body.lastName.trim() : "";
-        const email =
-            typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-        const phone =
-            typeof body.phone === "string" ? body.phone.trim() : "";
-        const checkIn =
-            typeof body.checkIn === "string" ? body.checkIn : "";
-        const checkOut =
-            typeof body.checkOut === "string" ? body.checkOut : "";
-        const specialRequests =
-            typeof body.specialRequests === "string"
-                ? body.specialRequests.trim()
-                : "";
+        const firstName = typeof body.firstName === "string" ? body.firstName.trim() : "";
+        const lastName = typeof body.lastName === "string" ? body.lastName.trim() : "";
+        const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+        const phone = typeof body.phone === "string" ? body.phone.trim() : "";
+        const checkIn = typeof body.checkIn === "string" ? body.checkIn : "";
+        const checkOut = typeof body.checkOut === "string" ? body.checkOut : "";
+        const specialRequests = typeof body.specialRequests === "string" ? body.specialRequests.trim() : "";
+
         const validDate = (value: string): boolean => {
             if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
             const date = new Date(`${value}T00:00:00.000Z`);
-            return (
-                !Number.isNaN(date.getTime()) &&
-                date.toISOString().slice(0, 10) === value
-            );
+            return (!Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value);
         };
 
         if (!Number.isSafeInteger(roomId) || roomId < 1) {
@@ -66,22 +53,14 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (
-            !firstName ||
-            !lastName ||
-            firstName.length > 100 ||
-            lastName.length > 100
-        ) {
+        if (!firstName || !lastName || firstName.length > 100 || lastName.length > 100) {
             return NextResponse.json(
                 { error: "Please provide valid first and last names." },
                 { status: 400 }
             );
         }
 
-        if (
-            email.length > 254 ||
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-        ) {
+        if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             return NextResponse.json(
                 { error: "Please provide a valid email address." },
                 { status: 400 }
@@ -128,13 +107,9 @@ export async function POST(request: NextRequest) {
         }
         const checkInDate = new Date(`${checkIn}T00:00:00.000Z`);
         const checkOutDate = new Date(`${checkOut}T00:00:00.000Z`);
-        const nights =
-            (checkOutDate.getTime() - checkInDate.getTime()) /
-            (1000 * 60 * 60 * 24);
+        const nights = (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24);
         const now = new Date();
-        const paymentExpiresAt = new Date(
-            now.getTime() + 10 * 60 * 1000
-        );
+        const paymentExpiresAt = new Date(now.getTime() + 10 * 60 * 1000);
 
         const booking = await prisma.$transaction(
             async (tx) => {
@@ -251,11 +226,7 @@ export async function POST(request: NextRequest) {
             const checkoutSessionId = checkoutResult?.data?.id;
             const checkoutUrl = checkoutResult?.data?.attributes?.checkout_url;
 
-            if (
-                !checkoutResponse.ok ||
-                typeof checkoutSessionId !== "string" ||
-                typeof checkoutUrl !== "string"
-            ) {
+            if (!checkoutResponse.ok || typeof checkoutSessionId !== "string" || typeof checkoutUrl !== "string") {
                 console.error("PayMongo checkout creation failed:", checkoutResult);
                 try {
                     await prisma.booking.update({
@@ -267,10 +238,7 @@ export async function POST(request: NextRequest) {
                         },
                     });
                 } catch (cleanupError) {
-                    console.error(
-                        `CRITICAL: Failed to cleanup booking ${booking.id} after PayMongo rejection:`,
-                        cleanupError
-                    );
+                    console.error(`CRITICAL: Failed to cleanup booking ${booking.id} after PayMongo rejection:`, cleanupError);
                 }
                 return NextResponse.json(
                     { error: "Payment gateway error. Please try again." },
@@ -319,6 +287,12 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+            return NextResponse.json(
+                { error: "Another booking was being processed for this accommodation. Please try again.", },
+                { status: 409 }
+            );
+        }
         if (error instanceof Error) {
             if (error.message === "ROOM_NOT_FOUND") {
                 return NextResponse.json(
@@ -328,10 +302,7 @@ export async function POST(request: NextRequest) {
             }
             if (error.message === "DATES_UNAVAILABLE") {
                 return NextResponse.json(
-                    {
-                        error:
-                            "This accommodation is unavailable for the selected dates.",
-                    },
+                    { error: "This accommodation is unavailable for the selected dates.", },
                     { status: 409 }
                 );
             }
@@ -339,18 +310,6 @@ export async function POST(request: NextRequest) {
                 return NextResponse.json(
                     { error: "Unable to calculate the booking total." },
                     { status: 400 }
-                );
-            }
-            if (
-                error instanceof Prisma.PrismaClientKnownRequestError &&
-                error.code === "P2034"
-            ) {
-                return NextResponse.json(
-                    {
-                        error:
-                            "Another booking was being processed for this accommodation. Please try again.",
-                    },
-                    { status: 409 }
                 );
             }
         }
