@@ -41,11 +41,21 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [apiError, setApiError] = useState("");
     const [bookingMessage, setBookingMessage] = useState("");
-    const today = new Date();
-    today.setDate(today.getDate() + 1);
-    const minimumCheckInDate = today
-        .toISOString()
-        .split("T")[0];
+    const minimumCheckInDate = (() => {
+        const parts = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Manila",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        }).formatToParts(new Date());
+        const year = Number(parts.find((part) => part.type === "year")!.value);
+        const month = Number(parts.find((part) => part.type === "month")!.value);
+        const day = Number(parts.find((part) => part.type === "day")!.value);
+        const tomorrow = new Date(Date.UTC(year, month - 1, day + 1));
+        return `${tomorrow.getUTCFullYear()}-${String(
+            tomorrow.getUTCMonth() + 1
+        ).padStart(2, "0")}-${String(tomorrow.getUTCDate()).padStart(2, "0")}`;
+    })();
     const [selectedRoomId, setSelectedRoomId] = useState(
         rooms[0]?.id ?? 0
     );
