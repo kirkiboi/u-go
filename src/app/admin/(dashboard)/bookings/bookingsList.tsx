@@ -62,12 +62,9 @@ export default function BookingsList({
     const bookingsPerPage = 6;
     const filteredBookings = useMemo(() => {
         const query = search.trim().toLowerCase();
-        const now = new Date();
-        const today = [
-            now.getFullYear(),
-            String(now.getMonth() + 1).padStart(2, "0"),
-            String(now.getDate()).padStart(2, "0"),
-        ].join("-");
+        const today = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Manila",
+        }).format(new Date());
 
         return bookings.filter((booking) => {
             const firstName = booking.guest_fname.toLowerCase();
