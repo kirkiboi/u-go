@@ -14,16 +14,16 @@ type UnavailableRange = {
     checkOut: string;
 };
 function dateToKey(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Manila", year: "numeric", month: "2-digit", day: "2-digit", }).formatToParts(date);
+    const year = parts.find((part) => part.type === "year")!.value;
+    const month = parts.find((part) => part.type === "month")!.value;
+    const day = parts.find((part) => part.type === "day")!.value;
 
     return `${year}-${month}-${day}`;
 }
 function keyToDate(key: string): Date {
     const [year, month, day] = key.split("-").map(Number);
-
-    return new Date(year, month - 1, day, 12);
+    return new Date(Date.UTC(year, month - 1, day, 12));
 }
 export default function BookingForm({ rooms }: BookingFormProps) {
     const [activeDatePicker, setActiveDatePicker] = useState<"checkIn" | "checkOut" | null>(null);
