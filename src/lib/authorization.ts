@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { getSession } from "./sessions";
 
 export async function requireAdmin() {
@@ -7,9 +8,26 @@ export async function requireAdmin() {
         throw new Error("Unauthorized.");
     }
 
-    if (session.role !== "admin") {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: session.userId,
+        },
+        select: {
+            id: true,
+            email: true,
+            role: true,
+        },
+    });
+
+    if (!user) {
+        throw new Error("Unauthorized.");
+    }
+    if (user.role !== "admin") {
         throw new Error("Forbidden.");
     }
-
-    return session;
+    return {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+    };
 }
