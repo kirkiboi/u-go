@@ -13,8 +13,15 @@ export async function removeRoom(roomId: number) {
         throw new Error("Room not found.");
     }
 
-    await deleteImage(room.image);
     await deleteRoom(roomId);
+    try {
+        await deleteImage(room.image);
+    } catch (error) {
+        console.error(
+            `Room ${roomId} was deleted, but its image could not be removed:`,
+            error
+        );
+    }
 
     redirect("/admin/rooms");
 }
