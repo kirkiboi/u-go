@@ -20,7 +20,7 @@ export default function CancelAddButton() {
 
             <CancelModal
                 isOpen={isConfirming}
-                title="Discard Changes"
+                title="Cancel Adding Room"
                 description="Are you sure you want to cancel? Any information you entered will be lost."
                 href="/admin/rooms"
                 onCancel={() => setIsConfirming(false)}

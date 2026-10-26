@@ -14,7 +14,7 @@ export default function CancelEditAmenityButton({
             <button
                 type="button"
                 onClick={() => setIsConfirming(true)}
-                className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+                className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 cursor-pointer"
                 style={{
                     borderColor: "var(--color-border)",
                     color: "var(--color-forest-800)",
@@ -24,10 +24,10 @@ export default function CancelEditAmenityButton({
 
             <CancelModal
                 isOpen={isConfirming}
-                title="Cancel Changes"
-                description="Are you sure you want to cancel? Any changes you made will be lost."
-                cancelLabel="Continue Editing"
-                confirmLabel="Cancel"
+                title="Discard Changes"
+                description="Are you sure you want to cancel? Any changes you made will be discarded."
+                cancelLabel="Keep Editing"
+                confirmLabel="Discard Changes"
                 onCancel={() => setIsConfirming(false)}
                 href={`/admin/amenities/${amenityId}`}
             />

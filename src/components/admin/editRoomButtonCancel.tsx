@@ -24,7 +24,7 @@ export default function CancelEditButton({
             <CancelModal
                 isOpen={isConfirming}
                 title="Discard Changes"
-                description="Are you sure you want to go back? Any changes you made will be discarded."
+                description="Are you sure you want to cancel? Any changes you made will be discarded."
                 href={`/admin/rooms/${roomId}`}
                 onCancel={() => setIsConfirming(false)}
             />

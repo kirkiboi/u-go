@@ -1,4 +1,3 @@
-
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authorization";
@@ -37,6 +36,12 @@ export default async function CheckInPage({
             check_out: true,
             guest_fname: true,
             guest_lname: true,
+            room: {
+                select: {
+                    checkInTime: true,
+                    checkOutTime: true,
+                },
+            },
         },
     });
     if (!booking) {
@@ -70,26 +75,26 @@ export default async function CheckInPage({
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Current Status</dt>
-                        <dd className="mt-1 font-medium text-stone-900">
-                            {booking.status.replaceAll("_", " ")}
+                        <dd className="mt-1 font-medium capitalize text-stone-900">
+                            {booking.status.replaceAll("_", " ").toLowerCase()}
                         </dd>
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Payment Status</dt>
-                        <dd className="mt-1 font-medium text-stone-900">
-                            {booking.payment_status.replaceAll("_", " ")}
+                        <dd className="mt-1 font-medium capitalize text-stone-900">
+                            {booking.payment_status.replaceAll("_", " ").toLowerCase()}
                         </dd>
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Check-in Date</dt>
                         <dd className="mt-1 font-medium text-stone-900">
-                            {formatDate(booking.check_in)}
+                            {formatDate(booking.check_in)} at {booking.room.checkInTime}
                         </dd>
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Check-out Date</dt>
                         <dd className="mt-1 font-medium text-stone-900">
-                            {formatDate(booking.check_out)}
+                            {formatDate(booking.check_out)} at {booking.room.checkOutTime}
                         </dd>
                     </div>
                 </dl>

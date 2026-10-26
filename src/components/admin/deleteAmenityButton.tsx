@@ -45,7 +45,7 @@ export default function DeleteAmenityButton({
             <ConfirmModal
                 isOpen={isConfirming}
                 title="Delete Amenity"
-                description="Are you sure you want to delete this amenity? This action cannot be undone and will permanently remove the amenity and its associated storage image."
+                description="Are you sure you want to delete this amenity? This action cannot be undone and will permanently remove all associated data and storage images."
                 confirmLabel={
                     isPending ? "Deleting..." : "Delete Amenity"
                 }

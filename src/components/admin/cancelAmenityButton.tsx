@@ -23,8 +23,8 @@ export default function CancelAmenityButton() {
                 isOpen={isConfirming}
                 title="Cancel Adding Amenity"
                 description="Are you sure you want to cancel? Any information you entered will be lost."
-                cancelLabel="Continue Editing"
-                confirmLabel="Cancel"
+                cancelLabel="Keep Editing"
+                confirmLabel="Discard Changes"
                 onCancel={() => setIsConfirming(false)}
                 href="/admin/amenities"
             />

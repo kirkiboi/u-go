@@ -15,6 +15,7 @@ export default function CheckInForm({
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
     const [isConfirming, setIsConfirming] = useState(false);
+    const [isCancelConfirming, setIsCancelConfirming] = useState(false);
     async function handleCheckIn() {
         setLoading(true);
         setError("");
@@ -80,27 +81,32 @@ export default function CheckInForm({
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <button
                     type="button"
+                    onClick={() => setIsCancelConfirming(true)}
+                    disabled={loading}
+                    className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover: cursor-pointer bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60">
+                    Cancel
+                </button>
+                <button
+                    type="button"
                     onClick={() => setIsConfirming(true)}
                     disabled={loading}
-                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-3 text-sm font-medium text-white transition hover: cursor-pointer bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-60">
+                    className="rounded-lg px-5 py-3 text-sm font-medium text-white transition hover:brightness-110 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                    style={{
+                        backgroundColor: "var(--color-forest-700)",
+                    }}>
                     Check In Guest
                 </button>
-                <Link
-                    href="/admin/bookings"
-                    className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover:bg-stone-50">
-                    Cancel
-                </Link>
             </div>
             <ConfirmationModal
-                isOpen={isConfirming}
-                title="Confirm Guest Check-In"
-                description="Are you sure you want to check in this guest? The booking status will change to Checked In."
-                confirmLabel="Confirm Check-In"
-                isLoading={loading}
-                onCancel={() => setIsConfirming(false)}
-                onConfirm={async () => {
-                    setIsConfirming(false);
-                    await handleCheckIn();
+                isOpen={isCancelConfirming}
+                title="Cancel Check-In"
+                description="Are you sure you want to leave this page? Your check-in action has not been completed."
+                confirmLabel="Leave Page"
+                isLoading={false}
+                onCancel={() => setIsCancelConfirming(false)}
+                onConfirm={() => {
+                    setIsCancelConfirming(false);
+                    window.location.href = "/admin/bookings";
                 }}
             />
         </section>

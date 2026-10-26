@@ -41,24 +41,24 @@ export default function CancelModal({
                 </p>
 
                 <div className="mt-6 flex items-center justify-end gap-3">
-                    <button
-                        type="button"
-                        onClick={onCancel}
+                    <Link
+                        href={href}
                         className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors text-white hover:bg-white hover:text-black cursor-pointer"
                         style={{
                             borderColor: "var(--color-border)",
                         }}>
-                        {cancelLabel}
-                    </button>
+                        {confirmLabel}
+                    </Link>
 
-                    <Link
-                        href={href}
+                    <button
+                        type="button"
+                        onClick={onCancel}
                         className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 cursor-pointer"
                         style={{
                             backgroundColor: "var(--color-forest-700)",
                         }}>
-                        {confirmLabel}
-                    </Link>
+                        {cancelLabel}
+                    </button>
                 </div>
             </div>
         </div>
