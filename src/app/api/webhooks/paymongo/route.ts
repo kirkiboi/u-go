@@ -63,6 +63,15 @@ function verifyPayMongoSignature(
 export async function POST(request: Request) {
     const rawBody = await request.text();
     const webhookSecret = process.env.PAYMONGO_WEBHOOK_SECRET;
+    const paymongoSecretKey = process.env.PAYMONGO_SECRET_KEY;
+    if (!paymongoSecretKey) {
+        console.error("PAYMONGO_SECRET_KEY is not configured.");
+        return NextResponse.json(
+            { error: "Payment configuration is missing." },
+            { status: 500 }
+        );
+    }
+    const expectedLiveMode = paymongoSecretKey.startsWith("sk_live_");
 
     if (!webhookSecret) {
         console.error("PAYMONGO_WEBHOOK_SECRET is not configured.");
@@ -83,7 +92,13 @@ export async function POST(request: Request) {
         );
     }
     const eventAttributes = event?.data?.attributes;
-    const isLiveMode = eventAttributes?.livemode === true;
+    const isLiveMode = eventAttributes?.livemode;
+    if (isLiveMode !== expectedLiveMode) {
+        return NextResponse.json(
+            { error: "Webhook mode does not match server configuration." },
+            { status: 401 }
+        );
+    }
     const validSignature = verifyPayMongoSignature(
         rawBody,
         request.headers.get("paymongo-signature"),
