@@ -39,7 +39,7 @@ export default function AdminLogin() {
     if (result.success) {
       router.push("/admin/dashboard");
     } else {
-      setError("Invalid username or password");
+      setError(result.error ?? "Invalid username or password");
       setLoading(false);
     }
   };

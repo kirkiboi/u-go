@@ -48,9 +48,12 @@ function verifyPayMongoSignature(
     const timestamp = parts.t;
     const receivedSignature = isLiveMode ? parts.li : parts.te;
     if (!timestamp || !receivedSignature) return false;
-    const expectedSignature = createHmac("sha256", webhookSecret)
-        .update(`${timestamp}.${rawBody}`)
-        .digest("hex");
+    const expectedSignature = createHmac("sha256", webhookSecret).update(`${timestamp}.${rawBody}`).digest("hex");
+    const timestampSeconds = Number(timestamp);
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    if (!Number.isFinite(timestampSeconds) || Math.abs(nowSeconds - timestampSeconds) > 300) {
+        return false;
+    }
     const expected = Buffer.from(expectedSignature, "hex");
     const received = Buffer.from(receivedSignature, "hex");
 

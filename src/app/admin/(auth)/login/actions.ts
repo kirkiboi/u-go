@@ -20,7 +20,7 @@ export async function login(formData: FormData) {
     if (!success) {
         return {
             success: false,
-            error: "Too many login attempts. Please try again in 15 minutes.",
+            error: "Too many login attempts. Please try again later.",
         };
     }
     const user = await verifyAdminCredentials(normalizedEmail, password);
