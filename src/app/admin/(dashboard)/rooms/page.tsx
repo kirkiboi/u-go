@@ -1,11 +1,26 @@
 import Link from "next/link";
 import { getRooms } from "@/services/room";
-export default async function RoomsPage() {
-    const rooms = await getRooms();
+const ROOMS_PER_PAGE = 4;
+
+export default async function RoomsPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ page?: string }>;
+}) {
+    const params = await searchParams;
+    const requestedPage = Number(params.page) || 1;
+
+    const {
+        rooms,
+        totalRooms,
+        totalPages,
+        currentPage,
+    } = await getRooms(requestedPage, ROOMS_PER_PAGE);
+
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-7xl">
-                {rooms.length === 0 ? (
+                {totalRooms === 0 ? (
                     <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
                         <p
                             className="text-sm font-medium"
@@ -140,6 +155,33 @@ export default async function RoomsPage() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                        <div className="mt-8 flex items-center justify-between gap-4">
+                            <p className="text-sm" style={{ color: "var(--color-muted)" }}>
+                                Showing{" "}{totalRooms === 0 ? 0 : (currentPage - 1) * ROOMS_PER_PAGE + 1}{"–"}{Math.min(currentPage * ROOMS_PER_PAGE, totalRooms)} of {totalRooms} rooms
+                            </p>
+
+                            <div className="flex items-center gap-2">
+                                <Link
+                                    href={`/admin/rooms?page=${currentPage - 1}`}
+                                    aria-disabled={currentPage <= 1}
+                                    className={`rounded-lg border px-3 py-2 text-sm ${currentPage <= 1 ? "pointer-events-none opacity-40" : "hover:bg-gray-50"}`}
+                                    style={{ borderColor: "var(--color-border)" }}>
+                                    Previous
+                                </Link>
+
+                                <span className="text-sm" style={{ color: "var(--color-muted)" }}>
+                                    Page {currentPage} of {Math.max(1, totalPages)}
+                                </span>
+
+                                <Link
+                                    href={`/admin/rooms?page=${currentPage + 1}`}
+                                    aria-disabled={currentPage >= totalPages}
+                                    className={`rounded-lg border px-3 py-2 text-sm ${currentPage >= totalPages ? "pointer-events-none opacity-40" : "hover:bg-gray-50"}`}
+                                    style={{ borderColor: "var(--color-border)" }}>
+                                    Next
+                                </Link>
+                            </div>
                         </div>
                     </>
                 )}
