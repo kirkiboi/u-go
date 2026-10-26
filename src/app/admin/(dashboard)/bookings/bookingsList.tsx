@@ -70,15 +70,12 @@ export default function BookingsList({
 }: BookingsListProps) {
     function getPageUrl(page: number) {
         const params = new URLSearchParams();
-
         if (search) {
             params.set("search", search);
         }
-
         params.set("status", statusFilter);
         params.set("date", dateFilter);
         params.set("page", String(page));
-
         return `/admin/bookings?${params.toString()}`;
     }
 
