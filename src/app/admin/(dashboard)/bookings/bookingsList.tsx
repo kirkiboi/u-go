@@ -1,5 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
+
+import { useState } from "react";
 import type { Prisma } from "@prisma/client";
 import Link from "next/link";
 
@@ -15,6 +16,12 @@ type BookingWithRoom = Prisma.BookingGetPayload<{
 
 type BookingsListProps = {
     bookings: BookingWithRoom[];
+    search: string;
+    statusFilter: string;
+    dateFilter: string;
+    currentPage: number;
+    totalPages: number;
+    totalBookings: number;
 };
 
 function getStatusStyles(status: string) {
@@ -54,59 +61,26 @@ function getStatusStyles(status: string) {
 
 export default function BookingsList({
     bookings,
+    search,
+    statusFilter,
+    dateFilter,
+    currentPage,
+    totalPages,
+    totalBookings,
 }: BookingsListProps) {
-    const [search, setSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState("CONFIRMED");
-    const [dateFilter, setDateFilter] = useState("all");
-    const [currentPage, setCurrentPage] = useState(1);
-    const bookingsPerPage = 6;
-    const filteredBookings = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        const today = new Intl.DateTimeFormat("en-CA", {
-            timeZone: "Asia/Manila",
-        }).format(new Date());
+    function getPageUrl(page: number) {
+        const params = new URLSearchParams();
 
-        return bookings.filter((booking) => {
-            const firstName = booking.guest_fname.toLowerCase();
-            const lastName = booking.guest_lname.toLowerCase();
-            const fullName = `${firstName} ${lastName}`;
-            const reference = booking.booking_ref.toLowerCase();
-            const matchesSearch =
-                !query ||
-                firstName.includes(query) ||
-                lastName.includes(query) ||
-                fullName.includes(query) ||
-                reference.includes(query);
-            const matchesStatus =
-                statusFilter === "all" ||
-                booking.status === statusFilter;
-            const checkInDate = booking.check_in
-                .toISOString()
-                .slice(0, 10);
+        if (search) {
+            params.set("search", search);
+        }
 
-            const matchesDate =
-                dateFilter === "all" ||
-                (dateFilter === "upcoming" && checkInDate > today) ||
-                (dateFilter === "today" && checkInDate === today) ||
-                (dateFilter === "past" && checkInDate < today);
+        params.set("status", statusFilter);
+        params.set("date", dateFilter);
+        params.set("page", String(page));
 
-            return matchesSearch && matchesStatus && matchesDate;
-        });
-    }, [bookings, search, statusFilter, dateFilter]);
-    const totalPages = Math.ceil(
-        filteredBookings.length / bookingsPerPage
-    );
-    const safeCurrentPage = Math.min(
-        currentPage,
-        Math.max(1, totalPages)
-    );
-    const paginatedBookings = useMemo(() => {
-        const startIndex = (safeCurrentPage - 1) * bookingsPerPage;
-        return filteredBookings.slice(
-            startIndex,
-            startIndex + bookingsPerPage
-        );
-    }, [filteredBookings, safeCurrentPage]);
+        return `/admin/bookings?${params.toString()}`;
+    }
 
     return (
         <section className="min-h-screen px-8 py-8">
@@ -128,19 +102,22 @@ export default function BookingsList({
                         Booking Overview
                     </h1>
                 </div>
-                <div
+
+                <form
+                    method="GET"
+                    action="/admin/bookings"
                     className="mt-8 flex flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm lg:flex-row"
-                    style={{ borderColor: "var(--color-border)" }}>
-                    <label
-                        htmlFor="booking-search"
-                        className="sr-only">
+                    style={{ borderColor: "var(--color-border)" }}
+                >
+                    <label htmlFor="booking-search" className="sr-only">
                         Search bookings by guest name or reference number
                     </label>
+
                     <input
                         id="booking-search"
                         type="search"
-                        value={search}
-                        onChange={(event) => setSearch(event.target.value)}
+                        name="search"
+                        defaultValue={search}
                         placeholder="Search by guest name or booking reference..."
                         autoComplete="off"
                         className="w-full min-w-0 flex-1 rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
@@ -149,10 +126,13 @@ export default function BookingsList({
 
                     <div className="relative w-full lg:w-44">
                         <select
+                            name="status"
                             aria-label="Filter by booking status"
-                            value={statusFilter}
-                            onChange={(event) => setStatusFilter(event.target.value)}
-                            className="w-full appearance-none rounded-lg border border-stone-300 bg-white px-4 py-2.5 pr-10 text-sm outline-none transition-colors hover:cursor-pointer focus:border-[var(--color-forest-500)] focus:ring-[var(--color-forest-500)]"
+                            defaultValue={statusFilter}
+                            onChange={(event) =>
+                                event.currentTarget.form?.requestSubmit()
+                            }
+                            className="w-full appearance-none rounded-lg border bg-white px-4 py-2.5 pr-10 text-sm outline-none hover:cursor-pointer"
                             style={{ borderColor: "var(--color-border)" }}>
                             <option value="CONFIRMED">Confirmed</option>
                             <option value="PENDING">Pending</option>
@@ -161,111 +141,88 @@ export default function BookingsList({
                             <option value="CHECKED_IN">Checked In</option>
                             <option value="all">All statuses</option>
                         </select>
-                        <svg
-                            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="m6 9 6 6 6-6"
-                            />
-                        </svg>
                     </div>
                     <div className="relative w-full lg:w-40">
                         <select
+                            name="date"
                             aria-label="Filter by booking date"
-                            value={dateFilter}
-                            onChange={(event) => setDateFilter(event.target.value)}
-                            className="w-full appearance-none rounded-lg border border-stone-300 bg-white px-4 py-2.5 pr-10 text-sm outline-none transition-colors hover:cursor-pointer focus:border-[var(--color-forest-500)] focus:ring-[var(--color-forest-500)]"
+                            defaultValue={dateFilter}
+                            onChange={(event) =>
+                                event.currentTarget.form?.requestSubmit()
+                            }
+                            className="w-full appearance-none rounded-lg border bg-white px-4 py-2.5 pr-10 text-sm outline-none hover:cursor-pointer"
                             style={{ borderColor: "var(--color-border)" }}>
                             <option value="all">All dates</option>
                             <option value="upcoming">Upcoming</option>
                             <option value="today">Today</option>
                             <option value="past">Past</option>
                         </select>
-                        <svg
-                            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="m6 9 6 6 6-6"
-                            />
-                        </svg>
                     </div>
-                </div>
 
-                {filteredBookings.length > 0 && (
+                    <button
+                        type="submit"
+                        className="rounded-lg px-4 py-2 text-sm font-medium text-white"
+                        style={{ backgroundColor: "var(--color-forest-700)" }}>
+                        Search
+                    </button>
+                </form>
+
+                {totalBookings > 0 && (
                     <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
                         <p
                             className="text-sm"
                             style={{ color: "var(--color-muted)" }}>
-                            Showing{" "}
-                            {(currentPage - 1) * bookingsPerPage + 1}
+                            Showing {(currentPage - 1) * 6 + 1}
                             {"–"}
-                            {Math.min(
-                                currentPage * bookingsPerPage,
-                                filteredBookings.length
-                            )}{" "}
-                            of {filteredBookings.length} bookings
+                            {Math.min(currentPage * 6, totalBookings)}
+                            {" of "}
+                            {totalBookings} bookings
                         </p>
                         <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage((page) => page - 1)}
-                                disabled={currentPage === 1}
-                                className="rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover: cursor-pointer bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                            <Link
+                                href={getPageUrl(currentPage - 1)}
+                                aria-disabled={currentPage <= 1}
+                                className={`rounded-lg border px-3 py-2 text-sm font-medium ${currentPage <= 1 ? "pointer-events-none opacity-40" : "bg-gray-50"}`}
                                 style={{ borderColor: "var(--color-border)" }}>
                                 Previous
-                            </button>
+                            </Link>
+
                             {Array.from(
                                 { length: totalPages },
                                 (_, index) => index + 1
                             ).map((page) => (
-                                <button
+                                <Link
                                     key={page}
-                                    type="button"
-                                    onClick={() => setCurrentPage(page)}
-                                    aria-current={currentPage === page ? "page" : undefined}
-                                    className="rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover: cursor-pointer"
+                                    href={getPageUrl(page)}
+                                    aria-current={
+                                        currentPage === page ? "page" : undefined
+                                    }
+                                    className="rounded-lg border px-3 py-2 text-sm font-medium"
                                     style={{
-                                        borderColor:
-                                            currentPage === page
-                                                ? "var(--color-forest-500)"
-                                                : "var(--color-border)",
-                                        backgroundColor:
-                                            currentPage === page
-                                                ? "var(--color-forest-100)"
-                                                : "white",
-                                        color:
-                                            currentPage === page
-                                                ? "var(--color-forest-900)"
-                                                : "var(--color-muted)",
+                                        borderColor: currentPage === page ? "var(--color-forest-500)" : "var(--color-border)",
+                                        backgroundColor: currentPage === page ? "var(--color-forest-100)" : "white", color: currentPage === page ? "var(--color-forest-900)" : "var(--color-muted)",
                                     }}>
                                     {page}
-                                </button>
+                                </Link>
                             ))}
-                            <button
-                                type="button"
-                                onClick={() => setCurrentPage((page) => page + 1)}
-                                disabled={currentPage === totalPages}
-                                className="rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover: cursor-pointer bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+
+                            <Link
+                                href={getPageUrl(currentPage + 1)}
+                                aria-disabled={currentPage >= totalPages}
+                                className={`rounded-lg border px-3 py-2 text-sm font-medium ${currentPage >= totalPages
+                                    ? "pointer-events-none opacity-40"
+                                    : "bg-gray-50"
+                                    }`}
                                 style={{ borderColor: "var(--color-border)" }}>
                                 Next
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 )}
 
                 <div className="mt-3 grid grid-cols-1 gap-4 xl:grid-cols-2">
-                    {paginatedBookings.length > 0 ? (
-                        paginatedBookings.map((booking) => (
+                    {bookings.length > 0 ? (
+                        bookings.map((booking) => (
                             <div
                                 key={booking.id}
                                 className="rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
