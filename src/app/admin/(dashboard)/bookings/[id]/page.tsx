@@ -166,11 +166,10 @@ export default async function BookingDetailPage({
                                 {booking.guest_fname} {booking.guest_lname}
                             </DetailItem>
                             <DetailItem label="Email Address">
-                                <a
-                                    href={`mailto:${booking.guest_email}`}
-                                    className="break-all hover:underline">
+                                <span
+                                    className="break-all">
                                     {booking.guest_email}
-                                </a>
+                                </span>
                             </DetailItem>
                             <DetailItem label="Phone Number">
                                 <a

@@ -47,7 +47,7 @@ export default function CancelBookingForm({
                 </h2>
                 <p className="mt-2 text-sm text-green-800">
                     The booking status is now Cancelled. The payment status
-                    has not been changed, and no refund was issued.
+                    has not been modified.
                 </p>
                 <Link
                     href={`/admin/bookings/${bookingId}`}

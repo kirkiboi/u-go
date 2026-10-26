@@ -98,7 +98,7 @@ export default async function RoomsPage() {
                                                     <strong>
                                                         {room.maxGuests}
                                                     </strong>{" "}
-                                                    guests
+                                                    max guests
                                                 </span>
 
                                                 <span>
@@ -115,12 +115,11 @@ export default async function RoomsPage() {
                                                     Check Out
                                                 </span>
 
-                                                <span
-                                                    className="font-semibold"
-                                                    style={{
-                                                        color: "var(--color-forest-700)",
-                                                    }}>
-                                                    {room.price} / night
+                                                <span>
+                                                    <strong>
+                                                        ₱{room.price.toLocaleString("en-PH")}
+                                                    </strong>
+                                                    /night
                                                 </span>
                                             </div>
                                         </div>

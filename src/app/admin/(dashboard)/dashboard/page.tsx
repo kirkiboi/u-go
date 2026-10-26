@@ -156,7 +156,7 @@ export default async function AdminDashboard() {
                         <p
                             className="text-sm font-medium"
                             style={{ color: "var(--color-muted)" }}>
-                            Paid Booking Value (Created This Month)
+                            Paid Booking Value
                         </p>
                         <p
                             className="mt-2 text-3xl font-bold"
@@ -180,29 +180,44 @@ export default async function AdminDashboard() {
                 <div className="mt-8 grid gap-8 lg:grid-cols-3">
                     <div className="lg:col-span-2 rounded-xl border bg-white shadow-sm" style={{ borderColor: "var(--color-border)" }}>
                         <div className="border-b px-6 py-4" style={{ borderColor: "var(--color-border)" }}>
-                            <h2 className="text-lg font-semibold" style={{ color: "var(--color-forest-900)" }}>Recent Bookings</h2>
+                            <h2 className="text-lg font-semibold" style={{ color: "var(--color-forest-900)" }}>
+                                Recent Bookings
+                            </h2>
                         </div>
                         <div className="p-0 overflow-x-auto">
                             <table className="w-full text-left text-sm whitespace-nowrap">
-                                <thead className="bg-gray-50 text-xs uppercase" style={{ color: "var(--color-muted)" }}>
+                                <thead className="bg-gray-50 text-xs uppercase">
                                     <tr>
-                                        <th className="px-6 py-3 font-medium">Guest</th>
-                                        <th className="px-6 py-3 font-medium">Room</th>
-                                        <th className="px-6 py-3 font-medium">Dates</th>
-                                        <th className="px-6 py-3 font-medium">Status</th>
+                                        <th
+                                            className="px-6 py-3 font-bold"
+                                            style={{ color: "var(--color-forest-900)" }}>
+                                            Guest
+                                        </th>
+                                        <th
+                                            className="px-6 py-3 font-bold"
+                                            style={{ color: "var(--color-forest-900)" }}>
+                                            Room
+                                        </th>
+                                        <th
+                                            className="px-6 py-3 font-bold"
+                                            style={{ color: "var(--color-forest-900)" }}>
+                                            Dates
+                                        </th>
+                                        <th
+                                            className="px-6 py-3 font-bold"
+                                            style={{ color: "var(--color-forest-900)" }}>
+                                            Booking Status
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody
-                                    className="divide-y"
-                                    style={{ borderColor: "var(--color-border)" }}
-                                >
+                                    style={{ borderColor: "var(--color-border)" }}>
                                     {recentBookings.length === 0 ? (
                                         <tr>
                                             <td
                                                 colSpan={4}
                                                 className="px-6 py-10 text-center"
-                                                style={{ color: "var(--color-muted)" }}
-                                            >
+                                                style={{ color: "var(--color-muted)" }}>
                                                 No bookings have been created yet.
                                             </td>
                                         </tr>
@@ -222,7 +237,7 @@ export default async function AdminDashboard() {
                                                     className="transition-colors hover:bg-gray-50">
                                                     <td
                                                         className="px-6 py-4 font-medium"
-                                                        style={{ color: "var(--color-forest-900)" }}>
+                                                        style={{ color: "var(--color-muted)" }}>
                                                         {booking.guest_fname} {booking.guest_lname}
                                                     </td>
                                                     <td

@@ -56,14 +56,6 @@ export default async function ManualOverridePage({
             requirement: "Requires a paid booking.",
         },
         {
-            title: "Cancel Reservation",
-            description:
-                "Cancel a confirmed reservation. A refund, if needed, is handled separately.",
-            href: `/admin/bookings/${booking.id}/cancel`,
-            enabled: isConfirmed,
-            requirement: "Requires a confirmed booking.",
-        },
-        {
             title: "Reschedule Reservation",
             description:
                 "Change the stay dates while keeping the reservation confirmed.",

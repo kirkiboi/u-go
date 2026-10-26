@@ -105,7 +105,7 @@ export default async function RoomDetailsPage({
                                     Price
                                 </p>
                                 <p className="mt-1 font-semibold">
-                                    {room.price}
+                                    ₱{room.price.toLocaleString("en-PH")}
                                     <span className="ml-1 text-xs font-normal text-gray-500">
                                         / night
                                     </span>

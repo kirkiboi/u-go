@@ -104,8 +104,7 @@ export default function BookingsList({
                     method="GET"
                     action="/admin/bookings"
                     className="mt-8 flex flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm lg:flex-row"
-                    style={{ borderColor: "var(--color-border)" }}
-                >
+                    style={{ borderColor: "var(--color-border)" }}>
                     <label htmlFor="booking-search" className="sr-only">
                         Search bookings by guest name or reference number
                     </label>
