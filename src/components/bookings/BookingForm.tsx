@@ -147,15 +147,11 @@ export default function BookingForm({ rooms }: BookingFormProps) {
         if (!checkIn || !checkOut) {
             newErrors.dates = "Please select both dates.";
         } else {
-            const checkInDate = new Date(`${checkIn}T00:00:00`);
-            const checkOutDate = new Date(`${checkOut}T00:00:00`);
-            const tomorrow = new Date();
-            tomorrow.setHours(0, 0, 0, 0);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            if (checkInDate < tomorrow) {
+            if (checkIn < minimumCheckInDate) {
                 newErrors.checkIn = "Check-in must be at least tomorrow.";
             }
-            if (checkOutDate <= checkInDate) {
+
+            if (checkOut <= checkIn) {
                 newErrors.checkOut =
                     "Check-out must be at least one day after check-in.";
             }
