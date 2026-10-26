@@ -15,3 +15,9 @@ export const bookingRateLimit = new Ratelimit({
     analytics: true,
     prefix: "ugo:booking",
 });
+export const adminLoginRateLimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, "20 m"),
+    analytics: true,
+    prefix: "ugo:admin-login",
+});
