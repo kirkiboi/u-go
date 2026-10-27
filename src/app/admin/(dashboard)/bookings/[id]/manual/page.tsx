@@ -50,7 +50,7 @@ export default async function ManualOverridePage({
         {
             title: "Refund Payment",
             description:
-                "Process a refund for a payment that has already been received.",
+                "Process a refund for the payment that has already been received.",
             href: `${basePath}/refund`,
             enabled: isPaid,
             requirement: "Requires a paid booking.",
@@ -59,28 +59,45 @@ export default async function ManualOverridePage({
             title: "Reschedule Reservation",
             description:
                 "Change the stay dates while keeping the reservation confirmed.",
-            href: `/admin/bookings/${booking.id}/reschedule`,
+            href: `/admin/bookings/${booking.id}/manual/reschedule`,
             enabled: isConfirmed,
             requirement: "Requires a confirmed booking and available dates.",
+        },
+        {
+            title: "Cancel Reservation",
+            description:
+                "Cancel the reservation, freeing up the date. This does not refund the payment",
+            href: `/admin/bookings/${booking.id}/manual/cancel`,
+            enabled: isConfirmed,
+            requirement: "Requires a confirmed booking.",
         },
     ];
 
     return (
         <main className="mx-auto max-w-4xl space-y-8 p-6">
-            <header>
+            <div className="mx-auto max-w-5xl">
                 <Link
                     href={`/admin/bookings/${booking.id}`}
-                    className="text-sm text-stone-600 hover:text-stone-900 hover:underline">
-                    ← Back to booking details
+                    className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:underline"
+                    style={{ color: "var(--color-forest-700)" }}>
+                    <span aria-hidden="true">←</span>
+                    Back to booking details
                 </Link>
-                <h1 className="mt-4 text-2xl font-bold text-stone-900">
-                    Manual Booking Actions
-                </h1>
-                <p className="mt-2 text-sm text-stone-600">
-                    Choose the specific action you need to perform for this
-                    reservation.
-                </p>
-            </header>
+
+                <header className="mt-6">
+                    <p className="text-sm font-medium"
+                        style={{ color: "var(--color-forest-500)" }}>
+                        Manual Management
+                    </p>
+                    <h1 className="mt-1 text-3xl font-bold"
+                        style={{
+                            fontFamily: "var(--font-display)",
+                            color: "var(--color-forest-900)",
+                        }}>
+                        Manual Booking Actions
+                    </h1>
+                </header>
+            </div>
             <section>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                     {actions.map((action) => (
