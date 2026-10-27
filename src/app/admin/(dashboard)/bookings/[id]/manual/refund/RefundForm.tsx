@@ -238,7 +238,7 @@ export default function RefundForm({
                 </p>
             ) : refundIsUnresolved ? (
                 <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-800">
-                    This refund is pending. Kindly refresh the page. If status did not change please wait for PayMongo to
+                    This refund is pending. Kindly refresh the page. If status did not change, please wait for PayMongo to
                     update its status before taking further action.
                 </p>
             ) : refundNeedsReview ? (

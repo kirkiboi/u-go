@@ -135,9 +135,7 @@ export async function POST(
                 }
                 return { success: true as const };
             },
-            {
-                isolationLevel: "Serializable",
-            },
+            { isolationLevel: "Serializable", },
         );
         if ("conflict" in result) {
             return NextResponse.json(
@@ -147,9 +145,7 @@ export async function POST(
         }
         if ("changed" in result) {
             return NextResponse.json(
-                {
-                    error: "The booking changed while rescheduling. Refresh and try again.",
-                },
+                { error: "The booking changed while rescheduling. Refresh and try again.", },
                 { status: 409 },
             );
         }
@@ -160,10 +156,14 @@ export async function POST(
         });
     } catch (error) {
         console.error("Booking rescheduling failed:", error);
+        if (typeof error === "object" && error !== null && "code" in error && error.code === "P2034") {
+            return NextResponse.json(
+                { error: "The room availability changed while rescheduling. Please refresh and try again.", },
+                { status: 409 },
+            );
+        }
         return NextResponse.json(
-            {
-                error: "An unexpected error occurred while rescheduling the booking.",
-            },
+            { error: "An unexpected error occurred while rescheduling the booking.", },
             { status: 500 },
         );
     }

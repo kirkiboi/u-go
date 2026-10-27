@@ -1,31 +1,111 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { DayPicker } from "react-day-picker";
 import ConfirmationModal from "@/components/reusable/ConfirmationModal";
 
 interface RescheduleBookingFormProps {
+    roomId: number;
     bookingId: number;
     currentCheckIn: string;
     currentCheckOut: string;
     minimumCheckIn: string;
 }
+type UnavailableRange = {
+    checkIn: string;
+    checkOut: string;
+};
+function dateToKey(date: Date): string {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Manila",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).formatToParts(date);
+    const year = parts.find((part) => part.type === "year")!.value;
+    const month = parts.find((part) => part.type === "month")!.value;
+    const day = parts.find((part) => part.type === "day")!.value;
+    return `${year}-${month}-${day}`;
+}
+
+function keyToDate(key: string): Date {
+    const [year, month, day] = key.split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day, 12));
+}
 
 export default function RescheduleBookingForm({
+    roomId,
     bookingId,
     currentCheckIn,
     currentCheckOut,
     minimumCheckIn,
 }: RescheduleBookingFormProps) {
-    const [checkIn, setCheckIn] = useState(currentCheckIn);
-    const [checkOut, setCheckOut] = useState(currentCheckOut);
+    const [checkIn, setCheckIn] = useState("");
+    const [checkOut, setCheckOut] = useState("");
+    const [activeDatePicker, setActiveDatePicker] = useState<"checkIn" | "checkOut" | null>(null);
     const [isConfirming, setIsConfirming] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState("");
-    const minimumCheckOut = checkIn || minimumCheckIn;
-    const datesAreValid =
-        checkIn >= minimumCheckIn && checkOut > checkIn;
+    const [unavailableRanges, setUnavailableRanges] = useState<UnavailableRange[]>([]);
+    const [availabilityLoading, setAvailabilityLoading] = useState(true);
+    const [availabilityError, setAvailabilityError] = useState("");
+    const router = useRouter();
+    const [isConfirmingCancel, setIsConfirmingCancel] = useState(false);
+    useEffect(() => {
+        let cancelled = false;
+        async function fetchAvailability() {
+            setAvailabilityLoading(true);
+            setAvailabilityError("");
+            try {
+                const response = await fetch(
+                    `/api/rooms/${roomId}/availability?excludeBookingId=${bookingId}`,
+                    { cache: "no-store" },
+                );
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || "Unable to load availability.");
+                }
+                if (!cancelled) {
+                    setUnavailableRanges(data.unavailableRanges);
+                }
+            } catch {
+                if (!cancelled) {
+                    setAvailabilityError("Unable to load room availability. Please try again.");
+                }
+            } finally {
+                if (!cancelled) {
+                    setAvailabilityLoading(false);
+                }
+            }
+        }
+        void fetchAvailability();
+        return () => {
+            cancelled = true;
+        };
+    }, [roomId, bookingId]);
+    const datesAreValid = checkIn >= minimumCheckIn && checkOut > checkIn;
+    const isCheckInUnavailable = (date: Date): boolean => {
+        const dateKey = dateToKey(date);
 
+        return unavailableRanges.some(
+            (range) => range.checkIn <= dateKey && dateKey < range.checkOut,
+        );
+    };
+
+    const isCheckoutUnavailable = (
+        checkoutKey: string,
+        checkInKey: string,
+    ): boolean => {
+        if (checkoutKey <= checkInKey) return true;
+
+        return unavailableRanges.some(
+            (range) =>
+                range.checkIn < checkoutKey &&
+                range.checkOut > checkInKey,
+        );
+    };
     async function handleReschedule() {
         setLoading(true);
         setError("");
@@ -65,10 +145,6 @@ export default function RescheduleBookingForm({
                 <h2 className="font-semibold text-green-900">
                     Booking rescheduled successfully
                 </h2>
-                <p className="mt-2 text-sm text-green-800">
-                    The new dates have been saved. The booking status,
-                    price, and payment status remain unchanged.
-                </p>
                 <Link
                     href={`/admin/bookings/${bookingId}`}
                     className="mt-4 inline-block text-sm font-medium text-[var(--color-forest-700)] hover:underline">
@@ -77,55 +153,99 @@ export default function RescheduleBookingForm({
             </div>
         );
     }
-
     return (
         <div className="mt-6">
             <div className="grid gap-5 sm:grid-cols-2">
-                <div>
+                <div className="relative flex flex-col">
                     <label
                         htmlFor="reschedule-check-in"
                         className="mb-2 block text-sm font-medium text-stone-700">
                         New check-in
                     </label>
-                    <input
+
+                    <button
                         id="reschedule-check-in"
-                        type="date"
-                        required
-                        min={minimumCheckIn}
-                        value={checkIn}
-                        onChange={(event) => {
-                            setCheckIn(event.target.value);
-                            setError("");
-                        }}
-                        className="w-full rounded-lg border border-stone-300 p-3 text-sm"
-                    />
+                        type="button"
+                        onClick={() => setActiveDatePicker(activeDatePicker === "checkIn" ? null : "checkIn")}
+                        className="w-full rounded-lg border border-stone-300 bg-white p-3 text-left text-sm text-stone-700 outline-none transition-colors hover:cursor-pointer focus:border-[var(--color-forest-500)] focus:ring-2 focus:ring-[var(--color-forest-500)]">
+                        {checkIn || "Select check-in date"}
+                    </button>
+
+                    {activeDatePicker === "checkIn" && (
+                        <div className="absolute bottom-full left-0 z-30 mb-2 rounded-xl border border-stone-200 bg-white p-3 shadow-xl">
+                            <DayPicker
+                                mode="single"
+                                selected={checkIn ? keyToDate(checkIn) : undefined}
+                                disabled={(date) => dateToKey(date) < minimumCheckIn || isCheckInUnavailable(date) || availabilityLoading || !!availabilityError}
+                                onSelect={(date) => {
+                                    if (!date) return;
+                                    const newCheckIn = dateToKey(date);
+                                    setCheckIn(newCheckIn);
+                                    if (checkOut <= newCheckIn) {
+                                        setCheckOut("");
+                                    }
+                                    setError("");
+                                    setActiveDatePicker(null);
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
 
-                <div>
+                <div className="relative flex flex-col">
                     <label
                         htmlFor="reschedule-check-out"
                         className="mb-2 block text-sm font-medium text-stone-700">
                         New check-out
                     </label>
-                    <input
+
+                    <button
                         id="reschedule-check-out"
-                        type="date"
-                        required
-                        min={minimumCheckOut}
-                        value={checkOut}
-                        onChange={(event) => {
-                            setCheckOut(event.target.value);
-                            setError("");
+                        type="button"
+                        onClick={() => {
+                            if (checkIn) {
+                                setActiveDatePicker(activeDatePicker === "checkOut" ? null : "checkOut");
+                            }
                         }}
-                        className="w-full rounded-lg border border-stone-300 p-3 text-sm"
-                    />
+                        disabled={!checkIn}
+                        className="w-full rounded-lg border border-stone-300 bg-white p-3 text-left text-sm text-stone-700 outline-none transition-colors hover:cursor-pointer focus:border-[var(--color-forest-500)] focus:ring-2 focus:ring-[var(--color-forest-500)] disabled:cursor-not-allowed disabled:opacity-50">
+                        {checkOut || "Select check-out date"}
+                    </button>
+
+                    {activeDatePicker === "checkOut" && checkIn && (
+                        <div className="absolute bottom-full left-0 z-30 mb-2 rounded-xl border border-stone-200 bg-white p-3 shadow-xl">
+                            <DayPicker
+                                mode="single"
+                                selected={checkOut ? keyToDate(checkOut) : undefined}
+                                disabled={(date) => dateToKey(date) <= checkIn || isCheckoutUnavailable(dateToKey(date), checkIn) || availabilityLoading || !!availabilityError}
+                                onSelect={(date) => {
+                                    if (!date) return;
+                                    const newCheckOut = dateToKey(date);
+                                    if (newCheckOut > checkIn) {
+                                        setCheckOut(newCheckOut);
+                                        setError("");
+                                        setActiveDatePicker(null);
+                                    }
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
             <p className="mt-3 text-xs text-stone-500">
-                Check-in must be at least tomorrow. Check-out must be
-                after check-in. Availability is verified when you confirm.
+                Check-in must be at least tomorrow.
             </p>
+            {availabilityLoading && (
+                <p className="mt-2 text-sm text-stone-500">
+                    Loading room availability...
+                </p>
+            )}
 
+            {availabilityError && (
+                <p role="alert" className="mt-2 text-sm text-red-600">
+                    {availabilityError}
+                </p>
+            )}
             {error && (
                 <p
                     role="alert"
@@ -137,24 +257,41 @@ export default function RescheduleBookingForm({
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <button
                     type="button"
+                    onClick={() => setIsConfirmingCancel(true)}
+                    className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover: cursor-pointer bg-stone-50">
+                    Cancel
+                </button>
+                <button
+                    type="button"
                     onClick={() => {
                         setError("");
                         setIsConfirming(true);
                     }}
                     disabled={!datesAreValid || loading}
-                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-50">
+                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-3 text-sm font-medium text-white transition hover: cursor-pointer bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-50"
+                    style={{
+                        backgroundColor: "var(--color-forest-700)",
+                    }}>
                     Reschedule Booking
                 </button>
-                <Link
-                    href="/admin/bookings"
-                    className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover:bg-stone-50">
-                    Cancel
-                </Link>
             </div>
+            <ConfirmationModal
+                isOpen={isConfirmingCancel}
+                title="Discard Changes?"
+                description="Are you sure you want to leave this page? Any changes you have made will be lost."
+                confirmLabel="Leave Page"
+                cancelLabel="Stay in this page"
+                confirmPosition="left"
+                onCancel={() => setIsConfirmingCancel(false)}
+                onConfirm={() => {
+                    setIsConfirmingCancel(false);
+                    router.back();
+                }}
+            />
             <ConfirmationModal
                 isOpen={isConfirming}
                 title="Confirm Rescheduling"
-                description={`Are you sure you want to change this booking to check in on ${checkIn} and check out on ${checkOut}? The server will verify room availability before saving the new dates.`}
+                description={`Are you sure you want to change this booking to check in on ${checkIn} and check out on ${checkOut}?`}
                 confirmLabel="Confirm Reschedule"
                 isLoading={loading}
                 onCancel={() => setIsConfirming(false)}

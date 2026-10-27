@@ -4,11 +4,19 @@ import { NextResponse, type NextRequest } from "next/server";
 export const runtime = "nodejs";
 
 export async function GET(
-    _request: NextRequest,
+    request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const { id } = await params;
+        const excludeBookingIdParam = request.nextUrl.searchParams.get("excludeBookingId");
+        const excludeBookingId = excludeBookingIdParam ? Number(excludeBookingIdParam) : null;
+        if (excludeBookingIdParam !== null && (!Number.isSafeInteger(excludeBookingId) || excludeBookingId! < 1)) {
+            return NextResponse.json(
+                { error: "Invalid booking ID." },
+                { status: 400 }
+            );
+        }
         const roomId = Number(id);
         if (!Number.isSafeInteger(roomId) || roomId < 1) {
             return NextResponse.json(
@@ -41,6 +49,7 @@ export async function GET(
         const bookings = await prisma.booking.findMany({
             where: {
                 room_id: roomId,
+                ...(excludeBookingId !== null ? { id: { not: excludeBookingId } } : {}),
                 check_out: { gt: today },
                 OR: [
                     { status: "CONFIRMED" },

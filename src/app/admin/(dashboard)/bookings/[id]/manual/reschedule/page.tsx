@@ -20,6 +20,7 @@ export default async function RescheduleBookingPage({
         where: { id: bookingId },
         select: {
             id: true,
+            room_id: true,
             booking_ref: true,
             status: true,
             check_in: true,
@@ -87,14 +88,14 @@ export default async function RescheduleBookingPage({
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Current Status</dt>
-                        <dd className="mt-1 font-medium text-stone-900">
-                            {booking.status.replaceAll("_", " ")}
+                        <dd className="mt-1 font-medium text-stone-900 capitalize">
+                            {booking.status.replaceAll("_", " ").toLowerCase()}
                         </dd>
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Payment Status</dt>
-                        <dd className="mt-1 font-medium text-stone-900">
-                            {booking.payment_status}
+                        <dd className="mt-1 font-medium text-stone-900 capitalize">
+                            {booking.payment_status.replaceAll("_", " ").toLowerCase()}
                         </dd>
                     </div>
                     <div>
@@ -109,17 +110,18 @@ export default async function RescheduleBookingPage({
                             {formatDate(booking.check_out)} at {booking.room.checkOutTime}
                         </dd>
                     </div>
+                    <div>
+                        <dt className="text-sm text-stone-500">Accommodation</dt>
+                        <dd className="mt-1 font-medium text-stone-900">{booking.room.name}</dd>
+                    </div>
                 </dl>
             </section>
-            <section className="rounded-xl border border-stone-200 bg-white p-5">
+            <section className="rounded-xl border border-stone-200 bg-white p-5 pb-10">
                 {eligible ? (
                     <>
-                        <div>
-                            <dt className="text-sm text-stone-500">Accommodation</dt>
-                            <dd className="mt-1 font-medium text-stone-900">{booking.room.name}</dd>
-                        </div>
                         <RescheduleBookingForm
                             bookingId={booking.id}
+                            roomId={booking.room_id}
                             currentCheckIn={dateInputValue(booking.check_in)}
                             currentCheckOut={dateInputValue(booking.check_out)}
                             minimumCheckIn={minimumCheckIn}
