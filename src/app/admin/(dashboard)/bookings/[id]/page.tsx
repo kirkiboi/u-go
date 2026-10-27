@@ -172,11 +172,9 @@ export default async function BookingDetailPage({
                                 </span>
                             </DetailItem>
                             <DetailItem label="Phone Number">
-                                <a
-                                    href={`tel:${booking.guest_phone}`}
-                                    className="hover:underline">
+                                <span>
                                     {booking.guest_phone}
-                                </a>
+                                </span>
                             </DetailItem>
                         </div>
                     </section>

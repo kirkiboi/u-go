@@ -30,6 +30,8 @@ export default async function RescheduleBookingPage({
             room: {
                 select: {
                     name: true,
+                    checkInTime: true,
+                    checkOutTime: true,
                 },
             },
         },
@@ -98,13 +100,13 @@ export default async function RescheduleBookingPage({
                     <div>
                         <dt className="text-sm text-stone-500">Current Check-in Date</dt>
                         <dd className="mt-1 font-medium text-stone-900">
-                            {formatDate(booking.check_in)}
+                            {formatDate(booking.check_in)} at {booking.room.checkInTime}
                         </dd>
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Current Check-out Date</dt>
                         <dd className="mt-1 font-medium text-stone-900">
-                            {formatDate(booking.check_out)}
+                            {formatDate(booking.check_out)} at {booking.room.checkOutTime}
                         </dd>
                     </div>
                 </dl>

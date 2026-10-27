@@ -58,8 +58,7 @@ export default async function RefundPage({
 
                 <p className="mt-2 text-sm leading-6 text-stone-600">
                     Review the payment details carefully before submitting
-                    a full refund. This action sends a refund request to
-                    PayMongo.
+                    a full refund.
                 </p>
             </header>
 
