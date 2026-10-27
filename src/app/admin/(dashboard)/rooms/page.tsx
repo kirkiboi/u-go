@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getRooms } from "@/services/room";
 import RoomsList from "./pagination";
-const ROOMS_PER_PAGE = 4;
 
 export default async function RoomsPage() {
     const rooms = await getRooms();

@@ -1,6 +1,7 @@
 
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ConfirmationModal from "@/components/reusable/ConfirmationModal";
 
@@ -11,6 +12,7 @@ export default function CheckInForm({
     bookingId: number;
     bookingRef: string;
 }) {
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
@@ -84,7 +86,7 @@ export default function CheckInForm({
                     onClick={() => setIsCancelConfirming(true)}
                     disabled={loading}
                     className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover: cursor-pointer bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60">
-                    Cancel
+                    Leave Page
                 </button>
                 <button
                     type="button"
@@ -99,14 +101,28 @@ export default function CheckInForm({
             </div>
             <ConfirmationModal
                 isOpen={isCancelConfirming}
-                title="Cancel Check-In"
+                title="Leave Check-In?"
                 description="Are you sure you want to leave this page? Your check-in action has not been completed."
                 confirmLabel="Leave Page"
-                isLoading={false}
+                cancelLabel="Stay in this page"
+                confirmPosition="left"
                 onCancel={() => setIsCancelConfirming(false)}
                 onConfirm={() => {
-                    setIsCancelConfirming(false);
-                    window.location.href = "/admin/bookings";
+                    router.push("/admin/bookings");
+                }}
+            />
+            <ConfirmationModal
+                isOpen={isConfirming}
+                title="Confirm Guest Check-In"
+                description="Are you sure you want to check in this guest? This will update the booking status."
+                confirmLabel="Confirm Check In"
+                cancelLabel="Cancel"
+                confirmPosition="right"
+                isLoading={loading}
+                onCancel={() => setIsConfirming(false)}
+                onConfirm={() => {
+                    setIsConfirming(false);
+                    void handleCheckIn();
                 }}
             />
         </section>
