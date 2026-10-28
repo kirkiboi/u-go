@@ -120,6 +120,6 @@ export default function AdminNavbar() {
                     }}
                 />
             </div>
-        </aside>
+        </aside >
     );
 }
