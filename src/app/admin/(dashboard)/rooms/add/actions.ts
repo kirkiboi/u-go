@@ -1,8 +1,8 @@
 "use server";
 
-import { uploadImage } from "@/services/imageService";
+import { uploadImage, deleteImage } from "@/services/imageService";
 import { redirect } from "next/navigation";
-import { createRoom } from "@/services/room";
+import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authorization";
 function getRequiredString(
     formData: FormData,
@@ -45,7 +45,7 @@ function getOptionalNonNegativeInteger(
 }
 
 export async function addRoom(formData: FormData) {
-    await requireAdmin();
+    const admin = await requireAdmin();
 
     const name = getRequiredString(formData, "name");
     const description = getRequiredString(formData, "description");
@@ -92,24 +92,67 @@ export async function addRoom(formData: FormData) {
         throw new Error("Please upload a valid room image.");
     }
     const imageUrl = await uploadImage("rooms", imageFile);
-    await createRoom({
-        name,
-        description,
-        price,
-        image: imageUrl,
-        maxGuests,
-        beds,
-        bedType,
-        bedrooms,
-        bathrooms,
-        hasWifi: formData.get("hasWifi") === "on",
-        hasParking: formData.get("hasParking") === "on",
-        hasAC: formData.get("hasAC") === "on",
-        hasKitchen: formData.get("hasKitchen") === "on",
-        hasPrivatePool: formData.get("hasPrivatePool") === "on",
-        checkInTime,
-        checkOutTime,
-    });
+    try {
+        await prisma.$transaction(async (tx) => {
+            const room = await tx.room.create({
+                data: {
+                    name,
+                    description,
+                    price,
+                    image: imageUrl,
+                    maxGuests,
+                    beds,
+                    bedType,
+                    bedrooms,
+                    bathrooms,
+                    hasWifi: formData.get("hasWifi") === "on",
+                    hasParking: formData.get("hasParking") === "on",
+                    hasAC: formData.get("hasAC") === "on",
+                    hasKitchen: formData.get("hasKitchen") === "on",
+                    hasPrivatePool: formData.get("hasPrivatePool") === "on",
+                    checkInTime,
+                    checkOutTime,
+                },
+            });
 
+            await tx.activityLog.create({
+                data: {
+                    entity_type: "ROOM",
+                    entity_id: room.id,
+                    entity_name: room.name,
+                    action: "CREATED",
+                    actor_user_id: admin.userId,
+                    actor_type: "ADMIN",
+                    room_id: room.id,
+                    new_data: {
+                        name: room.name,
+                        description: room.description,
+                        price: room.price,
+                        image: "Image",
+                        maxGuests: room.maxGuests,
+                        beds: room.beds,
+                        bedType: room.bedType,
+                        bedrooms: room.bedrooms,
+                        bathrooms: room.bathrooms,
+                        hasWifi: room.hasWifi,
+                        hasParking: room.hasParking,
+                        hasAC: room.hasAC,
+                        hasKitchen: room.hasKitchen,
+                        hasPrivatePool: room.hasPrivatePool,
+                        checkInTime: room.checkInTime,
+                        checkOutTime: room.checkOutTime,
+                    },
+                },
+            });
+        });
+    } catch (error) {
+        try {
+            await deleteImage(imageUrl);
+        } catch {
+
+        }
+
+        throw error;
+    }
     redirect("/admin/rooms");
 }
