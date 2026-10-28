@@ -245,7 +245,7 @@ export default function BookingsList({
                                     </span>
                                 </div>
                                 <div
-                                    className="mt-4 grid grid-cols-2 gap-3 border-t pt-3 sm:grid-cols-3"
+                                    className="mt-4 grid grid-cols-2 gap-3 border-t pt-3 sm:grid-cols-4"
                                     style={{ borderColor: "var(--color-border)" }}>
                                     <div className="min-w-0">
                                         <p
@@ -275,6 +275,16 @@ export default function BookingsList({
                                         </p>
                                         <p className="mt-1 text-sm font-medium">
                                             {booking.check_out.toISOString().slice(0, 10)}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p
+                                            className="text-xs"
+                                            style={{ color: "var(--color-muted)" }}>
+                                            Payment Status
+                                        </p>
+                                        <p className="mt-1 text-sm font-medium capitalize">
+                                            {booking.payment_status.replaceAll("_", " ").toLowerCase()}
                                         </p>
                                     </div>
                                 </div>
