@@ -13,6 +13,7 @@ model User {
   password  String
   name      String?
   role      String   @default("admin")
+  bookingAuditLogs BookingAuditLog[]
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt
 }
@@ -37,6 +38,7 @@ model Room {
   checkInTime    String
   checkOutTime   String
   bookings       Booking[]
+  activityLogs ActivityLog[]
 }
 
 model Amenity {
@@ -45,6 +47,7 @@ model Amenity {
   description    String
   image          String
   timeDescription           String
+  activityLogs ActivityLog[]
 }
 
 enum BookingStatus {
@@ -99,14 +102,38 @@ enum PayMongoRefundStatus {
 }
 
 model BookingAuditLog {
-  id             Int      @id @default(autoincrement())
-  booking_id     Int
-  admin_user_id  Int
-  action         String
-  reason         String
-  previous_data  Json
-  new_data       Json
-  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  id            Int      @id @default(autoincrement())
+  booking_id    Int
+  admin_user_id Int?
+  admin         User?    @relation(fields: [admin_user_id], references: [id], onDelete: SetNull)
+  actor_type    String   @default("ADMIN")
+  action        String
+  reason        String?
+  previous_data Json
+  new_data      Json
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
   @@index([booking_id, createdAt])
   @@index([admin_user_id, createdAt])
+  @@index([actor_type, createdAt])
+}
+
+model ActivityLog {
+  id          Int      @id @default(autoincrement())
+  entity_type String
+  entity_id   Int
+  entity_name String
+  action      String
+  actor_user_id Int?
+  actor_type  String   @default("ADMIN")
+  previous_data Json?
+  new_data    Json?
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  room_id    Int?
+  room       Room?    @relation(fields: [room_id], references: [id], onDelete: SetNull)
+  amenity_id Int?
+  amenity    Amenity? @relation(fields: [amenity_id], references: [id], onDelete: SetNull)
+  @@index([entity_type, createdAt])
+  @@index([entity_name, createdAt])
+  @@index([room_id, createdAt])
+  @@index([amenity_id, createdAt])
 }
