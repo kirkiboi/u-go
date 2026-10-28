@@ -116,27 +116,24 @@ export default async function RescheduleBookingPage({
                     </div>
                 </dl>
             </section>
-            <section className="rounded-xl border border-stone-200 bg-white p-5 pb-10">
-                {eligible ? (
-                    <>
-                        <RescheduleBookingForm
-                            bookingId={booking.id}
-                            roomId={booking.room_id}
-                            currentCheckIn={dateInputValue(booking.check_in)}
-                            currentCheckOut={dateInputValue(booking.check_out)}
-                            minimumCheckIn={minimumCheckIn}
-                        />
-                    </>
-                ) : (
-                    <section className="rounded-xl border border-amber-200 bg-amber-50 p-5">
-                        <h2 className="font-semibold text-amber-900">Rescheduling unavailable</h2>
-                        <p className="mt-2 text-sm text-amber-800">
-                            Only confirmed bookings can be rescheduled. Refresh the booking details to see the latest status.
-                        </p>
-                    </section>
-                )}
-            </section>
-
+            {eligible ? (
+                <>
+                    <RescheduleBookingForm
+                        bookingId={booking.id}
+                        roomId={booking.room_id}
+                        currentCheckIn={dateInputValue(booking.check_in)}
+                        currentCheckOut={dateInputValue(booking.check_out)}
+                        minimumCheckIn={minimumCheckIn}
+                    />
+                </>
+            ) : (
+                <section className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+                    <h2 className="font-semibold text-amber-900">Rescheduling unavailable</h2>
+                    <p className="mt-2 text-sm text-amber-800">
+                        Only confirmed bookings can be rescheduled. Refresh the booking details to see the latest status.
+                    </p>
+                </section>
+            )}
         </main >
     );
 }

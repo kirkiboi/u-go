@@ -142,20 +142,20 @@ export default function RescheduleBookingForm({
 
     if (success) {
         return (
-            <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-5">
+            <section className="rounded-xl border border-green-200 bg-green-50 p-5">
                 <h2 className="font-semibold text-green-900">
                     Booking rescheduled successfully
                 </h2>
                 <Link
                     href={`/admin/bookings/${bookingId}`}
-                    className="mt-4 inline-block text-sm font-medium text-[var(--color-forest-700)] hover:underline">
+                    className="mt-4 inline-block text-sm font-medium text-green-900 underline hover:text-green-950">
                     View booking details →
                 </Link>
-            </div>
+            </section>
         );
     }
     return (
-        <div className="mt-6">
+        <section className="rounded-xl border border-stone-200 bg-white p-5 pb-10">
             <div className="grid gap-5 sm:grid-cols-2">
                 <div className="relative flex flex-col">
                     <label
@@ -183,7 +183,8 @@ export default function RescheduleBookingForm({
                                     isCheckInUnavailable(date) ||
                                     availabilityLoading ||
                                     !!availabilityError
-                                } onSelect={(date) => {
+                                }
+                                onSelect={(date) => {
                                     if (!date) return;
                                     const newCheckIn = dateToKey(date);
                                     const newCheckInDate = keyToDate(newCheckIn);
@@ -269,7 +270,7 @@ export default function RescheduleBookingForm({
                 <button
                     type="button"
                     onClick={() => setIsConfirmingCancel(true)}
-                    className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover: cursor-pointer bg-stone-50">
+                    className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover:cursor-pointer bg-stone-50">
                     Cancel
                 </button>
                 <button
@@ -279,7 +280,7 @@ export default function RescheduleBookingForm({
                         setIsConfirming(true);
                     }}
                     disabled={!datesAreValid || loading}
-                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-3 text-sm font-medium text-white transition hover: cursor-pointer bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg bg-[var(--color-forest-800)] px-5 py-3 text-sm font-medium text-white transition hover:cursor-pointer bg-[var(--color-forest-900)] disabled:cursor-not-allowed disabled:opacity-50"
                     style={{
                         backgroundColor: "var(--color-forest-700)",
                     }}>
@@ -308,6 +309,6 @@ export default function RescheduleBookingForm({
                 onCancel={() => setIsConfirming(false)}
                 onConfirm={handleReschedule}
             />
-        </div>
+        </section>
     );
 }
