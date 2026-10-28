@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/admin/(auth)/logout/actions";
+import { useState } from "react";
+import ConfirmationModal from "@/components/reusable/ConfirmationModal";
 
 const NAV_LINKS = [
     { label: "Dashboard", href: "/admin/dashboard" },
@@ -14,6 +16,7 @@ const NAV_LINKS = [
 
 export default function AdminNavbar() {
     const pathname = usePathname();
+    const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
     return (
         <aside
             className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r"
@@ -93,19 +96,29 @@ export default function AdminNavbar() {
                         Administrator
                     </p>
                 </div>
-                <form action={logout} className="mt-3">
-                    <button
-                        type="submit"
-                        className="w-full rounded-md border px-3 py-2 
-                                    text-xs font-medium transition-colors hover:bg-white/10
-                                    cursor-pointer"
-                        style={{
-                            borderColor: "var(--color-forest-700)",
-                            color: "var(--color-forest-200)",
-                        }}>
-                        Sign out
-                    </button>
-                </form>
+                <button
+                    type="button"
+                    onClick={() => setIsConfirmingLogout(true)}
+                    className="mt-3 w-full cursor-pointer rounded-md border px-3 py-2 text-xs font-medium transition-colors hover:bg-white/10"
+                    style={{
+                        borderColor: "var(--color-forest-700)",
+                        color: "var(--color-forest-200)",
+                    }}>
+                    Sign out
+                </button>
+
+                <ConfirmationModal
+                    isOpen={isConfirmingLogout}
+                    title="Confirm Logout"
+                    description="Are you sure you want to sign out of the admin portal?"
+                    confirmLabel="Sign Out"
+                    cancelLabel="Stay Logged In"
+                    confirmPosition="right"
+                    onCancel={() => setIsConfirmingLogout(false)}
+                    onConfirm={async () => {
+                        await logout();
+                    }}
+                />
             </div>
         </aside>
     );
