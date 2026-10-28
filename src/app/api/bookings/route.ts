@@ -19,13 +19,13 @@ export async function POST(request: NextRequest) {
         const { success, reset } = await bookingRateLimit.limit(clientIp);
         if (!success) {
             return NextResponse.json(
-                {
-                    error: "Too many booking attempts. Please try again later.",
-                },
+                { error: "Too many booking attempts. Please try again later." },
                 {
                     status: 429,
                     headers: {
-                        "Retry-After": String(Math.max(1, Math.ceil((reset - Date.now()) / 1000))),
+                        "Retry-After": String(
+                            Math.max(1, Math.ceil((reset - Date.now()) / 1000))
+                        ),
                     },
                 }
             );
@@ -74,11 +74,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (
-            !validDate(checkIn) ||
-            !validDate(checkOut) ||
-            checkOut <= checkIn
-        ) {
+        if (!validDate(checkIn) || !validDate(checkOut) || checkOut <= checkIn) {
             return NextResponse.json(
                 { error: "Please provide valid check-in and check-out dates." },
                 { status: 400 }
@@ -115,7 +111,7 @@ export async function POST(request: NextRequest) {
             async (tx) => {
                 const room = await tx.room.findUnique({
                     where: { id: roomId },
-                    select: { id: true, price: true },
+                    select: { id: true, name: true, price: true },
                 });
                 if (!room) {
                     throw new Error("ROOM_NOT_FOUND");
@@ -147,7 +143,7 @@ export async function POST(request: NextRequest) {
                     throw new Error("INVALID_BOOKING_TOTAL");
                 }
 
-                return tx.booking.create({
+                const createdBooking = await tx.booking.create({
                     data: {
                         booking_ref: `UGO-${randomUUID()
                             .replaceAll("-", "")
@@ -168,10 +164,30 @@ export async function POST(request: NextRequest) {
                         payment_expires_at: paymentExpiresAt,
                     },
                 });
+                await tx.bookingAuditLog.create({
+                    data: {
+                        booking_id: createdBooking.id,
+                        actor_type: "CUSTOMER",
+                        action: "BOOKING_CREATED",
+                        reason: "Customer submitted a new booking.",
+                        previous_data: {},
+                        new_data: {
+                            booking_ref: createdBooking.booking_ref,
+                            room_id: room.id,
+                            room_name: room.name,
+                            guest_name: `${firstName} ${lastName}`,
+                            check_in: checkIn,
+                            check_out: checkOut,
+                            room_price: room.price,
+                            total,
+                            status: createdBooking.status,
+                            payment_status: createdBooking.payment_status,
+                        },
+                    },
+                });
+                return createdBooking;
             },
-            {
-                isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
-            }
+            { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, }
         );
 
         const secretKey = process.env.PAYMONGO_SECRET_KEY;
@@ -229,13 +245,39 @@ export async function POST(request: NextRequest) {
             if (!checkoutResponse.ok || typeof checkoutSessionId !== "string" || typeof checkoutUrl !== "string") {
                 console.error("PayMongo checkout creation failed:", checkoutResult);
                 try {
-                    await prisma.booking.update({
-                        where: { id: booking.id },
-                        data: {
-                            status: "CANCELLED",
-                            payment_status: "FAILED",
-                            payment_expires_at: new Date(),
-                        },
+                    await prisma.$transaction(async (tx) => {
+                        const result = await tx.booking.updateMany({
+                            where: {
+                                id: booking.id,
+                                status: "PENDING",
+                                payment_status: "PENDING",
+                            },
+                            data: {
+                                status: "CANCELLED",
+                                payment_status: "FAILED",
+                                payment_expires_at: new Date(),
+                            },
+                        });
+
+                        if (result.count === 1) {
+                            await tx.bookingAuditLog.create({
+                                data: {
+                                    booking_id: booking.id,
+                                    actor_type: "SYSTEM",
+                                    action: "PAYMENT_INITIALIZATION_FAILED",
+                                    reason:
+                                        "PayMongo rejected checkout session creation.",
+                                    previous_data: {
+                                        status: "PENDING",
+                                        payment_status: "PENDING",
+                                    },
+                                    new_data: {
+                                        status: "CANCELLED",
+                                        payment_status: "FAILED",
+                                    },
+                                },
+                            });
+                        }
                     });
                 } catch (cleanupError) {
                     console.error(`CRITICAL: Failed to cleanup booking ${booking.id} after PayMongo rejection:`, cleanupError);
@@ -248,9 +290,7 @@ export async function POST(request: NextRequest) {
 
             await prisma.booking.update({
                 where: { id: booking.id },
-                data: {
-                    paymongo_session_id: checkoutSessionId,
-                },
+                data: { paymongo_session_id: checkoutSessionId, },
             });
 
             return NextResponse.json(
@@ -268,13 +308,7 @@ export async function POST(request: NextRequest) {
                 { status: 201 }
             );
         } catch (paymentError) {
-            console.error(
-                "PayMongo checkout request failed; booking left pending until expiry:",
-                {
-                    bookingRef: booking.booking_ref,
-                    error: paymentError,
-                }
-            );
+            console.error("PayMongo checkout request failed; booking left pending until expiry:", { bookingRef: booking.booking_ref, error: paymentError, });
             return NextResponse.json(
                 { error: "Unable to initialize payment. Please try again." },
                 { status: 502 }
