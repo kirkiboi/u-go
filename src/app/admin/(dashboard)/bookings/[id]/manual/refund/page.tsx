@@ -46,16 +46,9 @@ export default async function RefundPage({
     return (
         <main className="mx-auto max-w-3xl space-y-8 p-6">
             <header>
-                <Link
-                    href={`/admin/bookings/${booking.id}/manual`}
-                    className="text-sm text-stone-600 hover:text-stone-900 hover:underline">
-                    ← Back to manual booking actions
-                </Link>
-
                 <h1 className="mt-4 text-2xl font-bold text-stone-900">
                     Refund Payment
                 </h1>
-
                 <p className="mt-2 text-sm leading-6 text-stone-600">
                     Review the payment details carefully before submitting
                     a full refund.

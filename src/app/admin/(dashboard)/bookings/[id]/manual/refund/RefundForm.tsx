@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import type { PayMongoRefundStatus } from "@prisma/client";
 import ConfirmationModal from "@/components/reusable/ConfirmationModal";
+import { useRouter } from "next/navigation";
 
 type Props = {
     bookingId: number;
@@ -64,6 +65,8 @@ export default function RefundForm({
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isConfirmingRefund, setIsConfirmingRefund] = useState(false);
+    const router = useRouter();
+    const [isConfirmingLeave, setIsConfirmingLeave] = useState(false);
 
     const amountLabel = new Intl.NumberFormat("en-PH", {
         style: "currency",
@@ -324,22 +327,36 @@ export default function RefundForm({
                             {message}
                         </p>
                     )}
-                    <button
-                        type="submit"
-                        disabled={loading || justification.trim().length < 2}
-                        className="w-full rounded-lg bg-[var(--color-forest-800)] px-5 py-3 font-medium text-white transition hover: cursor-pointer opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
-                        {loading ? "Submitting refund..." : `Confirm Refund · ${amountLabel}`}
-                    </button>
-                </form>
-            )}
+                    <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                        <button
+                            type="button"
+                            onClick={() => setIsConfirmingLeave(true)}
+                            disabled={loading}
+                            className="rounded-lg border border-stone-300 bg-stone-50 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover:cursor-pointer hover:cursor-pointer bg-stone-100 disabled:cursor-not-allowed disabled:opacity-50">
+                            Leave Page
+                        </button>
 
-            {!canSubmit && message && (
-                <p
-                    role="alert"
-                    className="rounded-lg bg-red-50 p-3 text-sm text-red-800">
-                    {message}
-                </p>
-            )}
+                        <button
+                            type="submit"
+                            disabled={loading || justification.trim().length < 2}
+                            className="rounded-lg px-5 py-3 text-sm font-medium text-white transition hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                            style={{ backgroundColor: "var(--color-forest-800)" }}>
+                            {loading ? "Submitting refund..." : `Confirm Refund`}
+                        </button>
+                    </div>
+                </form>
+            )
+            }
+
+            {
+                !canSubmit && message && (
+                    <p
+                        role="alert"
+                        className="rounded-lg bg-red-50 p-3 text-sm text-red-800">
+                        {message}
+                    </p>
+                )
+            }
             <ConfirmationModal
                 isOpen={isConfirmingRefund}
                 title="Confirm Full Refund"
@@ -354,6 +371,19 @@ export default function RefundForm({
                     void processRefund();
                 }}
             />
-        </div>
+            <ConfirmationModal
+                isOpen={isConfirmingLeave}
+                title="Leave Refund Page?"
+                description="Are you sure you want to leave this page? Any changes you have made will be lost."
+                confirmLabel="Leave Page"
+                cancelLabel="Stay on Page"
+                confirmPosition="left"
+                onCancel={() => setIsConfirmingLeave(false)}
+                onConfirm={() => {
+                    setIsConfirmingLeave(false);
+                    router.push(`/admin/bookings/${bookingId}/manual`);
+                }}
+            />
+        </div >
     );
 }
