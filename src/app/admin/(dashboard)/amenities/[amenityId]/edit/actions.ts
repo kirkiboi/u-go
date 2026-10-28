@@ -1,46 +1,118 @@
 "use server";
 
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { getAmenityById, updateAmenity } from "@/services/amenity";
-import { deleteImage, uploadImage } from "@/services/imageService";
+import { getAmenityById } from "@/services/amenity";
+import { uploadImage, deleteImage } from "@/services/imageService";
 import { requireAdmin } from "@/lib/authorization";
 
 export async function editAmenity(
     amenityId: number,
     formData: FormData
 ) {
-    await requireAdmin();
-    const amenity = await getAmenityById(amenityId);
+    const admin = await requireAdmin();
 
-    if (!amenity) {
+    if (!Number.isSafeInteger(amenityId) || amenityId < 1) {
+        throw new Error("Invalid amenity ID.");
+    }
+
+    const nameValue = formData.get("name");
+    const descriptionValue = formData.get("description");
+    const timeDescriptionValue = formData.get("timeDescription");
+    const imageFile = formData.get("image");
+
+    if (typeof nameValue !== "string" || !nameValue.trim() || typeof descriptionValue !== "string" || !descriptionValue.trim() || typeof timeDescriptionValue !== "string" || !timeDescriptionValue.trim()) {
+        throw new Error("Please complete all required amenity fields.");
+    }
+
+    const existingAmenity = await getAmenityById(amenityId);
+
+    if (!existingAmenity) {
         throw new Error("Amenity not found.");
     }
 
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const timeDescription = formData.get(
-        "timeDescription"
-    ) as string;
+    const name = nameValue.trim();
+    const description = descriptionValue.trim();
+    const timeDescription = timeDescriptionValue.trim();
+    let imageUrl = existingAmenity.image;
+    let uploadedImageUrl: string | null = null;
 
-    const image = formData.get("image") as File;
-
-    if (!name || !description || !timeDescription) {
-        throw new Error("All required fields must be filled.");
+    if (imageFile instanceof File && imageFile.size > 0) {
+        if (!imageFile.type.startsWith("image/") || imageFile.size > 10 * 1024 * 1024) {
+            throw new Error("Please upload a valid image no larger than 10 MB.");
+        }
+        uploadedImageUrl = await uploadImage("amenities", imageFile);
+        imageUrl = uploadedImageUrl;
+    } else if (imageFile !== null && !(imageFile instanceof File)) {
+        throw new Error("Invalid amenity image.");
     }
 
-    let imageUrl = amenity.image;
+    const previousData: Record<string, unknown> = {};
+    const newData: Record<string, unknown> = {};
 
-    if (image && image.size > 0) {
-        imageUrl = await uploadImage("amenities", image);
-        await deleteImage(amenity.image);
+    const changes = {
+        name: [existingAmenity.name, name],
+        description: [existingAmenity.description, description],
+        timeDescription: [existingAmenity.timeDescription, timeDescription,],
+        image: [uploadedImageUrl ? "Image" : "Image", "Image",],
+    } as const;
+
+    for (const [field, values] of Object.entries(changes)) {
+        const [oldValue, newValue] = values;
+        if (field === "image" && !uploadedImageUrl) {
+            continue;
+        }
+
+        if (oldValue !== newValue || field === "image") {
+            previousData[field] = oldValue;
+            newData[field] = newValue;
+        }
     }
 
-    await updateAmenity(amenityId, {
-        name,
-        description,
-        image: imageUrl,
-        timeDescription,
-    });
+    try {
+        await prisma.$transaction(async (tx) => {
+            const amenity = await tx.amenity.update({
+                where: { id: amenityId },
+                data: {
+                    name,
+                    description,
+                    timeDescription,
+                    image: imageUrl,
+                },
+            });
+
+            if (Object.keys(newData).length > 0) {
+                await tx.activityLog.create({
+                    data: {
+                        entity_type: "AMENITY",
+                        entity_id: amenity.id,
+                        entity_name: amenity.name,
+                        action: "UPDATED",
+                        actor_user_id: admin.userId,
+                        actor_type: "ADMIN",
+                        amenity_id: amenity.id,
+                        previous_data: previousData as object,
+                        new_data: newData as object,
+                    },
+                });
+            }
+        });
+    } catch (error) {
+        if (uploadedImageUrl) {
+            try {
+                await deleteImage(uploadedImageUrl);
+            } catch {
+            }
+        }
+        throw error;
+    }
+
+    if (uploadedImageUrl) {
+        try {
+            await deleteImage(existingAmenity.image);
+        } catch {
+        }
+    }
 
     redirect(`/admin/amenities/${amenityId}`);
 }
