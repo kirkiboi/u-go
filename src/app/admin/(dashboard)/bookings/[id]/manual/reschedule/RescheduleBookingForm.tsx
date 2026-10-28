@@ -85,10 +85,11 @@ export default function RescheduleBookingForm({
             cancelled = true;
         };
     }, [roomId, bookingId]);
-    const datesAreValid = checkIn >= minimumCheckIn && checkOut > checkIn;
+    const originalNights = (Date.parse(`${currentCheckOut}T00:00:00Z`) - Date.parse(`${currentCheckIn}T00:00:00Z`)) / (1000 * 60 * 60 * 24);
+
+    const datesAreValid = checkIn >= minimumCheckIn && checkOut > checkIn && (Date.parse(`${checkOut}T00:00:00Z`) - Date.parse(`${checkIn}T00:00:00Z`)) / (1000 * 60 * 60 * 24) === originalNights;
     const isCheckInUnavailable = (date: Date): boolean => {
         const dateKey = dateToKey(date);
-
         return unavailableRanges.some(
             (range) => range.checkIn <= dateKey && dateKey < range.checkOut,
         );
@@ -176,14 +177,22 @@ export default function RescheduleBookingForm({
                             <DayPicker
                                 mode="single"
                                 selected={checkIn ? keyToDate(checkIn) : undefined}
-                                disabled={(date) => dateToKey(date) < minimumCheckIn || isCheckInUnavailable(date) || availabilityLoading || !!availabilityError}
-                                onSelect={(date) => {
+                                disabled={(date) =>
+                                    dateToKey(date) < minimumCheckIn ||
+                                    dateToKey(date) === currentCheckIn ||
+                                    isCheckInUnavailable(date) ||
+                                    availabilityLoading ||
+                                    !!availabilityError
+                                } onSelect={(date) => {
                                     if (!date) return;
                                     const newCheckIn = dateToKey(date);
+                                    const newCheckInDate = keyToDate(newCheckIn);
+                                    newCheckInDate.setUTCDate(
+                                        newCheckInDate.getUTCDate() + originalNights,
+                                    );
+                                    const newCheckOut = dateToKey(newCheckInDate);
                                     setCheckIn(newCheckIn);
-                                    if (checkOut <= newCheckIn) {
-                                        setCheckOut("");
-                                    }
+                                    setCheckOut(newCheckOut);
                                     setError("");
                                     setActiveDatePicker(null);
                                 }}
@@ -233,7 +242,9 @@ export default function RescheduleBookingForm({
                 </div>
             </div>
             <p className="mt-3 text-xs text-stone-500">
-                Check-in must be at least tomorrow.
+                Check-in must be at least tomorrow
+                <br />
+                and length of stay must be the same.
             </p>
             {availabilityLoading && (
                 <p className="mt-2 text-sm text-stone-500">
