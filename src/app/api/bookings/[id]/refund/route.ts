@@ -276,19 +276,42 @@ export async function POST(
                 );
             }
 
-            await prisma.booking.updateMany({
-                where: {
-                    id: refundRequest.id,
-                    paymongo_refund_id: null,
-                    paymongo_refund_idempotency_key:
-                        refundRequest.idempotencyKey,
-                    paymongo_refund_status:
-                        PayMongoRefundStatus.PENDING,
-                },
-                data: {
-                    paymongo_refund_status:
-                        PayMongoRefundStatus.FAILED,
-                },
+            await prisma.$transaction(async (tx) => {
+                const update = await tx.booking.updateMany({
+                    where: {
+                        id: refundRequest.id,
+                        paymongo_refund_id: null,
+                        paymongo_refund_idempotency_key:
+                            refundRequest.idempotencyKey,
+                        paymongo_refund_status: PayMongoRefundStatus.PENDING,
+                    },
+                    data: {
+                        paymongo_refund_status: PayMongoRefundStatus.FAILED,
+                    },
+                });
+
+                if (update.count === 1) {
+                    await tx.bookingAuditLog.create({
+                        data: {
+                            booking_id: refundRequest.id,
+                            admin_user_id: session.userId,
+                            actor_type: "ADMIN",
+                            action: "REFUND_REQUEST_REJECTED",
+                            reason: justification,
+                            previous_data: {
+                                payment_status: "PAID",
+                                paymongo_refund_status: "PENDING",
+                                paymongo_refund_id: null,
+                            },
+                            new_data: {
+                                payment_status: "PAID",
+                                paymongo_refund_status: "FAILED",
+                                paymongo_refund_id: null,
+                                refund_reason: reason,
+                            },
+                        },
+                    });
+                }
             });
             return errorResponse("PayMongo rejected the refund request. Review the payment and try again if appropriate.", 502);
         }
@@ -304,16 +327,41 @@ export async function POST(
             });
 
             if (refundId) {
-                await prisma.booking.updateMany({
-                    where: {
-                        id: refundRequest.id,
-                        paymongo_refund_id: null,
-                        paymongo_refund_idempotency_key:
-                            refundRequest.idempotencyKey,
-                    },
-                    data: {
-                        paymongo_refund_id: refundId,
-                    },
+                await prisma.$transaction(async (tx) => {
+                    const update = await tx.booking.updateMany({
+                        where: {
+                            id: refundRequest.id,
+                            paymongo_refund_id: null,
+                            paymongo_refund_idempotency_key:
+                                refundRequest.idempotencyKey,
+                        },
+                        data: {
+                            paymongo_refund_id: refundId,
+                        },
+                    });
+
+                    if (update.count === 1) {
+                        await tx.bookingAuditLog.create({
+                            data: {
+                                booking_id: refundRequest.id,
+                                admin_user_id: session.userId,
+                                actor_type: "ADMIN",
+                                action: "REFUND_REQUIRES_RECONCILIATION",
+                                reason: justification,
+                                previous_data: {
+                                    payment_status: "PAID",
+                                    paymongo_refund_status: "PENDING",
+                                    paymongo_refund_id: null,
+                                },
+                                new_data: {
+                                    payment_status: "PAID",
+                                    paymongo_refund_status: "PENDING",
+                                    paymongo_refund_id: refundId,
+                                    refund_reason: reason,
+                                },
+                            },
+                        });
+                    }
                 });
             }
 
@@ -327,32 +375,74 @@ export async function POST(
             );
         }
 
-        const updated = await prisma.booking.updateMany({
-            where: {
-                id: refundRequest.id,
-                paymongo_refund_id: null,
-                paymongo_refund_idempotency_key:
-                    refundRequest.idempotencyKey,
-            },
-            data: {
-                paymongo_refund_id: refundId,
-                paymongo_refund_status: refundStatus,
-                ...(refundStatus === PayMongoRefundStatus.SUCCEEDED
-                    ? { payment_status: "REFUNDED" as const }
-                    : {}),
-            },
+        const updated = await prisma.$transaction(async (tx) => {
+            const update = await tx.booking.updateMany({
+                where: {
+                    id: refundRequest.id,
+                    paymongo_refund_id: null,
+                    paymongo_refund_idempotency_key:
+                        refundRequest.idempotencyKey,
+                },
+                data: {
+                    paymongo_refund_id: refundId,
+                    paymongo_refund_status: refundStatus,
+                    ...(refundStatus === PayMongoRefundStatus.SUCCEEDED
+                        ? { payment_status: "REFUNDED" as const }
+                        : {}),
+                },
+            });
+
+            if (update.count !== 1) {
+                return false;
+            }
+
+            await tx.bookingAuditLog.create({
+                data: {
+                    booking_id: refundRequest.id,
+                    admin_user_id: session.userId,
+                    actor_type: "ADMIN",
+                    action:
+                        refundStatus === PayMongoRefundStatus.SUCCEEDED
+                            ? "PAYMENT_REFUND_SUCCEEDED"
+                            : refundStatus === PayMongoRefundStatus.FAILED
+                                ? "PAYMENT_REFUND_FAILED"
+                                : "PAYMENT_REFUND_STATUS_UPDATED",
+                    reason: justification,
+                    previous_data: {
+                        payment_status: "PAID",
+                        paymongo_refund_status: "PENDING",
+                        paymongo_refund_id: null,
+                    },
+                    new_data: {
+                        payment_status:
+                            refundStatus === PayMongoRefundStatus.SUCCEEDED
+                                ? "REFUNDED"
+                                : "PAID",
+                        paymongo_refund_status: refundStatus,
+                        paymongo_refund_id: refundId,
+                        refund_reason: reason,
+                        refund_amount: refundRequest.amount / 100,
+                    },
+                },
+            });
+
+            return true;
         });
 
-        if (updated.count !== 1) {
+        if (!updated) {
             console.error(
                 "Refund response received but booking reconciliation failed:",
                 {
                     bookingRef: refundRequest.bookingRef,
                     refundId,
                     refundStatus,
-                }
+                },
             );
-            return errorResponse("The refund was created, but its database record needs reconciliation.", 500);
+
+            return errorResponse(
+                "The refund was created, but its database record needs reconciliation.",
+                500,
+            );
         }
 
         const messages: Record<PayMongoRefundStatus, string> = {
