@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authorization";
@@ -636,152 +635,147 @@ export default async function ActivitiesPage({
                     </>
                 )}
                 {activeTab === "catalog" && (
-                    <section
-                        className="mt-8 overflow-hidden rounded-xl border bg-white shadow-sm"
-                        style={{ borderColor: "var(--color-border)" }}>
-                        <div
-                            className="border-b px-5 py-5 sm:px-6"
-                            style={{ borderColor: "var(--color-border)" }}>
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                <div>
-                                    <p
-                                        className="mt-1 text-sm"
-                                        style={{ color: "var(--color-muted)" }}>
-                                        Rooms &amp; Amenities creation, edits, deletions, and field changes.
-                                    </p>
-                                </div>
-                                <span
-                                    className="text-sm"
-                                    style={{ color: "var(--color-muted)" }}>
-                                    {catalogTotal} records
-                                </span>
-                            </div>
-
+                    <section className="mt-8">
+                        <div>
                             <form
                                 method="GET"
                                 action="/admin/activities"
-                                className="mt-4 flex flex-col gap-2 sm:flex-row">
+                                className="flex flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm lg:flex-row"
+                                style={{ borderColor: "var(--color-border)" }}>
+                                <input type="hidden" name="tab" value="catalog" />
+
+                                <label htmlFor="catalog-search" className="sr-only">
+                                    Search rooms and amenities by name
+                                </label>
+
                                 <input
+                                    id="catalog-search"
+                                    type="search"
                                     name="catalogSearch"
                                     defaultValue={catalogSearch}
                                     maxLength={100}
-                                    placeholder="Search room or amenity name"
-                                    className="min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700"
+                                    placeholder="Search room or amenity name..."
+                                    autoComplete="off"
+                                    className="w-full min-w-0 flex-1 rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                     style={{ borderColor: "var(--color-border)" }}
                                 />
                                 <button
                                     type="submit"
-                                    className="rounded-lg px-4 py-2 text-sm font-semibold text-white hover: cursor-pointer"
+                                    className="rounded-lg px-4 py-2.5 text-sm font-medium text-white hover:cursor-pointer"
                                     style={{ backgroundColor: "var(--color-forest-700)" }}>
                                     Search
                                 </button>
                             </form>
                         </div>
 
-                        {catalogLogs.length ? (
-                            <div className="divide-y" style={{ borderColor: "var(--color-border)" }}>
-                                {catalogLogs.map((log) => {
-                                    const type = log.entity_type.toUpperCase() === "AMENITY"
-                                        ? "amenity"
-                                        : "room";
-                                    const changes = getChanges(
-                                        log.previous_data,
-                                        log.new_data,
-                                    );
+                        <section className="mt-6">
+                            <Pagination
+                                feed="catalog"
+                                search={catalogSearch}
+                                page={catalogPage}
+                                totalPages={catalogTotalPages}
+                                totalRecords={catalogTotal}
+                            />
 
-                                    return (
-                                        <article
-                                            key={log.id}
-                                            className="px-5 py-5 sm:px-6">
-                                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                                <div className="flex min-w-0 items-start gap-3">
-                                                    <div
-                                                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-semibold"
-                                                        style={getTypeStyles(type)}>
-                                                        {type === "room" ? "R" : "A"}
+                            {catalogLogs.length ? (
+                                <div className="mt-3 flex flex-col gap-4">
+                                    {catalogLogs.map((log) => {
+                                        const type = log.entity_type.toUpperCase() === "AMENITY" ? "amenity" : "room";
+                                        const changes = getChanges(log.previous_data, log.new_data,);
+
+                                        return (
+                                            <article
+                                                key={log.id}
+                                                className="rounded-xl border bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:px-6"
+                                                style={{ borderColor: "var(--color-border)" }}>
+                                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                                    <div className="flex min-w-0 items-start gap-3">
+                                                        <div
+                                                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-semibold"
+                                                            style={getTypeStyles(type)}>
+                                                            {type === "room" ? "R" : "A"}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <h3
+                                                                className="font-semibold"
+                                                                style={{ color: "var(--color-forest-900)" }}>
+                                                                {formatAction(log.action, log.entity_type)}
+                                                            </h3>
+                                                            <p
+                                                                className="mt-1 text-sm"
+                                                                style={{ color: "var(--color-muted)" }}>
+                                                                {type === "room" ? "Room" : "Amenity"}: {log.entity_name}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <div className="min-w-0">
-                                                        <h3
-                                                            className="font-semibold"
-                                                            style={{ color: "var(--color-forest-900)" }}>
-                                                            {formatAction(log.action, log.entity_type)}
-                                                        </h3>
-                                                        <p
-                                                            className="mt-1 text-sm"
+                                                    <div>
+                                                        <time
+                                                            className="shrink-0 text-xs sm:text-right"
+                                                            dateTime={log.createdAt.toISOString()}
                                                             style={{ color: "var(--color-muted)" }}>
-                                                            {type === "room" ? "Room" : "Amenity"}: {log.entity_name}
+                                                            {formatDate(log.createdAt)}
+                                                        </time>
+                                                        <p
+                                                            className="mt-1 text-xs"
+                                                            style={{ color: "var(--color-muted)" }}>
+                                                            Performed by: {log.actor_user_id !== null
+                                                                ? catalogActorMap.get(log.actor_user_id) ?? getActor(log.actor_type)
+                                                                : getActor(log.actor_type)}
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <time
-                                                        className="shrink-0 text-xs sm:text-right"
-                                                        dateTime={log.createdAt.toISOString()}
-                                                        style={{ color: "var(--color-muted)" }}>
-                                                        {formatDate(log.createdAt)}
-                                                    </time>
-                                                    <p
-                                                        className="mt-1 text-xs"
-                                                        style={{ color: "var(--color-muted)" }}>
-                                                        Performed by: {log.actor_user_id !== null
-                                                            ? catalogActorMap.get(log.actor_user_id) ?? getActor(log.actor_type)
-                                                            : getActor(log.actor_type)}
-                                                    </p>
-                                                </div>
-                                            </div>
 
-                                            {changes.length > 0 && (
-                                                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                                                    {changes.map((change) => (
-                                                        <div
-                                                            key={change.key}
-                                                            className="rounded-lg border px-3 py-2"
-                                                            style={{ borderColor: "var(--color-border)" }}>
-                                                            <p
-                                                                className="text-xs font-semibold"
-                                                                style={{ color: "var(--color-muted)" }}>
-                                                                {change.label}
-                                                            </p>
-                                                            <p className="mt-1 break-words text-sm">
-                                                                <span style={{ color: "#b91c1c" }}>
-                                                                    {change.oldValue}
-                                                                </span>
-                                                                <span className="mx-2" style={{ color: "var(--color-muted)" }}>
-                                                                    →
-                                                                </span>
-                                                                <span style={{ color: "var(--color-forest-800)" }}>
-                                                                    {change.newValue}
-                                                                </span>
-                                                            </p>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </article>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <div className="px-6 py-10 text-center">
-                                <p className="font-medium" style={{ color: "var(--color-forest-900)" }}>
-                                    No room or amenity activity found
-                                </p>
-                                <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
-                                    Try a different record name.
-                                </p>
-                            </div>
-                        )}
-
-                        <Pagination
-                            feed="catalog"
-                            search={catalogSearch}
-                            page={catalogPage}
-                            totalPages={catalogTotalPages}
-                            totalRecords={catalogTotal}
-                        />
+                                                {changes.length > 0 && (
+                                                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                                                        {changes.map((change) => (
+                                                            <div
+                                                                key={change.key}
+                                                                className="rounded-lg border px-3 py-2"
+                                                                style={{ borderColor: "var(--color-border)" }}>
+                                                                <p
+                                                                    className="text-xs font-semibold"
+                                                                    style={{ color: "var(--color-muted)" }}>
+                                                                    {change.label}
+                                                                </p>
+                                                                <p className="mt-1 break-words text-sm">
+                                                                    <span style={{ color: "#b91c1c" }}>
+                                                                        {change.oldValue}
+                                                                    </span>
+                                                                    <span className="mx-2" style={{ color: "var(--color-muted)" }}>
+                                                                        →
+                                                                    </span>
+                                                                    <span style={{ color: "var(--color-forest-800)" }}>
+                                                                        {change.newValue}
+                                                                    </span>
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </article>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div
+                                    className="mt-3 rounded-xl border bg-white px-6 py-10 text-center"
+                                    style={{ borderColor: "var(--color-border)" }}>
+                                    <p
+                                        className="font-medium"
+                                        style={{ color: "var(--color-forest-900)" }}>
+                                        No room or amenity activity found
+                                    </p>
+                                    <p
+                                        className="mt-1 text-sm"
+                                        style={{ color: "var(--color-muted)" }}>
+                                        Try a different record name.
+                                    </p>
+                                </div>
+                            )}
+                        </section>
                     </section>
                 )}
             </div>
-        </main >
+        </main>
     );
 }
