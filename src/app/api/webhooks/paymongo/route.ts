@@ -48,12 +48,12 @@ function verifyPayMongoSignature(
     const timestamp = parts.t;
     const receivedSignature = isLiveMode ? parts.li : parts.te;
     if (!timestamp || !receivedSignature) return false;
-    const expectedSignature = createHmac("sha256", webhookSecret).update(`${timestamp}.${rawBody}`).digest("hex");
     const timestampSeconds = Number(timestamp);
     const nowSeconds = Math.floor(Date.now() / 1000);
     if (!Number.isFinite(timestampSeconds) || Math.abs(nowSeconds - timestampSeconds) > 300) {
         return false;
     }
+    const expectedSignature = createHmac("sha256", webhookSecret).update(`${timestamp}.${rawBody}`).digest("hex");
     const expected = Buffer.from(expectedSignature, "hex");
     const received = Buffer.from(receivedSignature, "hex");
 
@@ -102,31 +102,21 @@ export async function POST(request: Request) {
             { status: 401 }
         );
     }
-    const validSignature = verifyPayMongoSignature(
-        rawBody,
-        request.headers.get("paymongo-signature"),
-        webhookSecret,
-        isLiveMode
-    );
-    if (!validSignature) {
+
+    if (!verifyPayMongoSignature(rawBody, request.headers.get("paymongo-signature"), webhookSecret, isLiveMode)) {
         return NextResponse.json(
             { error: "Invalid webhook signature." },
             { status: 401 }
         );
     }
     const eventType = eventAttributes?.type;
-    if (
-        eventType === "payment.refunded" ||
-        eventType === "payment.refund.updated"
-    ) {
+
+    if (eventType === "payment.refunded" || eventType === "payment.refund.updated") {
         const resource = eventAttributes?.data;
         const resourceId = resource?.id;
         const resourceStatus = resource?.attributes?.status;
 
-        if (
-            typeof resourceId !== "string" ||
-            typeof resourceStatus !== "string"
-        ) {
+        if (typeof resourceId !== "string" || typeof resourceStatus !== "string") {
             console.error("Invalid PayMongo refund webhook payload.", {
                 eventType,
             });
@@ -148,6 +138,7 @@ export async function POST(request: Request) {
                     where: { paymongo_payment_id: resourceId },
                     select: {
                         id: true,
+                        booking_ref: true,
                         payment_status: true,
                         paymongo_refund_status: true,
                     },
@@ -162,19 +153,75 @@ export async function POST(request: Request) {
                         { status: 200 }
                     );
                 }
-                await prisma.booking.update({
-                    where: { id: booking.id },
-                    data: {
-                        payment_status: "REFUNDED",
-                        paymongo_refund_status: "SUCCEEDED",
-                    },
+
+                const result = await prisma.$transaction(async (tx) => {
+                    const current = await tx.booking.findUnique({
+                        where: { id: booking.id },
+                        select: {
+                            payment_status: true,
+                            paymongo_refund_status: true,
+                        },
+                    });
+
+                    if (!current) return "NOT_FOUND" as const;
+
+                    if (current.payment_status === "REFUNDED" && current.paymongo_refund_status === "SUCCEEDED") {
+                        return "ALREADY_PROCESSED" as const;
+                    }
+
+                    const update = await tx.booking.updateMany({
+                        where: {
+                            id: booking.id,
+                            payment_status: current.payment_status,
+                            paymongo_refund_status:
+                                current.paymongo_refund_status,
+                        },
+                        data: {
+                            payment_status: "REFUNDED",
+                            paymongo_refund_status: "SUCCEEDED",
+                        },
+                    });
+
+                    if (update.count !== 1) {
+                        return "CONFLICT" as const;
+                    }
+
+                    await tx.bookingAuditLog.create({
+                        data: {
+                            booking_id: booking.id,
+                            actor_type: "PAYMONGO",
+                            action: "PAYMENT_REFUNDED",
+                            reason:
+                                "PayMongo confirmed that the payment was refunded.",
+                            previous_data: {
+                                payment_status: current.payment_status,
+                                paymongo_refund_status:
+                                    current.paymongo_refund_status,
+                            },
+                            new_data: {
+                                payment_status: "REFUNDED",
+                                paymongo_refund_status: "SUCCEEDED",
+                                paymongo_payment_id: resourceId,
+                            },
+                        },
+                    });
+                    return "UPDATED" as const;
                 });
+
+                if (result === "NOT_FOUND" || result === "CONFLICT") {
+                    return NextResponse.json(
+                        { received: true, requiresReview: true },
+                        { status: 200 }
+                    );
+                }
+
                 return NextResponse.json(
                     {
                         received: true,
                         paymentId: resourceId,
                         paymentStatus: "REFUNDED",
                         refundStatus: "SUCCEEDED",
+                        alreadyProcessed: result === "ALREADY_PROCESSED",
                     },
                     { status: 200 }
                 );
@@ -184,7 +231,7 @@ export async function POST(request: Request) {
                     { paymentId: resourceId, error }
                 );
                 return NextResponse.json(
-                    { error: "Unable to process refunded payment webhook." },
+                    { error: "Unable to process refunded payment webhook.", },
                     { status: 500 }
                 );
             }
@@ -199,7 +246,7 @@ export async function POST(request: Request) {
             failed: "FAILED",
         } as const;
 
-        if (!(resourceStatus in statusMap)) {
+        if (!Object.hasOwn(statusMap, resourceStatus)) {
             console.warn("Unknown PayMongo refund status.", {
                 refundId,
                 refundStatus: resourceStatus,
@@ -210,8 +257,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const mappedStatus =
-            statusMap[resourceStatus as keyof typeof statusMap];
+        const mappedStatus = statusMap[resourceStatus as keyof typeof statusMap];
 
         try {
             const booking = await prisma.booking.findFirst({
@@ -225,67 +271,115 @@ export async function POST(request: Request) {
                 },
                 select: {
                     id: true,
-                    paymongo_refund_id: true,
-                    paymongo_refund_status: true,
-                    payment_status: true,
+                    booking_ref: true,
                 },
             });
             if (!booking) {
-                console.warn(
-                    "No booking matches the PayMongo refund event.",
-                    { refundId, paymentId }
-                );
+                console.warn("No booking matches the PayMongo refund event.", {
+                    refundId,
+                    paymentId,
+                });
+
                 return NextResponse.json(
                     { received: true, requiresReview: true },
                     { status: 200 }
                 );
             }
-            if (booking.paymongo_refund_status === "SUCCEEDED") {
-                return NextResponse.json(
-                    { received: true, alreadyProcessed: true },
-                    { status: 200 }
-                );
-            }
-            if (
-                booking.paymongo_refund_id &&
-                booking.paymongo_refund_id !== refundId
-            ) {
-                console.error(
-                    "PayMongo refund ID does not match the booking record.",
-                    {
-                        bookingId: booking.id,
-                        existingRefundId: booking.paymongo_refund_id,
-                        receivedRefundId: refundId,
-                    }
-                );
-                return NextResponse.json(
-                    { received: true, requiresReview: true },
-                    { status: 200 }
-                );
-            }
-            await prisma.booking.update({
-                where: { id: booking.id },
-                data: {
-                    paymongo_refund_id: refundId,
-                    paymongo_refund_status: mappedStatus,
-                    ...(mappedStatus === "SUCCEEDED"
-                        ? { payment_status: "REFUNDED" as const }
-                        : {}),
-                },
+
+            const result = await prisma.$transaction(async (tx) => {
+                const current = await tx.booking.findUnique({
+                    where: { id: booking.id },
+                    select: {
+                        paymongo_refund_id: true,
+                        paymongo_refund_status: true,
+                        payment_status: true,
+                    },
+                });
+
+                if (!current) return "NOT_FOUND" as const;
+
+                if (current.paymongo_refund_status === "SUCCEEDED") {
+                    return "ALREADY_PROCESSED" as const;
+                }
+
+                if (current.paymongo_refund_id && current.paymongo_refund_id !== refundId) {
+                    return "REFUND_ID_MISMATCH" as const;
+                }
+
+                const nextPaymentStatus = mappedStatus === "SUCCEEDED" ? "REFUNDED" : current.payment_status;
+                const hasChanges = current.paymongo_refund_id !== refundId || current.paymongo_refund_status !== mappedStatus || current.payment_status !== nextPaymentStatus;
+
+                if (!hasChanges) return "UNCHANGED" as const;
+
+                const update = await tx.booking.updateMany({
+                    where: {
+                        id: booking.id,
+                        paymongo_refund_id: current.paymongo_refund_id,
+                        paymongo_refund_status:
+                            current.paymongo_refund_status,
+                        payment_status: current.payment_status,
+                    },
+                    data: {
+                        paymongo_refund_id: refundId,
+                        paymongo_refund_status: mappedStatus,
+                        ...(mappedStatus === "SUCCEEDED"
+                            ? { payment_status: "REFUNDED" as const }
+                            : {}),
+                    },
+                });
+
+                if (update.count !== 1) return "CONFLICT" as const;
+
+                await tx.bookingAuditLog.create({
+                    data: {
+                        booking_id: booking.id,
+                        actor_type: "PAYMONGO",
+                        action: "REFUND_STATUS_UPDATED",
+                        reason: `PayMongo refund status changed to ${mappedStatus}.`,
+                        previous_data: {
+                            paymongo_refund_id: current.paymongo_refund_id,
+                            paymongo_refund_status:
+                                current.paymongo_refund_status,
+                            payment_status: current.payment_status,
+                        },
+                        new_data: {
+                            paymongo_refund_id: refundId,
+                            paymongo_refund_status: mappedStatus,
+                            payment_status: nextPaymentStatus,
+                        },
+                    },
+                });
+                return "UPDATED" as const;
             });
+
+            if (result === "NOT_FOUND" || result === "REFUND_ID_MISMATCH" || result === "CONFLICT") {
+                if (result === "REFUND_ID_MISMATCH") {
+                    console.error(
+                        "PayMongo refund ID does not match the booking record.",
+                        { bookingId: booking.id, refundId }
+                    );
+                }
+                return NextResponse.json(
+                    { received: true, requiresReview: true },
+                    { status: 200 }
+                );
+            }
             return NextResponse.json(
                 {
                     received: true,
                     refundId,
                     refundStatus: mappedStatus,
+                    alreadyProcessed:
+                        result === "ALREADY_PROCESSED" ||
+                        result === "UNCHANGED",
                 },
                 { status: 200 }
             );
         } catch (error) {
-            console.error(
-                "PayMongo refund webhook processing failed:",
-                { refundId, error }
-            );
+            console.error("PayMongo refund webhook processing failed:", {
+                refundId,
+                error,
+            });
 
             return NextResponse.json(
                 { error: "Unable to process refund webhook." },
@@ -308,11 +402,7 @@ export async function POST(request: Request) {
     const bookingRef = attributes?.reference_number;
     const payments = attributes?.payments;
 
-    if (
-        typeof sessionId !== "string" ||
-        typeof bookingRef !== "string" ||
-        !Array.isArray(payments)
-    ) {
+    if (typeof sessionId !== "string" || typeof bookingRef !== "string" || !Array.isArray(payments)) {
         return NextResponse.json(
             { error: "Invalid checkout session data." },
             { status: 400 }
@@ -335,10 +425,7 @@ export async function POST(request: Request) {
                 { status: 404 }
             );
         }
-        if (
-            booking.status === "CONFIRMED" &&
-            booking.payment_status === "PAID"
-        ) {
+        if (booking.status === "CONFIRMED" && booking.payment_status === "PAID") {
             return NextResponse.json(
                 { received: true, alreadyProcessed: true },
                 { status: 200 }
@@ -354,10 +441,7 @@ export async function POST(request: Request) {
                 { status: 400 }
             );
         }
-        if (
-            typeof paidPayment.id !== "string" ||
-            paidPayment.id.trim().length === 0
-        ) {
+        if (typeof paidPayment.id !== "string" || paidPayment.id.trim().length === 0) {
             console.error("Paid payment is missing its payment ID.", {
                 bookingRef,
                 sessionId,
@@ -372,11 +456,7 @@ export async function POST(request: Request) {
         const expectedAmount = booking.total * 100;
         const paidAmount = paidAttributes?.amount;
         const paidCurrency = paidAttributes?.currency;
-        if (
-            paidAmount !== expectedAmount ||
-            typeof paidCurrency !== "string" ||
-            paidCurrency.toUpperCase() !== "PHP"
-        ) {
+        if (paidAmount !== expectedAmount || typeof paidCurrency !== "string" || paidCurrency.toUpperCase() !== "PHP") {
             console.error("Payment amount or currency mismatch.", {
                 bookingRef,
                 expectedAmount,
@@ -389,12 +469,7 @@ export async function POST(request: Request) {
             );
         }
 
-        if (
-            booking.status !== "PENDING" ||
-            booking.payment_status !== "PENDING" ||
-            (booking.payment_expires_at !== null &&
-                booking.payment_expires_at < new Date())
-        ) {
+        if (booking.status !== "PENDING" || booking.payment_status !== "PENDING" || (booking.payment_expires_at !== null && booking.payment_expires_at < new Date())) {
             console.error("Paid event received for an ineligible booking.", {
                 bookingRef,
                 status: booking.status,
@@ -405,23 +480,53 @@ export async function POST(request: Request) {
                 { status: 200 }
             );
         }
-        const confirmation = await prisma.booking.updateMany({
-            where: {
-                id: booking.id,
-                status: "PENDING",
-                payment_status: "PENDING",
-                OR: [
-                    { payment_expires_at: null },
-                    { payment_expires_at: { gte: new Date() } },
-                ],
-            },
-            data: {
-                status: "CONFIRMED",
-                payment_status: "PAID",
-                paymongo_payment_id: paidPayment.id,
-            },
+
+        const result = await prisma.$transaction(async (tx) => {
+            const confirmation = await tx.booking.updateMany({
+                where: {
+                    id: booking.id,
+                    status: "PENDING",
+                    payment_status: "PENDING",
+                    OR: [
+                        { payment_expires_at: null },
+                        { payment_expires_at: { gte: new Date() } },
+                    ],
+                },
+                data: {
+                    status: "CONFIRMED",
+                    payment_status: "PAID",
+                    paymongo_payment_id: paidPayment.id,
+                },
+            });
+
+            if (confirmation.count !== 1) {
+                return false;
+            }
+
+            await tx.bookingAuditLog.create({
+                data: {
+                    booking_id: booking.id,
+                    actor_type: "PAYMONGO",
+                    action: "PAYMENT_CONFIRMED",
+                    reason:
+                        "PayMongo confirmed the checkout payment; booking eligibility and payment amount were verified.",
+                    previous_data: {
+                        status: booking.status,
+                        payment_status: booking.payment_status,
+                        paymongo_payment_id: booking.paymongo_payment_id,
+                    },
+                    new_data: {
+                        status: "CONFIRMED",
+                        payment_status: "PAID",
+                        paymongo_payment_id: paidPayment.id,
+                    },
+                },
+            });
+
+            return true;
         });
-        if (confirmation.count !== 1) {
+
+        if (!result) {
             console.warn("Payment received but booking was not confirmed.", {
                 bookingRef,
                 reason: "Booking state changed or payment deadline passed.",
