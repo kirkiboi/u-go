@@ -35,7 +35,50 @@ function formatDate(date: Date): string {
     }).format(date);
 }
 
-function formatAction(action: string): string {
+function formatAction(
+    action: string,
+    entityType?: string,
+): string {
+    const labels: Record<string, string> = {
+        BOOKING_CREATED: "New Booking",
+        BOOKING_CANCELLED: "Booking Cancelled",
+        BOOKING_CHECKED_IN: "Guest Checked In",
+        BOOKING_COMPLETED: "Stay Completed",
+        BOOKING_RESCHEDULED: "Booking Rescheduled",
+        MANUAL_BOOKING_OVERRIDE: "Booking Manually Adjusted",
+        PAYMENT_CONFIRMED: "Payment Received",
+        PAYMENT_REFUNDED: "Payment Refunded",
+        PAYMENT_REFUND_SUCCEEDED: "Refund Completed",
+        PAYMENT_REFUND_FAILED: "Refund Failed",
+        ROOM_CREATED: "Room Created",
+        ROOM_UPDATED: "Room Updated",
+        ROOM_DELETED: "Room Deleted",
+        AMENITY_CREATED: "Amenity Created",
+        AMENITY_UPDATED: "Amenity Updated",
+        AMENITY_DELETED: "Amenity Deleted",
+    };
+
+    const normalizedAction = action.trim().toUpperCase();
+    const normalizedEntity = entityType?.trim().toUpperCase();
+
+    if (labels[normalizedAction]) {
+        return labels[normalizedAction];
+    }
+
+    const entityLabel = normalizedEntity === "AMENITY" ? "Amenity" : "Room";
+
+    const genericActions: Record<string, string> = {
+        CREATE: "Created",
+        CREATED: "Created",
+        UPDATE: "Updated",
+        UPDATED: "Updated",
+        DELETE: "Deleted",
+        DELETED: "Deleted",
+    };
+
+    if (genericActions[normalizedAction]) {
+        return `${entityLabel} ${genericActions[normalizedAction]}`;
+    }
     return action.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
@@ -165,66 +208,69 @@ function Pagination({
     search,
     page,
     totalPages,
+    totalRecords,
 }: {
     feed: "booking" | "catalog";
     search: string;
     page: number;
     totalPages: number;
+    totalRecords: number;
 }) {
+    const start = totalRecords === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+    const end = Math.min(page * PAGE_SIZE, totalRecords);
     return (
-        <div
-            className="flex flex-wrap items-center justify-between gap-3 border-t px-5 py-4"
-            style={{ borderColor: "var(--color-border)" }} >
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm" style={{ color: "var(--color-muted)" }}>
-                Page {page} of {totalPages}
+                Showing {start}–{end} of {totalRecords}{" "}
+                {feed === "booking" ? "activities" : "activities"}
             </p>
 
             <div className="flex items-center gap-2">
-                {page > 1 ? (
-                    <Link
-                        href={paginationHref(feed, search, page - 1)}
-                        className="rounded-lg border px-3 py-2 text-sm font-medium"
-                        style={{
-                            borderColor: "var(--color-border)",
-                            color: "var(--color-forest-800)",
-                        }}>
-                        Previous
-                    </Link>
-                ) : (
-                    <span
-                        className="rounded-lg border px-3 py-2 text-sm"
-                        style={{
-                            borderColor: "var(--color-border)",
-                            color: "var(--color-muted)",
-                        }}>
-                        Previous
-                    </span>
+                <Link
+                    href={paginationHref(feed, search, page - 1)}
+                    aria-disabled={page <= 1}
+                    tabIndex={page <= 1 ? -1 : undefined}
+                    className={`rounded-lg border px-3 py-2 text-sm font-medium ${page <= 1 ? "pointer-events-none opacity-40" : "bg-gray-50"}`}
+                    style={{
+                        borderColor: "var(--color-border)",
+                        color: "var(--color-forest-800)",
+                    }}>
+                    Previous
+                </Link>
+
+                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                    (pageNumber) => (
+                        <Link
+                            key={pageNumber}
+                            href={paginationHref(feed, search, pageNumber)}
+                            aria-current={page === pageNumber ? "page" : undefined}
+                            className="rounded-lg border px-3 py-2 text-sm font-medium"
+                            style={{
+                                borderColor: page === pageNumber ? "var(--color-forest-500)" : "var(--color-border)",
+                                backgroundColor: page === pageNumber ? "var(--color-forest-100)" : "white",
+                                color: page === pageNumber ? "var(--color-forest-900)" : "var(--color-muted)",
+                            }}>
+                            {pageNumber}
+                        </Link>
+                    ),
                 )}
 
-                {page < totalPages ? (
-                    <Link
-                        href={paginationHref(feed, search, page + 1)}
-                        className="rounded-lg border px-3 py-2 text-sm font-medium"
-                        style={{
-                            borderColor: "var(--color-border)",
-                            color: "var(--color-forest-800)",
-                        }}>
-                        Next
-                    </Link>
-                ) : (
-                    <span
-                        className="rounded-lg border px-3 py-2 text-sm"
-                        style={{
-                            borderColor: "var(--color-border)",
-                            color: "var(--color-muted)",
-                        }}>
-                        Next
-                    </span>
-                )}
+                <Link
+                    href={paginationHref(feed, search, page + 1)}
+                    aria-disabled={page >= totalPages}
+                    tabIndex={page >= totalPages ? -1 : undefined}
+                    className={`rounded-lg border px-3 py-2 text-sm font-medium ${page >= totalPages ? "pointer-events-none opacity-40" : "bg-gray-50"}`}
+                    style={{
+                        borderColor: "var(--color-border)",
+                        color: "var(--color-forest-800)",
+                    }}>
+                    Next
+                </Link>
             </div>
         </div>
     );
 }
+
 
 export default async function ActivitiesPage({
     searchParams,
@@ -239,7 +285,6 @@ export default async function ActivitiesPage({
     const catalogSearch = (params.catalogSearch ?? "").trim().slice(0, 100);
     const requestedBookingPage = parsePage(params.bookingPage);
     const requestedCatalogPage = parsePage(params.catalogPage);
-
     const matchingBookings = bookingSearch
         ? await prisma.booking.findMany({
             where: {
@@ -346,6 +391,31 @@ export default async function ActivitiesPage({
             `${booking.guest_fname} ${booking.guest_lname}`.trim(),
         ]),
     );
+    const catalogActorIds = [
+        ...new Set(
+            catalogLogs
+                .map((log) => log.actor_user_id)
+                .filter((id): id is number => id !== null),
+        ),
+    ];
+
+    const catalogActors = await prisma.user.findMany({
+        where: {
+            id: { in: catalogActorIds },
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+        },
+    });
+
+    const catalogActorMap = new Map(
+        catalogActors.map((user) => [
+            user.id,
+            user.name?.trim() || user.email,
+        ]),
+    );
     return (
         <main className="min-h-screen px-4 py-8 sm:px-8">
             <div className="mx-auto max-w-7xl">
@@ -365,13 +435,6 @@ export default async function ActivitiesPage({
                             }}>
                             Activities Overview
                         </h1>
-
-                        <p
-                            className="mt-2 text-sm"
-                            style={{ color: "var(--color-muted)" }}>
-                            Review booking changes and resort inventory activity.
-                            Times are displayed in Philippine time.
-                        </p>
                     </div>
 
                     <div
@@ -416,170 +479,161 @@ export default async function ActivitiesPage({
                     </div>
                 </header>
                 {activeTab === "booking" && (
-                    <section
-                        className="mt-8 overflow-hidden rounded-xl border bg-white shadow-sm"
-                        style={{ borderColor: "var(--color-border)" }}>
-                        <div
-                            className="border-b px-5 py-5 sm:px-6"
+                    <>
+                        <form
+                            method="GET"
+                            action="/admin/activities"
+                            className="mt-8 flex flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm lg:flex-row"
                             style={{ borderColor: "var(--color-border)" }}>
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                <div>
-                                    <p
-                                        className="mt-1 text-sm"
-                                        style={{ color: "var(--color-muted)" }}>
-                                        Booking creation, status changes, payments,
-                                        refunds, and rescheduling.
-                                    </p>
-                                </div>
-                                <span
-                                    className="text-sm"
-                                    style={{ color: "var(--color-muted)" }}>
-                                    {bookingTotal} records
-                                </span>
-                            </div>
+                            <input type="hidden" name="tab" value="booking" />
 
-                            <form
-                                method="GET"
-                                action="/admin/activities"
-                                className="mt-4 flex flex-col gap-2 sm:flex-row">
-                                <input
-                                    name="bookingSearch"
-                                    defaultValue={bookingSearch}
-                                    maxLength={50}
-                                    placeholder="Search booking reference or guest name"
-                                    className="min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-700"
-                                    style={{ borderColor: "var(--color-border)" }}
+                            <label htmlFor="booking-search" className="sr-only">
+                                Search bookings by guest name or reference number
+                            </label>
+
+                            <input
+                                id="booking-search"
+                                type="search"
+                                name="bookingSearch"
+                                defaultValue={bookingSearch}
+                                maxLength={50}
+                                placeholder="Search by guest name or booking reference..."
+                                autoComplete="off"
+                                className="w-full min-w-0 flex-1 rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
+                                style={{ borderColor: "var(--color-border)" }}
+                            />
+
+                            <button
+                                type="submit"
+                                className="rounded-lg px-4 py-2.5 text-sm font-medium text-white hover:cursor-pointer"
+                                style={{ backgroundColor: "var(--color-forest-700)" }}>
+                                Search
+                            </button>
+                        </form>
+                        <section className="mt-6">
+                            <div className="">
+                                <Pagination
+                                    feed="booking"
+                                    search={bookingSearch}
+                                    page={bookingPage}
+                                    totalPages={bookingTotalPages}
+                                    totalRecords={bookingTotal}
                                 />
-                                <button
-                                    type="submit"
-                                    className="rounded-lg px-4 py-2 text-sm font-semibold text-white hover: cursor-pointer"
-                                    style={{ backgroundColor: "var(--color-forest-700)" }}>
-                                    Search
-                                </button>
-                            </form>
-                        </div>
-
-                        {bookingLogs.length ? (
-                            <div className="divide-y" style={{ borderColor: "var(--color-border)" }}>
-                                {bookingLogs.map((log) => {
-                                    const changes = getChanges(
-                                        log.previous_data,
-                                        log.new_data,
-                                    );
-                                    const newData = asRecord(log.new_data);
-                                    const oldData = asRecord(log.previous_data);
-                                    const bookingRef = String(
-                                        newData.booking_ref ??
-                                        oldData.booking_ref ??
-                                        `Booking #${log.booking_id}`,
-                                    );
-
-                                    const guestName = bookingDetailsMap.get(log.booking_id) || "Not recorded";
-
-                                    return (
-                                        <article
-                                            key={log.id}
-                                            className="px-5 py-5 sm:px-6">
-                                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                                <div className="flex min-w-0 items-start gap-3">
-                                                    <div
-                                                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-semibold"
-                                                        style={getTypeStyles("booking")}>
-                                                        B
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <h3
-                                                            className="font-semibold"
-                                                            style={{ color: "var(--color-forest-900)" }}>
-                                                            {formatAction(log.action)}
-                                                        </h3>
-                                                        <p
-                                                            className="mt-1 text-sm"
-                                                            style={{ color: "var(--color-muted)" }}>
-                                                            Booking Reference: {bookingRef}
-                                                        </p>
-                                                        <p
-                                                            className="mt-1 text-sm"
-                                                            style={{ color: "var(--color-muted)" }}>
-                                                            Guest Name: {guestName}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <time
-                                                        className="shrink-0 text-xs sm:text-right"
-                                                        dateTime={log.createdAt.toISOString()}
-                                                        style={{ color: "var(--color-muted)" }}>
-                                                        {formatDate(log.createdAt)}
-                                                    </time>
-                                                    <p
-                                                        className="mt-1 text-xs"
-                                                        style={{ color: "var(--color-muted)" }}>
-                                                        Performed by: {getActor(log.actor_type, log.admin)}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            {log.reason && (
-                                                <p
-                                                    className="mt-3 rounded-lg px-3 py-2 text-sm"
-                                                    style={{
-                                                        backgroundColor: "#f9fafb",
-                                                        color: "var(--color-muted)",
-                                                    }}>
-                                                    Reason: {log.reason}
-                                                </p>
-                                            )}
-
-                                            {changes.length > 0 && (
-                                                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                                                    {changes.map((change) => (
+                            </div>
+                            {bookingLogs.length ? (
+                                <div className="mt-3 flex flex-col gap-4">
+                                    {bookingLogs.map((log) => {
+                                        const changes = getChanges(
+                                            log.previous_data,
+                                            log.new_data,
+                                        );
+                                        const newData = asRecord(log.new_data);
+                                        const oldData = asRecord(log.previous_data);
+                                        const bookingRef = String(
+                                            newData.booking_ref ??
+                                            oldData.booking_ref ??
+                                            `Booking #${log.booking_id}`,
+                                        );
+                                        const guestName = bookingDetailsMap.get(log.booking_id) || "Not recorded";
+                                        return (
+                                            <article
+                                                key={log.id}
+                                                className="rounded-xl border bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:px-6"
+                                                style={{ borderColor: "var(--color-border)" }}>
+                                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                                    <div className="flex min-w-0 items-start gap-3">
                                                         <div
-                                                            key={change.key}
-                                                            className="rounded-lg border px-3 py-2"
-                                                            style={{ borderColor: "var(--color-border)" }}>
+                                                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-semibold"
+                                                            style={getTypeStyles("booking")}>
+                                                            B
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <h3
+                                                                className="font-semibold"
+                                                                style={{ color: "var(--color-forest-900)" }}>
+                                                                {formatAction(log.action)}
+                                                            </h3>
                                                             <p
-                                                                className="text-xs font-semibold"
+                                                                className="mt-1 text-sm"
                                                                 style={{ color: "var(--color-muted)" }}>
-                                                                {change.label}
+                                                                Booking Reference: {bookingRef}
                                                             </p>
-                                                            <p className="mt-1 break-words text-sm">
-                                                                <span style={{ color: "#b91c1c" }}>
-                                                                    {change.oldValue}
-                                                                </span>
-                                                                <span className="mx-2" style={{ color: "var(--color-muted)" }}>
-                                                                    →
-                                                                </span>
-                                                                <span style={{ color: "var(--color-forest-500)" }}>
-                                                                    {change.newValue}
-                                                                </span>
+                                                            <p
+                                                                className="mt-1 text-sm"
+                                                                style={{ color: "var(--color-muted)" }}>
+                                                                Guest Name: {guestName}
                                                             </p>
                                                         </div>
-                                                    ))}
+                                                    </div>
+                                                    <div>
+                                                        <time
+                                                            className="shrink-0 text-xs sm:text-right"
+                                                            dateTime={log.createdAt.toISOString()}
+                                                            style={{ color: "var(--color-muted)" }}>
+                                                            {formatDate(log.createdAt)}
+                                                        </time>
+                                                        <p
+                                                            className="mt-1 text-xs"
+                                                            style={{ color: "var(--color-muted)" }}>
+                                                            Performed by: {getActor(log.actor_type, log.admin)}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            )}
-                                        </article>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <div className="px-6 py-10 text-center">
-                                <p className="font-medium" style={{ color: "var(--color-forest-900)" }}>
-                                    No booking activity found
-                                </p>
-                                <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
-                                    Try a different reference or guest name.
-                                </p>
-                            </div>
-                        )}
 
-                        <Pagination
-                            feed="booking"
-                            search={bookingSearch}
-                            page={bookingPage}
-                            totalPages={bookingTotalPages}
-                        />
-                    </section>
+                                                {log.reason && (
+                                                    <p
+                                                        className="mt-3 rounded-lg px-3 py-2 text-sm"
+                                                        style={{
+                                                            backgroundColor: "#f9fafb",
+                                                            color: "var(--color-muted)",
+                                                        }}>
+                                                        Reason: {log.reason}
+                                                    </p>
+                                                )}
+
+                                                {changes.length > 0 && (
+                                                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                                                        {changes.map((change) => (
+                                                            <div
+                                                                key={change.key}
+                                                                className="rounded-lg border px-3 py-2"
+                                                                style={{ borderColor: "var(--color-border)" }}>
+                                                                <p
+                                                                    className="text-xs font-semibold"
+                                                                    style={{ color: "var(--color-muted)" }}>
+                                                                    {change.label}
+                                                                </p>
+                                                                <p className="mt-1 break-words text-sm">
+                                                                    <span style={{ color: "#b91c1c" }}>
+                                                                        {change.oldValue}
+                                                                    </span>
+                                                                    <span className="mx-2" style={{ color: "var(--color-muted)" }}>
+                                                                        →
+                                                                    </span>
+                                                                    <span style={{ color: "var(--color-forest-500)" }}>
+                                                                        {change.newValue}
+                                                                    </span>
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </article>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="px-6 py-10 text-center">
+                                    <p className="font-medium" style={{ color: "var(--color-forest-900)" }}>
+                                        No booking activity found
+                                    </p>
+                                    <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
+                                        Try a different reference or guest name.
+                                    </p>
+                                </div>
+                            )}
+                        </section>
+                    </>
                 )}
                 {activeTab === "catalog" && (
                     <section
@@ -650,26 +704,30 @@ export default async function ActivitiesPage({
                                                         <h3
                                                             className="font-semibold"
                                                             style={{ color: "var(--color-forest-900)" }}>
-                                                            {formatAction(log.action)}
+                                                            {formatAction(log.action, log.entity_type)}
                                                         </h3>
                                                         <p
                                                             className="mt-1 text-sm"
                                                             style={{ color: "var(--color-muted)" }}>
                                                             {type === "room" ? "Room" : "Amenity"}: {log.entity_name}
                                                         </p>
-                                                        <p
-                                                            className="mt-1 text-xs"
-                                                            style={{ color: "var(--color-muted)" }}>
-                                                            Performed by: {getActor(log.actor_type)}
-                                                        </p>
                                                     </div>
                                                 </div>
-                                                <time
-                                                    className="shrink-0 text-xs sm:text-right"
-                                                    dateTime={log.createdAt.toISOString()}
-                                                    style={{ color: "var(--color-muted)" }}>
-                                                    {formatDate(log.createdAt)}
-                                                </time>
+                                                <div>
+                                                    <time
+                                                        className="shrink-0 text-xs sm:text-right"
+                                                        dateTime={log.createdAt.toISOString()}
+                                                        style={{ color: "var(--color-muted)" }}>
+                                                        {formatDate(log.createdAt)}
+                                                    </time>
+                                                    <p
+                                                        className="mt-1 text-xs"
+                                                        style={{ color: "var(--color-muted)" }}>
+                                                        Performed by: {log.actor_user_id !== null
+                                                            ? catalogActorMap.get(log.actor_user_id) ?? getActor(log.actor_type)
+                                                            : getActor(log.actor_type)}
+                                                    </p>
+                                                </div>
                                             </div>
 
                                             {changes.length > 0 && (
@@ -719,6 +777,7 @@ export default async function ActivitiesPage({
                             search={catalogSearch}
                             page={catalogPage}
                             totalPages={catalogTotalPages}
+                            totalRecords={catalogTotal}
                         />
                     </section>
                 )}

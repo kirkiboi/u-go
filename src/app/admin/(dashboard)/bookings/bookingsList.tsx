@@ -113,7 +113,7 @@ export default function BookingsList({
                         type="search"
                         name="search"
                         defaultValue={search}
-                        placeholder="Search by guest name or booking reference..."
+                        placeholder="Search by guest name or booking reference"
                         autoComplete="off"
                         className="w-full min-w-0 flex-1 rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                         style={{ borderColor: "var(--color-border)" }}
