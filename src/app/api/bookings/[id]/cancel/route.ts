@@ -6,8 +6,9 @@ export async function POST(
     _request: Request,
     { params }: { params: Promise<{ id: string }> },
 ) {
+    let admin: Awaited<ReturnType<typeof requireAdmin>>;
     try {
-        await requireAdmin();
+        admin = await requireAdmin();
     } catch (error) {
         const message = error instanceof Error ? error.message : "";
         const status = message === "Forbidden." ? 403 : 401;
@@ -32,7 +33,12 @@ export async function POST(
             where: { id: bookingId },
             select: {
                 id: true,
+                booking_ref: true,
                 status: true,
+                payment_status: true,
+                check_in: true,
+                check_out: true,
+                room_id: true,
             },
         });
         if (!booking) {
@@ -44,27 +50,57 @@ export async function POST(
 
         if (booking.status !== "CONFIRMED") {
             return NextResponse.json(
-                {
-                    error: "Only confirmed bookings can be cancelled through this action.",
-                },
+                { error: "Only confirmed bookings can be cancelled through this action.", },
                 { status: 409 },
             );
         }
-        const result = await prisma.booking.updateMany({
-            where: {
-                id: bookingId,
-                status: "CONFIRMED",
-            },
-            data: {
-                status: "CANCELLED",
-            },
+
+        const result = await prisma.$transaction(async (tx) => {
+            const update = await tx.booking.updateMany({
+                where: {
+                    id: bookingId,
+                    status: "CONFIRMED",
+                },
+                data: {
+                    status: "CANCELLED",
+                },
+            });
+
+            if (update.count !== 1) {
+                return false;
+            }
+
+            await tx.bookingAuditLog.create({
+                data: {
+                    booking_id: booking.id,
+                    admin_user_id: admin.userId,
+                    actor_type: "ADMIN",
+                    action: "BOOKING_CANCELLED",
+                    reason: "Administrator cancelled the booking.",
+                    previous_data: {
+                        booking_ref: booking.booking_ref,
+                        status: booking.status,
+                        payment_status: booking.payment_status,
+                        room_id: booking.room_id,
+                        check_in: booking.check_in.toISOString(),
+                        check_out: booking.check_out.toISOString(),
+                    },
+                    new_data: {
+                        booking_ref: booking.booking_ref,
+                        status: "CANCELLED",
+                        payment_status: booking.payment_status,
+                        room_id: booking.room_id,
+                        check_in: booking.check_in.toISOString(),
+                        check_out: booking.check_out.toISOString(),
+                    },
+                },
+            });
+            return true;
         });
 
-        if (result.count === 0) {
+        if (!result) {
             return NextResponse.json(
-                {
-                    error: "The booking changed before cancellation could be completed. Refresh and try again.",
-                },
+                { error: "The booking changed before cancellation could be completed. Refresh and try again.", },
                 { status: 409 },
             );
         }
@@ -75,9 +111,7 @@ export async function POST(
     } catch (error) {
         console.error("Booking cancellation failed:", error);
         return NextResponse.json(
-            {
-                error: "An unexpected error occurred while cancelling the booking.",
-            },
+            { error: "An unexpected error occurred while cancelling the booking.", },
             { status: 500 },
         );
     }
