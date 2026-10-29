@@ -6,8 +6,9 @@ export async function POST(
     request: Request,
     { params }: { params: Promise<{ id: string }> },
 ) {
+    let admin: Awaited<ReturnType<typeof requireAdmin>>;
     try {
-        await requireAdmin();
+        admin = await requireAdmin();
     } catch (error) {
         const message = error instanceof Error ? error.message : "";
         const status = message === "Forbidden." ? 403 : 401;
@@ -40,7 +41,10 @@ export async function POST(
         typeof value === "string" &&
         /^\d{4}-\d{2}-\d{2}$/.test(value) &&
         !Number.isNaN(Date.parse(`${value}T00:00:00.000Z`)) &&
-        new Date(`${value}T00:00:00.000Z`).toISOString().slice(0, 10) === value;
+        new Date(`${value}T00:00:00.000Z`)
+            .toISOString()
+            .slice(0, 10) === value;
+
     if (!isDateOnly(checkIn) || !isDateOnly(checkOut)) {
         return NextResponse.json(
             { error: "Valid check-in and check-out dates are required." },
@@ -56,7 +60,7 @@ export async function POST(
         month: "2-digit",
         day: "2-digit",
     }).format(new Date());
-    const tomorrowInManila = new Date(`${todayInManila}T00:00:00.000Z`);
+    const tomorrowInManila = new Date(`${todayInManila}T00:00:00.000Z`,);
     tomorrowInManila.setUTCDate(tomorrowInManila.getUTCDate() + 1);
     if (newCheckIn < tomorrowInManila) {
         return NextResponse.json(
@@ -76,6 +80,7 @@ export async function POST(
             where: { id: bookingId },
             select: {
                 id: true,
+                booking_ref: true,
                 room_id: true,
                 status: true,
                 payment_status: true,
@@ -130,16 +135,47 @@ export async function POST(
                         check_out: newCheckOut,
                     },
                 });
-                if (updated.count === 0) {
+                if (updated.count !== 1) {
                     return { changed: true as const };
                 }
+
+                await tx.bookingAuditLog.create({
+                    data: {
+                        booking_id: booking.id,
+                        admin_user_id: admin.userId,
+                        actor_type: "ADMIN",
+                        action: "BOOKING_RESCHEDULED",
+                        reason: "Administrator rescheduled the booking.",
+                        previous_data: {
+                            booking_ref: booking.booking_ref,
+                            status: booking.status,
+                            payment_status: booking.payment_status,
+                            room_id: booking.room_id,
+                            check_in: booking.check_in
+                                .toISOString()
+                                .slice(0, 10),
+                            check_out: booking.check_out
+                                .toISOString()
+                                .slice(0, 10),
+                        },
+                        new_data: {
+                            booking_ref: booking.booking_ref,
+                            status: booking.status,
+                            payment_status: booking.payment_status,
+                            room_id: booking.room_id,
+                            check_in: checkIn,
+                            check_out: checkOut,
+                        },
+                    },
+                });
+
                 return { success: true as const };
             },
-            { isolationLevel: "Serializable", },
+            { isolationLevel: "Serializable" },
         );
         if ("conflict" in result) {
             return NextResponse.json(
-                { error: "The room is not available for the selected dates." },
+                { error: "The room is not available for the selected dates.", },
                 { status: 409 },
             );
         }
