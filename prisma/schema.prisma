@@ -73,20 +73,22 @@ model Booking {
   guest_lname   String
   guest_email   String
   guest_phone   String
-  check_in      DateTime      @db.Date
-  check_out     DateTime      @db.Date
+  check_in       DateTime @db.Date
+  check_out      DateTime @db.Date
+  check_in_time  String   @db.VarChar(5)
+  check_out_time String   @db.VarChar(5)
   room_price    Int
   total         Int
-  status BookingStatus @default(PENDING)
+  status        BookingStatus @default(PENDING)
   payment_status PaymentStatus @default(PENDING)
   special_req   String?
-  createdAt     DateTime      @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime      @updatedAt @db.Timestamptz(6)
-  payment_expires_at  DateTime? @db.Timestamptz(6)
-  paymongo_session_id String?   @unique
-  paymongo_payment_id  String?   @unique
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(6)
+  payment_expires_at DateTime? @db.Timestamptz(6)
+  paymongo_session_id String? @unique
+  paymongo_payment_id String? @unique
   paymongo_refund_status PayMongoRefundStatus?
-  paymongo_refund_reason String?  
+  paymongo_refund_reason String?
   paymongo_refund_idempotency_key String? @unique
   paymongo_refund_id String? @unique
   @@index([room_id, check_in, check_out])

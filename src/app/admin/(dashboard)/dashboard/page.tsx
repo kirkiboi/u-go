@@ -59,8 +59,6 @@ export default async function AdminDashboard() {
                 room: {
                     select: {
                         name: true,
-                        checkInTime: true,
-                        checkOutTime: true,
                     },
                 },
             },
@@ -115,6 +113,8 @@ export default async function AdminDashboard() {
         guest_phone: booking.guest_phone,
         check_in: booking.check_in.toISOString().slice(0, 10),
         check_out: booking.check_out.toISOString().slice(0, 10),
+        check_in_time: booking.check_in_time,
+        check_out_time: booking.check_out_time,
         total: booking.total,
         payment_status: booking.payment_status,
         room: booking.room,

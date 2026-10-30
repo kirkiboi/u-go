@@ -276,7 +276,6 @@ export default async function EditRoomPage({
                                         type="number"
                                         min="0"
                                         defaultValue={room.bathrooms ?? ""}
-                                        required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                         style={{
                                             borderColor: "var(--color-border)",

@@ -654,7 +654,7 @@ export default async function ActivitiesPage({
                                     name="catalogSearch"
                                     defaultValue={catalogSearch}
                                     maxLength={100}
-                                    placeholder="Search room or amenity name..."
+                                    placeholder="Search room or amenity name"
                                     autoComplete="off"
                                     className="w-full min-w-0 flex-1 rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
                                     style={{ borderColor: "var(--color-border)" }}

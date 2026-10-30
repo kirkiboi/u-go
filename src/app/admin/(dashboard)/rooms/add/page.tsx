@@ -265,7 +265,7 @@ export default function AddRoomPage() {
                                 type="file"
                                 accept="image/*"
                                 required
-                                className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors file:mr-4 file:rounded-md file:border-0 file:bg-[var(--color-forest-100)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--color-forest-800)]"
+                                className="mt-2 w-full cursor-pointer rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-[var(--color-forest-100)] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[var(--color-forest-800)]"
                                 style={{
                                     borderColor: "var(--color-border)",
                                 }}

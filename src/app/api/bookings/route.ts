@@ -111,7 +111,13 @@ export async function POST(request: NextRequest) {
             async (tx) => {
                 const room = await tx.room.findUnique({
                     where: { id: roomId },
-                    select: { id: true, name: true, price: true },
+                    select: {
+                        id: true,
+                        name: true,
+                        price: true,
+                        checkInTime: true,
+                        checkOutTime: true,
+                    },
                 });
                 if (!room) {
                     throw new Error("ROOM_NOT_FOUND");
@@ -156,6 +162,8 @@ export async function POST(request: NextRequest) {
                         guest_phone: phone,
                         check_in: checkInDate,
                         check_out: checkOutDate,
+                        check_in_time: room.checkInTime,
+                        check_out_time: room.checkOutTime,
                         room_price: room.price,
                         total,
                         status: "PENDING",
@@ -178,6 +186,8 @@ export async function POST(request: NextRequest) {
                             guest_name: `${firstName} ${lastName}`,
                             check_in: checkIn,
                             check_out: checkOut,
+                            check_in_time: room.checkInTime,
+                            check_out_time: room.checkOutTime,
                             room_price: room.price,
                             total,
                             status: createdBooking.status,

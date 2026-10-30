@@ -10,27 +10,32 @@ type ActiveBooking = {
     guest_phone: string;
     check_in: string;
     check_out: string;
+    check_in_time: string;
+    check_out_time: string;
     total: number;
     payment_status: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
     room: {
         name: string;
-        checkInTime: string;
-        checkOutTime: string;
     };
 };
 type Props = {
     bookings: ActiveBooking[];
 };
-function formatDate(date: string) {
-    return new Intl.DateTimeFormat("en-PH", {
+function formatDate(date: string, time: string) {
+    const datePart = new Intl.DateTimeFormat("en-PH", {
         month: "short",
         day: "numeric",
         year: "numeric",
+        timeZone: "UTC",
+    }).format(new Date(`${date.slice(0, 10)}T00:00:00.000Z`));
+    const timePart = new Intl.DateTimeFormat("en-PH", {
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
-        timeZone: "Asia/Manila",
-    }).format(new Date(date));
+        timeZone: "UTC",
+    }).format(new Date(`1970-01-01T${time}:00.000Z`));
+
+    return `${datePart}, ${timePart}`;
 }
 function getNights(checkIn: string, checkOut: string) {
     const start = new Date(`${checkIn.slice(0, 10)}T00:00:00.000Z`);
@@ -194,7 +199,7 @@ export default function ActiveBookingsModal({ bookings }: Props) {
                                                         Check-in
                                                     </p>
                                                     <p className="mt-1 font-medium">
-                                                        {formatDate(booking.check_in)} · {booking.room.checkInTime}
+                                                        {formatDate(booking.check_in, booking.check_in_time)}
                                                     </p>
                                                 </div>
                                                 <div>
@@ -206,7 +211,7 @@ export default function ActiveBookingsModal({ bookings }: Props) {
                                                         Check-out
                                                     </p>
                                                     <p className="mt-1 font-medium">
-                                                        {formatDate(booking.check_out)} · {booking.room.checkOutTime}
+                                                        {formatDate(booking.check_out, booking.check_out_time)}
                                                     </p>
                                                 </div>
                                             </div>
