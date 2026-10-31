@@ -67,7 +67,8 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (!phone || phone.length > 30) {
+        const phoneDigits = phone.replace(/\D/g, "");
+        if (!/^\+?[\d\s().-]+$/.test(phone) || phoneDigits.length < 7 || phoneDigits.length > 15) {
             return NextResponse.json(
                 { error: "Please provide a valid phone number." },
                 { status: 400 }
