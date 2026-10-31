@@ -124,6 +124,7 @@ export async function POST(
         return NextResponse.json({
             message: "Booking cancelled successfully.",
             status: "CANCELLED",
+            payment_status: booking.payment_status,
         });
     } catch (error) {
         console.error("Booking cancellation failed:", error);

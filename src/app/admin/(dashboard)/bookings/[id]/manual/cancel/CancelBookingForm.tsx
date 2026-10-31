@@ -15,6 +15,7 @@ export default function CancelBookingForm({
     const [isConfirmingGoBack, setIsConfirmingGoBack] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
     const [error, setError] = useState("");
     const [reason, setReason] = useState("");
     async function handleCancelBooking() {
@@ -39,6 +40,7 @@ export default function CancelBookingForm({
                 );
             }
             setIsConfirming(false);
+            setPaymentStatus(data.payment_status);
             setSuccess(true);
         } catch (err) {
             setError(err instanceof Error ? err.message : "An unexpected error occurred.",);
@@ -49,18 +51,42 @@ export default function CancelBookingForm({
 
     if (success) {
         return (
-            <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-5">
-                <h2 className="font-semibold text-green-900">
-                    Booking cancelled successfully
-                </h2>
+            <div className="mt-6 space-y-4">
+                {paymentStatus === "PAID" ? (
+                    <div
+                        className="rounded-lg border border-amber-200 bg-amber-50 p-5"
+                        role="alert">
+                        <h2 className="font-semibold text-amber-900">
+                            Booking cancelled — refund may be required
+                        </h2>
 
-                <p className="mt-2 text-sm text-green-800">
-                    The booking status is now Cancelled.
-                </p>
+                        <p className="mt-2 text-sm leading-6 text-amber-800">
+                            This booking has been cancelled, but its payment is
+                            still marked as paid. Please review the refund before
+                            considering this cancellation fully resolved.
+                        </p>
+
+                        <Link
+                            href={`/admin/bookings/${bookingId}/manual/refund`}
+                            className="mt-4 inline-block rounded-lg bg-amber-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-amber-900">
+                            Review Refund →
+                        </Link>
+                    </div>
+                ) : (
+                    <div className="rounded-lg border border-green-200 bg-green-50 p-5">
+                        <h2 className="font-semibold text-green-900">
+                            Booking cancelled successfully
+                        </h2>
+
+                        <p className="mt-2 text-sm text-green-800">
+                            The booking status is now Cancelled.
+                        </p>
+                    </div>
+                )}
 
                 <Link
                     href={`/admin/bookings/${bookingId}`}
-                    className="mt-4 inline-block text-sm font-medium text-[var(--color-forest-700)] hover:underline">
+                    className="inline-block text-sm font-medium text-[var(--color-forest-700)] hover:underline">
                     View booking details →
                 </Link>
             </div>
