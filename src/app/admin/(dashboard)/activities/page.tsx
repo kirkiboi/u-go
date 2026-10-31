@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authorization";
 import { formatTime } from "@/lib/time";
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 5;
 
 type SearchParams = {
     tab?: string;
@@ -49,12 +49,6 @@ function formatAction(
         PAYMENT_REFUNDED: "Payment Refunded",
         PAYMENT_REFUND_SUCCEEDED: "Refund Completed",
         PAYMENT_REFUND_FAILED: "Refund Failed",
-        ROOM_CREATED: "Room Created",
-        ROOM_UPDATED: "Room Updated",
-        ROOM_DELETED: "Room Deleted",
-        AMENITY_CREATED: "Amenity Created",
-        AMENITY_UPDATED: "Amenity Updated",
-        AMENITY_DELETED: "Amenity Deleted",
     };
 
     const normalizedAction = action.trim().toUpperCase();

@@ -130,84 +130,46 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const subtotal = selectedRoom && nights > 0 ? Number(selectedRoom.price) * nights : 0;
     const handleConfirmBooking = async () => {
         if (isSubmitting) return;
-        setApiError("");
-        setBookingMessage("");
-        const newErrors: Record<string, string> = {};
-        if (!selectedRoom) {
-            newErrors.room = "Please select an accommodation.";
+        if (!selectedRoom || !checkIn || !checkOut) {
+            return;
         }
-        if (!checkIn || !checkOut) {
-            newErrors.dates = "Please select both dates.";
-        } else {
-            if (checkIn < minimumCheckInDate) {
-                newErrors.checkIn = "Check-in must be at least tomorrow.";
-            }
-
-            if (checkOut <= checkIn) {
-                newErrors.checkOut =
-                    "Check-out must be at least one day after check-in.";
-            }
-        }
-        if (!firstName.trim()) {
-            newErrors.firstName = "Please enter your first name.";
-        }
-        if (!lastName.trim()) {
-            newErrors.lastName = "Please enter your last name.";
-        }
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email.trim()) {
-            newErrors.email = "Please enter your email address.";
-        } else if (!emailPattern.test(email.trim())) {
-            newErrors.email = "Please enter a valid email address.";
-        }
-        if (!phone.trim()) {
-            newErrors.phone = "Please enter your phone number.";
-        }
-        setErrors(newErrors);
-
-        if (Object.keys(newErrors).length > 0) return;
 
         setIsSubmitting(true);
+        let redirecting = false;
 
         try {
             const response = await fetch("/api/bookings", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    roomId: selectedRoom!.id,
-                    firstName: firstName.trim(),
-                    lastName: lastName.trim(),
-                    email: email.trim(),
-                    phone: phone.trim(),
+                    roomId: selectedRoom.id,
                     checkIn,
                     checkOut,
-                    specialRequests,
+                    firstName,
+                    lastName,
+                    email,
+                    phone,
+                    specialRequest: specialRequests,
                 }),
             });
             const result = await response.json();
             if (!response.ok) {
-                setApiError(
-                    result.error || "Unable to create your booking. Please try again."
-                );
+                setApiError(result.error || "Unable to create booking.");
                 return;
             }
             if (typeof result.checkoutUrl !== "string") {
-                setApiError(
-                    "Payment checkout could not be opened. Please contact the resort before trying again."
-                );
+                setApiError("Invalid checkout URL.");
                 return;
             }
             window.location.assign(result.checkoutUrl);
-
+            redirecting = true;
         } catch (error) {
-            console.error("Booking submission failed:", error);
-            setApiError(
-                "Unable to connect to the server. Please try again."
-            );
+            console.error(error);
+            setApiError("Unable to connect to the server. Please try again.");
         } finally {
-            setIsSubmitting(false);
+            if (!redirecting) {
+                setIsSubmitting(false);
+            }
         }
     };
 
