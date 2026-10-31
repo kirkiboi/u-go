@@ -388,6 +388,7 @@ export default async function ActivitiesPage({
         },
         select: {
             id: true,
+            booking_ref: true,
             guest_fname: true,
             guest_lname: true,
         },
@@ -396,6 +397,12 @@ export default async function ActivitiesPage({
         bookingDetails.map((booking) => [
             booking.id,
             `${booking.guest_fname} ${booking.guest_lname}`.trim(),
+        ]),
+    );
+    const bookingReferenceMap = new Map(
+        bookingDetails.map((booking) => [
+            booking.id,
+            booking.booking_ref,
         ]),
     );
     const catalogActorIds = [
@@ -536,11 +543,7 @@ export default async function ActivitiesPage({
                                         );
                                         const newData = asRecord(log.new_data);
                                         const oldData = asRecord(log.previous_data);
-                                        const bookingRef = String(
-                                            newData.booking_ref ??
-                                            oldData.booking_ref ??
-                                            `Booking #${log.booking_id}`,
-                                        );
+                                        const bookingRef = String(newData.booking_ref ?? oldData.booking_ref ?? bookingReferenceMap.get(log.booking_id) ?? `Booking #${log.booking_id}`,);
                                         const guestName = bookingDetailsMap.get(log.booking_id) || "Not recorded";
                                         return (
                                             <article
