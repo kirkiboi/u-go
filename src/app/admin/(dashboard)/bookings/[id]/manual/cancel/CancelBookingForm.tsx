@@ -16,6 +16,7 @@ export default function CancelBookingForm({
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState("");
+    const [reason, setReason] = useState("");
     async function handleCancelBooking() {
         setLoading(true);
         setError("");
@@ -23,7 +24,13 @@ export default function CancelBookingForm({
         try {
             const response = await fetch(
                 `/api/bookings/${bookingId}/cancel`,
-                { method: "POST" },
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ reason }),
+                },
             );
             const data = await response.json();
             if (!response.ok) {
@@ -34,11 +41,7 @@ export default function CancelBookingForm({
             setIsConfirming(false);
             setSuccess(true);
         } catch (err) {
-            setError(
-                err instanceof Error
-                    ? err.message
-                    : "An unexpected error occurred.",
-            );
+            setError(err instanceof Error ? err.message : "An unexpected error occurred.",);
         } finally {
             setLoading(false);
         }
@@ -73,6 +76,28 @@ export default function CancelBookingForm({
                 Cancelling this booking will release its reservation status.
                 This action does not issue a refund.
             </p>
+            <div className="space-y-2">
+                <label
+                    htmlFor="cancellation-reason"
+                    className="text-sm font-medium text-stone-700">
+                    Reason for Cancellation
+                </label>
+
+                <textarea
+                    id="cancellation-reason"
+                    value={reason}
+                    onChange={(event) => setReason(event.target.value)}
+                    placeholder="Explain why this reservation is being cancelled"
+                    rows={4}
+                    required
+                    maxLength={500}
+                    className="w-full rounded-lg border border-stone-300 p-3 text-sm outline-none transition focus:border-[var(--color-forest-700)] focus:ring-2 focus:ring-[var(--color-forest-100)]"
+                />
+
+                <p className="text-xs text-stone-500">
+                    Please include your name initials (e.g. -RZ)
+                </p>
+            </div>
             {error && (
                 <p
                     role="alert"
@@ -92,7 +117,14 @@ export default function CancelBookingForm({
 
                 <button
                     type="button"
-                    onClick={() => setIsConfirming(true)}
+                    onClick={() => {
+                        if (!reason.trim()) {
+                            setError("Please provide a reason for cancelling this reservation.");
+                            return;
+                        }
+                        setError("");
+                        setIsConfirming(true);
+                    }}
                     disabled={loading}
                     className="rounded-lg px-5 py-3 text-sm font-medium text-white transition hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                     style={{ backgroundColor: "var(--color-forest-800)" }}>

@@ -35,7 +35,7 @@ function formatDate(date: string, time: string) {
         timeZone: "UTC",
     }).format(new Date(`1970-01-01T${time}:00.000Z`));
 
-    return `${datePart}, ${timePart}`;
+    return `${datePart} at ${timePart}`;
 }
 function getNights(checkIn: string, checkOut: string) {
     const start = new Date(`${checkIn.slice(0, 10)}T00:00:00.000Z`);

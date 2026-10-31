@@ -192,10 +192,10 @@ export default async function BookingDetailPage({
                                 {booking.room.name}
                             </DetailItem>
                             <DetailItem label="Check-in">
-                                {formatDate(booking.check_in)}
+                                {`${formatDate(booking.check_in)} at ${booking.check_in.toLocaleTimeString("en-PH", { timeStyle: "short", timeZone: "UTC" })}`}
                             </DetailItem>
                             <DetailItem label="Check-out">
-                                {formatDate(booking.check_out)}
+                                {`${formatDate(booking.check_out)} at ${booking.check_out.toLocaleTimeString("en-PH", { timeStyle: "short", timeZone: "UTC" })}`}
                             </DetailItem>
                             <DetailItem label="Price per Night">
                                 {formatCurrency(booking.room_price)}
@@ -203,7 +203,6 @@ export default async function BookingDetailPage({
                             <DetailItem label="Booking Status">
                                 <StatusBadge status={booking.status} />
                             </DetailItem>
-
                         </div>
                     </section>
 
@@ -241,16 +240,10 @@ export default async function BookingDetailPage({
                                 {booking.booking_ref}
                             </DetailItem>
                             <DetailItem label="Created At">
-                                {booking.createdAt.toLocaleString("en-PH", {
-                                    dateStyle: "medium",
-                                    timeStyle: "short",
-                                })}
+                                {`${booking.createdAt.toLocaleDateString("en-PH", { dateStyle: "medium" })} at ${booking.createdAt.toLocaleTimeString("en-PH", { timeStyle: "short" })}`}
                             </DetailItem>
                             <DetailItem label="Last Updated">
-                                {booking.updatedAt.toLocaleString("en-PH", {
-                                    dateStyle: "medium",
-                                    timeStyle: "short",
-                                })}
+                                {`${booking.updatedAt.toLocaleDateString("en-PH", { dateStyle: "medium" })} at ${booking.updatedAt.toLocaleTimeString("en-PH", { timeStyle: "short" })}`}
                             </DetailItem>
                         </div>
                     </section>

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authorization";
 
 export async function POST(
-    _request: Request,
+    request: Request,
     { params }: { params: Promise<{ id: string }> },
 ) {
     let admin: Awaited<ReturnType<typeof requireAdmin>>;
@@ -24,6 +24,23 @@ export async function POST(
     if (!Number.isSafeInteger(bookingId) || bookingId < 1) {
         return NextResponse.json(
             { error: "Invalid booking ID." },
+            { status: 400 },
+        );
+    }
+
+    const body = await request.json().catch(() => null);
+    const reason = typeof body?.reason === "string" ? body.reason.trim() : "";
+
+    if (!reason) {
+        return NextResponse.json(
+            { error: "A cancellation reason is required." },
+            { status: 400 },
+        );
+    }
+
+    if (reason.length > 500) {
+        return NextResponse.json(
+            { error: "Cancellation reason cannot exceed 500 characters." },
             { status: 400 },
         );
     }
@@ -76,7 +93,7 @@ export async function POST(
                     admin_user_id: admin.userId,
                     actor_type: "ADMIN",
                     action: "BOOKING_CANCELLED",
-                    reason: "Administrator cancelled the booking.",
+                    reason,
                     previous_data: {
                         booking_ref: booking.booking_ref,
                         status: booking.status,
