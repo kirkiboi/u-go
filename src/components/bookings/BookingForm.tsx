@@ -25,6 +25,16 @@ function keyToDate(key: string): Date {
     const [year, month, day] = key.split("-").map(Number);
     return new Date(Date.UTC(year, month - 1, day, 12));
 }
+function formatTime(time: string): string {
+    const [hours, minutes] = time.split(":").map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return new Intl.DateTimeFormat("en-PH", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+    }).format(date);
+}
 export default function BookingForm({ rooms }: BookingFormProps) {
     const [activeDatePicker, setActiveDatePicker] = useState<"checkIn" | "checkOut" | null>(null);
     const [unavailableRanges, setUnavailableRanges] = useState<UnavailableRange[]>([]);
@@ -476,11 +486,15 @@ export default function BookingForm({ rooms }: BookingFormProps) {
                             <div className="space-y-4 text-sm mb-6 border-b border-[var(--color-border)] pb-6">
                                 <div className="flex justify-between">
                                     <span className="text-stone-600">Check-in</span>
-                                    <span className="font-semibold text-stone-800">{checkIn}</span>
+                                    <span className="font-semibold text-stone-800 text-right">
+                                        {checkIn && selectedRoom?.checkInTime ? `${checkIn} at ${formatTime(selectedRoom.checkInTime)}` : "—"}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-stone-600">Check-out</span>
-                                    <span className="font-semibold text-stone-800">{checkOut}</span>
+                                    <span className="font-semibold text-stone-800 text-right">
+                                        {checkOut && selectedRoom?.checkOutTime ? `${checkOut} at ${formatTime(selectedRoom.checkOutTime)}` : "—"}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-stone-600">Length of stay</span>
