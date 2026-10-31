@@ -21,3 +21,9 @@ export const adminLoginRateLimit = new Ratelimit({
     analytics: true,
     prefix: "ugo:admin-login",
 });
+export const adminLoginIpRateLimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, "10 m"),
+    analytics: true,
+    prefix: "ugo:admin-login-ip",
+});
