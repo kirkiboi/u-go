@@ -8,46 +8,46 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String?
-  role      String   @default("admin")
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  password         String
+  name             String?
+  role             String            @default("admin")
   bookingAuditLogs BookingAuditLog[]
-  createdAt DateTime @default(now()) @db.Timestamptz
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime          @default(now()) @db.Timestamptz
+  updatedAt        DateTime          @updatedAt
+  activityLogs     ActivityLog[]
 }
 
 model Room {
-  id             Int      @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   name           String
   description    String
   price          Int
   image          String
   maxGuests      Int
-  rooms          Int?
   beds           Int
   bedType        String?
   bedrooms       Int?
   bathrooms      Int?
-  hasPrivatePool Boolean  @default(false)
-  hasKitchen     Boolean  @default(false)
-  hasWifi        Boolean  @default(false)
-  hasParking     Boolean  @default(false)
-  hasAC          Boolean  @default(false)
+  hasPrivatePool Boolean       @default(false)
+  hasKitchen     Boolean       @default(false)
+  hasWifi        Boolean       @default(false)
+  hasParking     Boolean       @default(false)
+  hasAC          Boolean       @default(false)
   checkInTime    String
   checkOutTime   String
   bookings       Booking[]
-  activityLogs ActivityLog[]
+  activityLogs   ActivityLog[]
 }
 
 model Amenity {
-  id             Int      @id @default(autoincrement())
-  name           String
-  description    String
-  image          String
-  timeDescription           String
-  activityLogs ActivityLog[]
+  id              Int           @id @default(autoincrement())
+  name            String
+  description     String
+  image           String
+  timeDescription String
+  activityLogs    ActivityLog[]
 }
 
 enum BookingStatus {
@@ -57,6 +57,7 @@ enum BookingStatus {
   CHECKED_IN
   COMPLETED
 }
+
 enum PaymentStatus {
   PENDING
   PAID
@@ -65,32 +66,34 @@ enum PaymentStatus {
 }
 
 model Booking {
-  id            Int           @id @default(autoincrement())
-  booking_ref   String        @unique
-  room_id       Int
-  room          Room          @relation(fields: [room_id], references: [id], onDelete: Restrict)
-  guest_fname   String
-  guest_lname   String
-  guest_email   String
-  guest_phone   String
-  check_in       DateTime @db.Date
-  check_out      DateTime @db.Date
-  check_in_time  String   @db.VarChar(5)
-  check_out_time String   @db.VarChar(5)
-  room_price    Int
-  total         Int
-  status        BookingStatus @default(PENDING)
-  payment_status PaymentStatus @default(PENDING)
-  special_req   String?
-  createdAt     DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @db.Timestamptz(6)
-  payment_expires_at DateTime? @db.Timestamptz(6)
-  paymongo_session_id String? @unique
-  paymongo_payment_id String? @unique
-  paymongo_refund_status PayMongoRefundStatus?
-  paymongo_refund_reason String?
-  paymongo_refund_idempotency_key String? @unique
-  paymongo_refund_id String? @unique
+  id                              Int                   @id @default(autoincrement())
+  booking_ref                     String                @unique
+  room_id                         Int
+  room                            Room                  @relation(fields: [room_id], references: [id], onDelete: Restrict)
+  guest_fname                     String
+  guest_lname                     String
+  guest_email                     String
+  guest_phone                     String
+  check_in                        DateTime              @db.Date
+  check_out                       DateTime              @db.Date
+  check_in_time                   String                @db.VarChar(5)
+  check_out_time                  String                @db.VarChar(5)
+  room_price                      Int
+  total                           Int
+  status                          BookingStatus         @default(PENDING)
+  payment_status                  PaymentStatus         @default(PENDING)
+  special_req                     String?
+  createdAt                       DateTime              @default(now()) @db.Timestamptz(6)
+  updatedAt                       DateTime              @updatedAt @db.Timestamptz(6)
+  payment_expires_at              DateTime?             @db.Timestamptz(6)
+  bookingAuditLogs                BookingAuditLog[]
+  paymongo_session_id             String?               @unique
+  paymongo_payment_id             String?               @unique
+  paymongo_refund_status          PayMongoRefundStatus?
+  paymongo_refund_reason          String?
+  paymongo_refund_idempotency_key String?               @unique
+  paymongo_refund_id              String?               @unique
+
   @@index([room_id, check_in, check_out])
   @@index([guest_email])
   @@index([status, payment_status])
@@ -106,6 +109,7 @@ enum PayMongoRefundStatus {
 model BookingAuditLog {
   id            Int      @id @default(autoincrement())
   booking_id    Int
+  booking       Booking  @relation(fields: [booking_id], references: [id], onDelete: Restrict)
   admin_user_id Int?
   admin         User?    @relation(fields: [admin_user_id], references: [id], onDelete: SetNull)
   actor_type    String   @default("ADMIN")
@@ -114,26 +118,29 @@ model BookingAuditLog {
   previous_data Json
   new_data      Json
   createdAt     DateTime @default(now()) @db.Timestamptz(6)
+
   @@index([booking_id, createdAt])
   @@index([admin_user_id, createdAt])
   @@index([actor_type, createdAt])
 }
 
 model ActivityLog {
-  id          Int      @id @default(autoincrement())
-  entity_type String
-  entity_id   Int
-  entity_name String
-  action      String
+  id            Int      @id @default(autoincrement())
+  entity_type   String
+  entity_id     Int
+  entity_name   String
+  action        String
   actor_user_id Int?
-  actor_type  String   @default("ADMIN")
+  actor         User?    @relation(fields: [actor_user_id], references: [id], onDelete: SetNull)
+  actor_type    String   @default("ADMIN")
   previous_data Json?
-  new_data    Json?
-  createdAt   DateTime @default(now()) @db.Timestamptz(6)
-  room_id    Int?
-  room       Room?    @relation(fields: [room_id], references: [id], onDelete: SetNull)
-  amenity_id Int?
-  amenity    Amenity? @relation(fields: [amenity_id], references: [id], onDelete: SetNull)
+  new_data      Json?
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+  room_id       Int?
+  room          Room?    @relation(fields: [room_id], references: [id], onDelete: SetNull)
+  amenity_id    Int?
+  amenity       Amenity? @relation(fields: [amenity_id], references: [id], onDelete: SetNull)
+
   @@index([entity_type, createdAt])
   @@index([entity_name, createdAt])
   @@index([room_id, createdAt])
