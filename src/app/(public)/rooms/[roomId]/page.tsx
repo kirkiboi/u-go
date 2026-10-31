@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRoomById } from "@/services/room";
 import Image from "next/image";
-
+import { formatTime } from "@/lib/time";
 interface RoomPageProps {
     params: Promise<{
         roomId: string;
@@ -157,7 +157,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
                                             </svg>
                                         }
                                         label="Check-in"
-                                        value={room.checkInTime}
+                                        value={formatTime(room.checkInTime)}
                                     />
                                     <RoomInfo
                                         icon={
@@ -175,7 +175,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
                                             </svg>
                                         }
                                         label="Check-out"
-                                        value={room.checkOutTime}
+                                        value={formatTime(room.checkOutTime)}
                                     />
                                     <RoomInfo
                                         icon={

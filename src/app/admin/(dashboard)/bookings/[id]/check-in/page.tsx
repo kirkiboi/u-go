@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authorization";
 import CheckInForm from "./CheckInForm";
-
+import { formatTime } from "@/lib/time";
 export default async function CheckInPage({
     params,
 }: {
@@ -34,6 +34,8 @@ export default async function CheckInPage({
             payment_status: true,
             check_in: true,
             check_out: true,
+            check_in_time: true,
+            check_out_time: true,
             guest_fname: true,
             guest_lname: true,
             room: {
@@ -88,13 +90,13 @@ export default async function CheckInPage({
                     <div>
                         <dt className="text-sm text-stone-500">Check-in Date</dt>
                         <dd className="mt-1 font-medium text-stone-900">
-                            {formatDate(booking.check_in)} at {booking.room.checkInTime}
+                            {formatDate(booking.check_in)} at {formatTime(booking.check_in_time)}
                         </dd>
                     </div>
                     <div>
                         <dt className="text-sm text-stone-500">Check-out Date</dt>
                         <dd className="mt-1 font-medium text-stone-900">
-                            {formatDate(booking.check_out)} at {booking.room.checkOutTime}
+                            {formatDate(booking.check_out)} at {formatTime(booking.check_out_time)}
                         </dd>
                     </div>
                 </dl>

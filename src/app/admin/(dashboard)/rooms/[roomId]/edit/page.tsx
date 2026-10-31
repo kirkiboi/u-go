@@ -3,7 +3,7 @@ import { editRoom } from "./actions";
 import CancelEditButton from "@/components/admin/editRoomButtonCancel";
 import SaveEditRoomButton from "@/components/admin/saveEditRoomButton";
 import Image from "next/image";
-
+import { normalizeTime } from "@/lib/time";
 function toTimeInputValue(time: string) {
     const normalized = time.trim().toUpperCase();
 
@@ -364,7 +364,7 @@ export default async function EditRoomPage({
                                         id="room-check-in"
                                         name="checkInTime"
                                         type="time"
-                                        defaultValue={toTimeInputValue(room.checkInTime)}
+                                        defaultValue={normalizeTime(room.checkInTime)}
                                         required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                         style={{
@@ -384,7 +384,7 @@ export default async function EditRoomPage({
                                         id="room-check-out"
                                         name="checkOutTime"
                                         type="time"
-                                        defaultValue={toTimeInputValue(room.checkOutTime)}
+                                        defaultValue={normalizeTime(room.checkOutTime)}
                                         required
                                         className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:border-[var(--color-forest-500)]"
                                         style={{

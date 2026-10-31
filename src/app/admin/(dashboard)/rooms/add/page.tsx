@@ -284,7 +284,7 @@ export default function AddRoomPage() {
                             <input
                                 id="check-in"
                                 name="checkInTime"
-                                type="text"
+                                type="time"
                                 placeholder="required"
                                 required
                                 className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"
@@ -303,7 +303,7 @@ export default function AddRoomPage() {
                             <input
                                 id="check-out"
                                 name="checkOutTime"
-                                type="text"
+                                type="time"
                                 placeholder="required"
                                 required
                                 className="mt-2 w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--color-forest-500)]"

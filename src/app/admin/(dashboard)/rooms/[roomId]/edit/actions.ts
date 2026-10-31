@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getRoomById } from "@/services/room";
 import { uploadImage, deleteImage } from "@/services/imageService";
 import { requireAdmin } from "@/lib/authorization";
-
+import { normalizeTime } from "@/lib/time";
 function getRequiredString(
     formData: FormData,
     field: string
@@ -63,8 +63,8 @@ export async function editRoom(
 
     const name = getRequiredString(formData, "name");
     const description = getRequiredString(formData, "description");
-    const checkInTime = getRequiredString(formData, "checkInTime");
-    const checkOutTime = getRequiredString(formData, "checkOutTime");
+    const checkInTime = normalizeTime(getRequiredString(formData, "checkInTime"));
+    const checkOutTime = normalizeTime(getRequiredString(formData, "checkOutTime"));
     const price = getRequiredPositiveInteger(getRequiredString(formData, "price"), "Price");
     const maxGuests = getRequiredPositiveInteger(getRequiredString(formData, "maxGuests"), "Maximum guests");
     const beds = getRequiredPositiveInteger(getRequiredString(formData, "beds"), "Number of beds");

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getRoomById } from "@/services/room";
 import DeleteRoomButton from "@/components/admin/deleteRoomButton";
 import Image from "next/image";
-
+import { formatTime } from "@/lib/time";
 export default async function RoomDetailsPage({
     params,
 }: {
@@ -170,7 +170,7 @@ export default async function RoomDetailsPage({
                                     Check-In
                                 </p>
                                 <p className="mt-1 font-semibold">
-                                    {room.checkInTime}
+                                    {formatTime(room.checkInTime)}
                                 </p>
                             </div>
                             <div>
@@ -178,7 +178,7 @@ export default async function RoomDetailsPage({
                                     Check-Out
                                 </p>
                                 <p className="mt-1 font-semibold">
-                                    {room.checkOutTime}
+                                    {formatTime(room.checkOutTime)}
                                 </p>
                             </div>
                             <div>

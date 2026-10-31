@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { formatTime } from "@/lib/time";
 
 type ActiveBooking = {
     id: number;
@@ -28,14 +29,8 @@ function formatDate(date: string, time: string) {
         year: "numeric",
         timeZone: "UTC",
     }).format(new Date(`${date.slice(0, 10)}T00:00:00.000Z`));
-    const timePart = new Intl.DateTimeFormat("en-PH", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "UTC",
-    }).format(new Date(`1970-01-01T${time}:00.000Z`));
 
-    return `${datePart} at ${timePart}`;
+    return `${datePart} at ${formatTime(time)}`;
 }
 function getNights(checkIn: string, checkOut: string) {
     const start = new Date(`${checkIn.slice(0, 10)}T00:00:00.000Z`);

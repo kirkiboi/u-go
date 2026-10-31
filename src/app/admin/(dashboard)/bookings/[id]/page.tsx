@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authorization";
+import { formatTime } from "@/lib/time";
 
 type BookingDetailPageProps = {
     params: Promise<{ id: string }>;
@@ -192,10 +193,10 @@ export default async function BookingDetailPage({
                                 {booking.room.name}
                             </DetailItem>
                             <DetailItem label="Check-in">
-                                {`${formatDate(booking.check_in)} at ${booking.check_in.toLocaleTimeString("en-PH", { timeStyle: "short", timeZone: "UTC" })}`}
+                                {formatDate(booking.check_in)} at {formatTime(booking.check_in_time)}
                             </DetailItem>
                             <DetailItem label="Check-out">
-                                {`${formatDate(booking.check_out)} at ${booking.check_out.toLocaleTimeString("en-PH", { timeStyle: "short", timeZone: "UTC" })}`}
+                                {formatDate(booking.check_out)} at {formatTime(booking.check_out_time)}
                             </DetailItem>
                             <DetailItem label="Price per Night">
                                 {formatCurrency(booking.room_price)}

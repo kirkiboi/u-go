@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authorization";
-
+import { formatTime } from "@/lib/time";
 const PAGE_SIZE = 3;
 
 type SearchParams = {
@@ -105,6 +105,9 @@ function formatValue(field: string, value: unknown): string {
     if (typeof value === "string") {
         if (/^(check_in|check_out|checkin|checkout)$/i.test(field) && /^\d{4}-\d{2}-\d{2}/.test(value)) {
             return value.slice(0, 10);
+        }
+        if (/^(checkInTime|checkOutTime|check_in_time|check_out_time)$/i.test(field)) {
+            return formatTime(value);
         }
 
         if (/status/i.test(field)) {

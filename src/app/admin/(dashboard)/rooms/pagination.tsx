@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { Room } from "@prisma/client";
-
+import { formatTime } from "@/lib/time";
 const ROOMS_PER_PAGE = 4;
 
 export default function RoomsList({ rooms }: { rooms: Room[] }) {
@@ -41,11 +41,11 @@ export default function RoomsList({ rooms }: { rooms: Room[] }) {
                                         max guests
                                     </span>
                                     <span>
-                                        <strong>{room.checkInTime}</strong>{" "}
+                                        <strong>{formatTime(room.checkInTime)}</strong>{" "}
                                         Check In
                                     </span>
                                     <span>
-                                        <strong>{room.checkOutTime}</strong>{" "}
+                                        <strong>{formatTime(room.checkOutTime)}</strong>{" "}
                                         Check Out
                                     </span>
                                     <span>

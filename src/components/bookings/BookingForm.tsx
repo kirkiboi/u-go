@@ -5,7 +5,7 @@ import type { Room } from "@/types/room";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { DayPicker } from "react-day-picker";
-
+import { formatTime } from "@/lib/time";
 type BookingFormProps = {
     rooms: Room[];
 };
@@ -24,16 +24,6 @@ function dateToKey(date: Date): string {
 function keyToDate(key: string): Date {
     const [year, month, day] = key.split("-").map(Number);
     return new Date(Date.UTC(year, month - 1, day, 12));
-}
-function formatTime(time: string): string {
-    const [hours, minutes] = time.split(":").map(Number);
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-    return new Intl.DateTimeFormat("en-PH", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-    }).format(date);
 }
 export default function BookingForm({ rooms }: BookingFormProps) {
     const [activeDatePicker, setActiveDatePicker] = useState<"checkIn" | "checkOut" | null>(null);
