@@ -126,16 +126,8 @@ export default function BookingForm({ rooms }: BookingFormProps) {
             cancelled = true;
         };
     }, [selectedRoomId]);
-    const nights = Math.max(
-        1,
-        Math.ceil(
-            (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
-            (1000 * 60 * 60 * 24)
-        )
-    );
-    const subtotal = selectedRoom
-        ? Number(selectedRoom.price) * nights
-        : 0;
+    const nights = checkIn && checkOut ? Math.max(1, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))) : 0;
+    const subtotal = selectedRoom && nights > 0 ? Number(selectedRoom.price) * nights : 0;
     const handleConfirmBooking = async () => {
         if (isSubmitting) return;
         setApiError("");
