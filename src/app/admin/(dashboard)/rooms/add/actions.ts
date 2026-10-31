@@ -85,12 +85,8 @@ export async function addRoom(formData: FormData) {
 
     const imageFile = formData.get("image");
 
-    if (
-        !(imageFile instanceof File) ||
-        imageFile.size === 0 ||
-        !imageFile.type.startsWith("image/")
-    ) {
-        throw new Error("Please upload a valid room image.");
+    if (!(imageFile instanceof File) || imageFile.size === 0) {
+        throw new Error("Please upload a valid jpeg or png  no larger than 10 MB.");
     }
     const imageUrl = await uploadImage("rooms", imageFile);
     try {

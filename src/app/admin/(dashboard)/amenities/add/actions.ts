@@ -16,8 +16,8 @@ export async function addAmenity(formData: FormData) {
         throw new Error("Please complete all required amenity fields.");
     }
 
-    if (!(imageFile instanceof File) || imageFile.size === 0 || !imageFile.type.startsWith("image/") || imageFile.size > 10 * 1024 * 1024) {
-        throw new Error("Please upload a valid image no larger than 10 MB.");
+    if (!(imageFile instanceof File) || imageFile.size === 0 || imageFile.size > 10 * 1024 * 1024) {
+        throw new Error("Please upload a valid jpeg or png  no larger than 10 MB.");
     }
     const name = nameValue.trim();
     const description = descriptionValue.trim();
