@@ -53,20 +53,19 @@ export async function editAmenity(
     const changes = {
         name: [existingAmenity.name, name],
         description: [existingAmenity.description, description],
-        timeDescription: [existingAmenity.timeDescription, timeDescription,],
-        image: [uploadedImageUrl ? "Image" : "Image", "Image",],
+        timeDescription: [existingAmenity.timeDescription, timeDescription],
     } as const;
 
     for (const [field, values] of Object.entries(changes)) {
         const [oldValue, newValue] = values;
-        if (field === "image" && !uploadedImageUrl) {
-            continue;
-        }
-
-        if (oldValue !== newValue || field === "image") {
+        if (oldValue !== newValue) {
             previousData[field] = oldValue;
             newData[field] = newValue;
         }
+    }
+    if (uploadedImageUrl) {
+        previousData.image = "Image";
+        newData.image = "Image updated";
     }
 
     try {

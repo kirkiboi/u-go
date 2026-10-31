@@ -144,8 +144,15 @@ export async function editRoom(
     const newData: Record<string, unknown> = {};
 
     for (const field of auditFields) {
-        const oldValue = field === "image" ? "Image" : existingRoom[field];
-        const newValue = field === "image" ? "Image" : updatedData[field];
+        if (field === "image") {
+            if (uploadedImageUrl) {
+                previousData[field] = "Image";
+                newData[field] = "Image updated";
+            }
+            continue;
+        }
+        const oldValue = existingRoom[field];
+        const newValue = updatedData[field];
 
         if (oldValue !== newValue) {
             previousData[field] = oldValue;
