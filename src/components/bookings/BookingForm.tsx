@@ -37,10 +37,10 @@ export default function BookingForm({ rooms }: BookingFormProps) {
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [specialRequests, setSpecialRequests] = useState("");
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [errors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [apiError, setApiError] = useState("");
-    const [bookingMessage, setBookingMessage] = useState("");
+    const [bookingMessage] = useState("");
     const minimumCheckInDate = (() => {
         const parts = new Intl.DateTimeFormat("en-CA", {
             timeZone: "Asia/Manila",

@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { deleteImage } from "@/services/imageService";
 import { getRoomById } from "@/services/room";
 import { requireAdmin } from "@/lib/authorization";
 

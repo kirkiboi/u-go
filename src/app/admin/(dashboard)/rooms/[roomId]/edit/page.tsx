@@ -4,29 +4,6 @@ import CancelEditButton from "@/components/admin/editRoomButtonCancel";
 import SaveEditRoomButton from "@/components/admin/saveEditRoomButton";
 import Image from "next/image";
 import { normalizeTime } from "@/lib/time";
-function toTimeInputValue(time: string) {
-    const normalized = time.trim().toUpperCase();
-
-    const match = normalized.match(/^(\d{1,2}):(\d{2})\s*(AM|PM|NN)$/);
-
-    if (!match) {
-        return "";
-    }
-
-    let hour = Number(match[1]);
-    const minute = match[2];
-    const period = match[3];
-
-    if (period === "PM" && hour !== 12) {
-        hour += 12;
-    }
-
-    if ((period === "AM" || period === "NN") && hour === 12) {
-        hour = 0;
-    }
-
-    return `${String(hour).padStart(2, "0")}:${minute}`;
-}
 
 export default async function EditRoomPage({
     params,
