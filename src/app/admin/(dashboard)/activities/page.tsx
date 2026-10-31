@@ -321,13 +321,18 @@ export default async function ActivitiesPage({
         })
         : null;
 
-    const bookingWhere: Prisma.BookingAuditLogWhereInput = bookingSearch
-        ? {
-            booking_id: {
-                in: matchingBookings!.map((booking) => booking.id),
-            },
-        }
-        : {};
+    const bookingWhere: Prisma.BookingAuditLogWhereInput = {
+        action: {
+            notIn: ["BOOKING_CREATED", "PAYMENT_CONFIRMED"],
+        },
+        ...(bookingSearch
+            ? {
+                booking_id: {
+                    in: matchingBookings!.map((booking) => booking.id),
+                },
+            }
+            : {}),
+    };
 
     const catalogWhere: Prisma.ActivityLogWhereInput = {
         entity_type: {
