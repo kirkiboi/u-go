@@ -115,14 +115,6 @@ export default async function BookingDetailPage({
     return (
         <main className="min-h-screen px-4 py-8 sm:px-8">
             <div className="mx-auto max-w-5xl">
-                <Link
-                    href="/admin/bookings"
-                    className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:underline"
-                    style={{ color: "var(--color-forest-700)" }}>
-                    <span aria-hidden="true">←</span>
-                    Back to Bookings
-                </Link>
-
                 <header className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <p
@@ -142,11 +134,21 @@ export default async function BookingDetailPage({
 
                     <div className="flex flex-wrap gap-2">
                         <Link
-                            href={`/admin/bookings/${booking.id}/manual`}
+                            href="/admin/bookings"
                             className="inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-stone-50"
                             style={{
                                 borderColor: "var(--color-border)",
                                 color: "var(--color-forest-700)",
+                            }}>
+                            Back
+                        </Link>
+
+                        <Link
+                            href={`/admin/bookings/${booking.id}/manual`}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-stone-50"
+                            style={{
+                                background: "var(--color-forest-600)",
+                                color: "white",
                             }}>
                             Manual Override
                         </Link>
