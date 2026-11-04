@@ -147,10 +147,10 @@ export default function BookingsList({
                             }
                             className="w-full appearance-none rounded-lg border bg-white px-4 py-2.5 pr-10 text-sm outline-none hover:cursor-pointer"
                             style={{ borderColor: "var(--color-border)" }}>
-                            <option value="all">All dates</option>
-                            <option value="upcoming">Upcoming</option>
                             <option value="today">Today</option>
                             <option value="past">Past</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="all">All dates</option>
                         </select>
                     </div>
 

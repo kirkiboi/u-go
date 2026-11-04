@@ -26,7 +26,6 @@ function getManilaDateKey(): string {
     const year = parts.find((part) => part.type === "year")!.value;
     const month = parts.find((part) => part.type === "month")!.value;
     const day = parts.find((part) => part.type === "day")!.value;
-
     return `${year}-${month}-${day}`;
 }
 
@@ -36,7 +35,6 @@ export default async function BookingsPage({
     searchParams: SearchParams;
 }) {
     const params = await searchParams;
-
     const search = getParam(params.search).trim();
     const requestedPage = Number.parseInt(getParam(params.page) || "1", 10);
     const page = Number.isFinite(requestedPage)
@@ -53,19 +51,10 @@ export default async function BookingsPage({
     ] as const;
 
     const requestedStatus = getParam(params.status) || "CONFIRMED";
-    const status = allowedStatuses.includes(
-        requestedStatus as (typeof allowedStatuses)[number],
-    )
-        ? requestedStatus
-        : "CONFIRMED";
-
+    const status = allowedStatuses.includes(requestedStatus as (typeof allowedStatuses)[number],) ? requestedStatus : "CONFIRMED";
     const allowedDates = ["all", "upcoming", "today", "past"] as const;
-    const requestedDate = getParam(params.date) || "all";
-    const date = allowedDates.includes(
-        requestedDate as (typeof allowedDates)[number],
-    )
-        ? requestedDate
-        : "all";
+    const requestedDate = getParam(params.date) || "today";
+    const date = allowedDates.includes(requestedDate as (typeof allowedDates)[number],) ? requestedDate : "all";
 
     const where: Prisma.BookingWhereInput = {};
 
@@ -105,12 +94,10 @@ export default async function BookingsPage({
     }
 
     if (date !== "all") {
+
         const todayKey = getManilaDateKey();
         const todayStart = new Date(`${todayKey}T00:00:00.000Z`);
-        const tomorrowStart = new Date(
-            todayStart.getTime() + 24 * 60 * 60 * 1000,
-        );
-
+        const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000,);
         if (date === "upcoming") {
             where.check_in = { gte: tomorrowStart };
         } else if (date === "today") {

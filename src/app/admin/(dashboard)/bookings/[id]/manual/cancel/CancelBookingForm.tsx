@@ -18,6 +18,7 @@ export default function CancelBookingForm({
     const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
     const [error, setError] = useState("");
     const [reason, setReason] = useState("");
+    const canConfirmCancellation = reason.trim().length >= 2;
     async function handleCancelBooking() {
         setLoading(true);
         setError("");
@@ -144,14 +145,14 @@ export default function CancelBookingForm({
                 <button
                     type="button"
                     onClick={() => {
-                        if (!reason.trim()) {
+                        if (!canConfirmCancellation) {
                             setError("Please provide a reason for cancelling this reservation.");
                             return;
                         }
                         setError("");
                         setIsConfirming(true);
                     }}
-                    disabled={loading}
+                    disabled={loading || !canConfirmCancellation}
                     className="rounded-lg px-5 py-3 text-sm font-medium text-white transition hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                     style={{ backgroundColor: "var(--color-forest-800)" }}>
                     Confirm Cancellation
@@ -168,7 +169,7 @@ export default function CancelBookingForm({
                 onCancel={() => setIsConfirmingGoBack(false)}
                 onConfirm={() => {
                     setIsConfirmingGoBack(false);
-                    router.push(`/admin/bookings/${bookingId}`);
+                    router.push(`/admin/bookings/${bookingId}/manual`);
                 }}
             />
 

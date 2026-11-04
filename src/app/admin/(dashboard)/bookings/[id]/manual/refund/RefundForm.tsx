@@ -333,7 +333,7 @@ export default function RefundForm({
                             onClick={() => setIsConfirmingLeave(true)}
                             disabled={loading}
                             className="rounded-lg border border-stone-300 bg-stone-50 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover:cursor-pointer hover:cursor-pointer bg-stone-100 disabled:cursor-not-allowed disabled:opacity-50">
-                            Leave Page
+                            Go Back
                         </button>
 
                         <button

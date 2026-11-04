@@ -271,7 +271,7 @@ export default function RescheduleBookingForm({
                     type="button"
                     onClick={() => setIsConfirmingCancel(true)}
                     className="rounded-lg border border-stone-300 px-5 py-3 text-center text-sm font-medium text-stone-700 transition hover:cursor-pointer bg-stone-50">
-                    Cancel
+                    Go Back
                 </button>
                 <button
                     type="button"
@@ -284,7 +284,7 @@ export default function RescheduleBookingForm({
                     style={{
                         backgroundColor: "var(--color-forest-700)",
                     }}>
-                    Reschedule Booking
+                    Confirm Reschedule
                 </button>
             </div>
             <ConfirmationModal
