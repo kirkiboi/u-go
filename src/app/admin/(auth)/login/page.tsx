@@ -134,12 +134,13 @@ export default function AdminLogin() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-border text-forest-600 focus:ring-forest-500"
+                className="h-4 w-4 rounded border-border text-forest-600 focus:ring-forest-500 hover:cursor-pointer"
                 style={{
                   accentColor: "var(--color-forest-500)",
                 }}
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-muted">
+              <label htmlFor="remember-me"
+                className="ml-2 block text-sm text-muted hover:cursor-pointer">
                 Remember me
               </label>
             </div>
@@ -159,11 +160,10 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition-all duration-200 hover: cursor-pointer brightness-110 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
               style={{
                 background: "linear-gradient(135deg, var(--color-forest-600), var(--color-forest-800))",
-              }}
-            >
+              }}>
               {loading ? (
                 <div className="flex items-center">
                   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
