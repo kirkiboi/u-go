@@ -76,26 +76,34 @@ export default async function ManualOverridePage({
     return (
         <main className="mx-auto max-w-4xl space-y-8 p-6">
             <div className="mx-auto max-w-5xl">
-                <Link
-                    href={`/admin/bookings/${booking.id}`}
-                    className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:underline"
-                    style={{ color: "var(--color-forest-700)" }}>
-                    <span aria-hidden="true">←</span>
-                    Back to booking details
-                </Link>
-
                 <header className="mt-6">
-                    <p className="text-sm font-medium"
-                        style={{ color: "var(--color-forest-500)" }}>
-                        Manual Management
-                    </p>
-                    <h1 className="mt-1 text-3xl font-bold"
-                        style={{
-                            fontFamily: "var(--font-display)",
-                            color: "var(--color-forest-900)",
-                        }}>
-                        Manual Booking Actions
-                    </h1>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p
+                                className="text-sm font-medium"
+                                style={{ color: "var(--color-forest-500)" }}>
+                                Manual Management
+                            </p>
+                            <h1
+                                className="mt-1 text-3xl font-bold"
+                                style={{
+                                    fontFamily: "var(--font-display)",
+                                    color: "var(--color-forest-900)",
+                                }}>
+                                Manual Booking Actions
+                            </h1>
+                        </div>
+
+                        <Link
+                            href={`/admin/bookings/${booking.id}`}
+                            className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-stone-50 sm:self-auto"
+                            style={{
+                                borderColor: "var(--color-border)",
+                                color: "var(--color-forest-700)",
+                            }}>
+                            Back
+                        </Link>
+                    </div>
                 </header>
             </div>
             <section>
