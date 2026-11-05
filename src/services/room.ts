@@ -4,6 +4,9 @@ import type { Prisma } from "@prisma/client";
 
 export async function getRooms() {
     return prisma.room.findMany({
+        where: {
+            isArchived: false,
+        },
         orderBy: {
             id: "asc",
         },

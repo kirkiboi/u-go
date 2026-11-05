@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getRoomById } from "@/services/room";
-import DeleteRoomButton from "@/components/admin/deleteRoomButton";
+import ArchiveRoomButton from "@/components/admin/archiveRoomButton";
 import Image from "next/image";
 import { formatTime } from "@/lib/time";
 export default async function RoomDetailsPage({
@@ -90,7 +90,7 @@ export default async function RoomDetailsPage({
                             }}>
                             Edit Room
                         </Link>
-                        <DeleteRoomButton roomId={room.id} />
+                        <ArchiveRoomButton roomId={room.id} />
                     </div>
                 </div>
                 <div className="mt-8 space-y-6">

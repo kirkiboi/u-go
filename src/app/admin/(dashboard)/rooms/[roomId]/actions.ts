@@ -64,3 +64,52 @@ export async function removeRoom(roomId: number) {
     }
     redirect("/admin/rooms");
 }
+
+export async function archiveRoom(roomId: number) {
+    const admin = await requireAdmin();
+
+    if (!Number.isSafeInteger(roomId) || roomId < 1) {
+        throw new Error("Invalid room ID.");
+    }
+
+    const existingRoom = await getRoomById(roomId);
+
+    if (!existingRoom) {
+        throw new Error("Room not found.");
+    }
+
+    if (existingRoom.isArchived) {
+        throw new Error("This room is already archived.");
+    }
+
+    await prisma.$transaction(async (tx) => {
+        const room = await tx.room.update({
+            where: {
+                id: roomId,
+            },
+            data: {
+                isArchived: true,
+            },
+        });
+
+        await tx.activityLog.create({
+            data: {
+                entity_type: "ROOM",
+                entity_id: room.id,
+                entity_name: room.name,
+                action: "ARCHIVED",
+                actor_user_id: admin.userId,
+                actor_type: "ADMIN",
+                room_id: room.id,
+                previous_data: {
+                    isArchived: false,
+                },
+                new_data: {
+                    isArchived: true,
+                },
+            },
+        });
+    });
+
+    redirect("/admin/rooms");
+}
