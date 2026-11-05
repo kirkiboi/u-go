@@ -40,9 +40,9 @@ export default function RestoreRoomButton({
 
             <ConfirmModal
                 isOpen={isConfirming}
-                title="Restore Room"
+                title="Unarchive Room"
                 description="Are you sure you want to unarchive this room? It will become visible in public room listings and available for new bookings again."
-                confirmLabel={isPending ? "Restoring..." : "Restore Room"}
+                confirmLabel={isPending ? "Unarchiving..." : "Unarchive Room"}
                 isPending={isPending}
                 error={error}
                 onCancel={() => {

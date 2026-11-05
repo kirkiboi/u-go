@@ -3,6 +3,8 @@ import { getRoomById } from "@/services/room";
 import ArchiveRoomButton from "@/components/admin/archiveRoomButton";
 import Image from "next/image";
 import { formatTime } from "@/lib/time";
+import RestoreRoomButton from "@/components/admin/restoreRoomButton";
+
 export default async function RoomDetailsPage({
     params,
 }: {
@@ -70,7 +72,7 @@ export default async function RoomDetailsPage({
                             Room Management
                         </p>
 
-                        <div className="mt-1 flex items-center gap-3">
+                        <div className="mt-1 flex flex-col items-start">
                             <h1
                                 className="text-3xl font-bold"
                                 style={{
@@ -79,9 +81,19 @@ export default async function RoomDetailsPage({
                                 }}>
                                 {room.name}
                             </h1>
+                            {room.isArchived && (
+                                <div
+                                    className="mt-2 inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold"
+                                    style={{
+                                        backgroundColor: "#fef3c7",
+                                        color: "#92400e",
+                                    }}>
+                                    Archived Room — Not Available for Booking
+                                </div>
+                            )}
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                         <Link
                             href={`/admin/rooms/${room.id}/edit`}
                             className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:brightness-110"
@@ -90,7 +102,12 @@ export default async function RoomDetailsPage({
                             }}>
                             Edit Room
                         </Link>
-                        <ArchiveRoomButton roomId={room.id} />
+
+                        {room.isArchived
+                            ?
+                            (<RestoreRoomButton roomId={room.id} />)
+                            :
+                            (<ArchiveRoomButton roomId={room.id} />)}
                     </div>
                 </div>
                 <div className="mt-8 space-y-6">

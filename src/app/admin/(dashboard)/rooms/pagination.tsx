@@ -5,7 +5,6 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Room } from "@prisma/client";
 import { formatTime } from "@/lib/time";
-import RestoreRoomButton from "@/components/admin/restoreRoomButton";
 
 const ROOMS_PER_PAGE = 4;
 
@@ -89,15 +88,19 @@ export default function RoomsList({
                                                 {room.name}
                                             </p>
 
-                                            {activeTab === "archived" && (
-                                                <span className="rounded-full px-2.5 py-1 text-xs font-medium"
-                                                    style={{
+                                            <span
+                                                className="rounded-full px-2.5 py-1 text-xs font-medium"
+                                                style={
+                                                    room.isArchived ? {
                                                         backgroundColor: "var(--color-stone-100)",
                                                         color: "var(--color-muted)",
-                                                    }}>
-                                                    Archived
-                                                </span>
-                                            )}
+                                                    } : {
+                                                        backgroundColor: "var(--color-forest-100)",
+                                                        color: "var(--color-forest-700)",
+                                                    }
+                                                }>
+                                                {room.isArchived ? "Archived" : "Active"}
+                                            </span>
                                         </div>
                                         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
                                             <span>
@@ -131,7 +134,6 @@ export default function RoomsList({
                                             }}>
                                             View Room
                                         </Link>
-                                        {activeTab === "archived" && (<RestoreRoomButton roomId={room.id} />)}
                                     </div>
                                 </div>
                             </div>
