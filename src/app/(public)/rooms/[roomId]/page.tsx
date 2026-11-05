@@ -16,7 +16,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
         notFound();
     }
     const room = await getRoomById(id);
-    if (!room) {
+    if (!room || room.isArchived) {
         notFound();
     }
 

@@ -82,34 +82,41 @@ export async function archiveRoom(roomId: number) {
         throw new Error("This room is already archived.");
     }
 
-    await prisma.$transaction(async (tx) => {
-        const room = await tx.room.update({
-            where: {
-                id: roomId,
-            },
-            data: {
-                isArchived: true,
-            },
-        });
-
-        await tx.activityLog.create({
-            data: {
-                entity_type: "ROOM",
-                entity_id: room.id,
-                entity_name: room.name,
-                action: "ARCHIVED",
-                actor_user_id: admin.userId,
-                actor_type: "ADMIN",
-                room_id: room.id,
-                previous_data: {
+    await prisma.$transaction(
+        async (tx) => {
+            const result = await tx.room.updateMany({
+                where: {
+                    id: roomId,
                     isArchived: false,
                 },
-                new_data: {
+                data: {
                     isArchived: true,
                 },
-            },
-        });
-    });
+            });
+            if (result.count !== 1) {
+                throw new Error("This room is no longer active or has already been archived.");
+            }
+
+            await tx.activityLog.create({
+                data: {
+                    entity_type: "ROOM",
+                    entity_id: roomId,
+                    entity_name: existingRoom.name,
+                    action: "ARCHIVED",
+                    actor_user_id: admin.userId,
+                    actor_type: "ADMIN",
+                    room_id: roomId,
+                    previous_data: {
+                        isArchived: false,
+                    },
+                    new_data: {
+                        isArchived: true,
+                    },
+                },
+            });
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, }
+    );
 
     redirect("/admin/rooms");
 }
