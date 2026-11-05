@@ -2,6 +2,20 @@ import { prisma } from "@/lib/prisma";
 
 export async function getAmenities() {
     return prisma.amenity.findMany({
+        where: {
+            isArchived: false,
+        },
+        orderBy: {
+            id: "asc",
+        },
+    });
+}
+
+export async function getArchivedAmenities() {
+    return prisma.amenity.findMany({
+        where: {
+            isArchived: true,
+        },
         orderBy: {
             id: "asc",
         },

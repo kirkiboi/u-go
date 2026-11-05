@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAmenityById } from "@/services/amenity";
 import DeleteAmenityButton from "@/components/admin/deleteAmenityButton";
+import ArchiveAmenityButton from "@/components/admin/archiveAmenityButton";
+import RestoreAmenityButton from "@/components/admin/restoreAmenityButton";
 import Image from "next/image";
 
 interface AmenityPageProps {
@@ -16,7 +18,7 @@ export default async function AmenityDetailsPage({
     const { amenityId } = await params;
     const id = Number(amenityId);
 
-    if (!Number.isInteger(id)) {
+    if (!Number.isSafeInteger(id) || id < 1) {
         notFound();
     }
 
@@ -38,7 +40,8 @@ export default async function AmenityDetailsPage({
                             }}>
                             Amenities Management
                         </p>
-                        <div className="mt-1 flex items-center gap-3">
+
+                        <div className="mt-1 flex flex-col items-start">
                             <h1
                                 className="text-3xl font-bold"
                                 style={{
@@ -47,10 +50,20 @@ export default async function AmenityDetailsPage({
                                 }}>
                                 {amenity.name}
                             </h1>
+                            {amenity.isArchived && (
+                                <div
+                                    className="mt-2 inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold"
+                                    style={{
+                                        backgroundColor: "#fef3c7",
+                                        color: "#92400e",
+                                    }}>
+                                    Archived Amenity — Hidden from Public Page
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                         <Link
                             href={`/admin/amenities/${amenity.id}/edit`}
                             className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:brightness-110"
@@ -58,12 +71,14 @@ export default async function AmenityDetailsPage({
                                 backgroundColor: "var(--color-forest-700)",
                             }}>
                             Edit Amenity
-                        </Link >
-                        <DeleteAmenityButton
-                            amenityId={amenity.id}
-                        />
-                    </div >
-                </div >
+                        </Link>
+                        {amenity.isArchived ? (
+                            <RestoreAmenityButton amenityId={amenity.id} />
+                        ) : (
+                            <ArchiveAmenityButton amenityId={amenity.id} />
+                        )}
+                    </div>
+                </div>
 
                 <div className="mt-8 space-y-6">
                     <div
@@ -126,7 +141,7 @@ export default async function AmenityDetailsPage({
                         </div>
                     </div>
                 </div>
-            </div >
-        </section >
+            </div>
+        </section>
     );
 }
