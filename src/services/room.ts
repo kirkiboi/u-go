@@ -13,6 +13,16 @@ export async function getRooms() {
     });
 }
 
+export async function getArchivedRooms() {
+    return prisma.room.findMany({
+        where: {
+            isArchived: true,
+        },
+        orderBy: {
+            id: "asc",
+        },
+    });
+}
 
 export async function getRoomById(id: number) {
     return prisma.room.findUnique({

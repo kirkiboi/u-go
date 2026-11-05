@@ -118,10 +118,14 @@ export async function POST(request: NextRequest) {
                         price: true,
                         checkInTime: true,
                         checkOutTime: true,
+                        isArchived: true,
                     },
                 });
                 if (!room) {
                     throw new Error("ROOM_NOT_FOUND");
+                }
+                if (room.isArchived) {
+                    throw new Error("ROOM_ARCHIVED");
                 }
 
                 const overlappingBooking = await tx.booking.findFirst({
@@ -343,6 +347,12 @@ export async function POST(request: NextRequest) {
                 return NextResponse.json(
                     { error: "The selected accommodation was not found." },
                     { status: 404 }
+                );
+            }
+            if (error.message === "ROOM_ARCHIVED") {
+                return NextResponse.json(
+                    { error: "This accommodation is no longer available for booking." },
+                    { status: 409 }
                 );
             }
             if (error.message === "DATES_UNAVAILABLE") {

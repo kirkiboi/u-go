@@ -1,14 +1,17 @@
 import Link from "next/link";
-import { getRooms } from "@/services/room";
+import { getArchivedRooms, getRooms } from "@/services/room";
 import RoomsList from "./pagination";
 
 export default async function RoomsPage() {
-    const rooms = await getRooms();
+    const [rooms, archivedRooms] = await Promise.all([
+        getRooms(),
+        getArchivedRooms(),
+    ]);
 
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-7xl">
-                {rooms.length === 0 ? (
+                {rooms.length === 0 && archivedRooms.length === 0 ? (
                     <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
                         <p
                             className="text-sm font-medium"
@@ -77,7 +80,10 @@ export default async function RoomsPage() {
                                 + Add Room
                             </Link>
                         </div>
-                        <RoomsList rooms={rooms} />
+                        <RoomsList
+                            rooms={rooms}
+                            archivedRooms={archivedRooms}
+                        />
                     </>
                 )}
             </div>
