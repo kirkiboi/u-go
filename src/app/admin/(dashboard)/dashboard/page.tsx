@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import RoomAvailabilityModal from "@/components/admin/roomAvailabilityModal";
 import ActiveBookingsModal from "@/components/admin/activeBookingsModal";
+import NotificationBell from "@/components/admin/notificationBell";
 
 function getManilaDateParts(date: Date) {
     const parts = new Intl.DateTimeFormat("en-US", {
@@ -132,22 +133,25 @@ export default async function AdminDashboard() {
     return (
         <section className="min-h-screen px-8 py-8">
             <div className="mx-auto max-w-7xl">
-                <div>
-                    <p
-                        className="text-sm font-medium"
-                        style={{
-                            color: "var(--color-forest-500)",
-                        }}>
-                        Admin Dashboard
-                    </p>
-                    <h1
-                        className="mt-1 text-3xl font-bold"
-                        style={{
-                            fontFamily: "var(--font-display)",
-                            color: "var(--color-forest-900)",
-                        }}>
-                        Overview
-                    </h1>
+                <div className="flex items-center justify-between gap-4">
+                    <div>
+                        <p
+                            className="text-sm font-medium"
+                            style={{
+                                color: "var(--color-forest-500)",
+                            }}>
+                            Admin Dashboard
+                        </p>
+                        <h1
+                            className="mt-1 text-3xl font-bold"
+                            style={{
+                                fontFamily: "var(--font-display)",
+                                color: "var(--color-forest-900)",
+                            }}>
+                            Overview
+                        </h1>
+                    </div>
+                    <NotificationBell />
                 </div>
                 <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <div
